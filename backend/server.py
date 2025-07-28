@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import uuid
 from datetime import datetime
-from openai import OpenAI
+import openai
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -27,15 +27,8 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # OpenAI setup
-try:
-    openai_client = OpenAI(
-        api_key=os.environ.get('OPENAI_API_KEY')
-    )
-    # Test the client
-    logger.info("OpenAI client initialized successfully")
-except Exception as e:
-    logger.error(f"OpenAI client initialization failed: {e}")
-    openai_client = None
+openai.api_key = os.environ.get('OPENAI_API_KEY')
+logger.info("OpenAI API key configured")
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -99,8 +92,8 @@ async def get_session_history(session_id: str) -> List[Message]:
 async def create_openai_response(session_id: str, user_message: str) -> str:
     """Cria resposta usando OpenAI com contexto da sessão"""
     try:
-        # Check if OpenAI client is available
-        if openai_client is None:
+        # Check if OpenAI API key is available
+        if not openai.api_key:
             return "Desculpe, o serviço de IA está temporariamente indisponível. Mas posso te ouvir: que tal me contar mais sobre como você está se sentindo?"
         
         # Recupera histórico da sessão
@@ -118,7 +111,7 @@ async def create_openai_response(session_id: str, user_message: str) -> str:
         messages.append({"role": "user", "content": user_message})
         
         # Chama OpenAI
-        response = openai_client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=messages,
             max_tokens=500,
