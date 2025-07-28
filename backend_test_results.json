@@ -1,53 +1,53 @@
 {
   "summary": {
     "total_tests": 7,
-    "passed": 6,
-    "failed": 1,
-    "success_rate": "85.7%"
+    "passed": 7,
+    "failed": 0,
+    "success_rate": "100.0%"
   },
   "results": [
     {
       "name": "Health Check",
       "success": true,
       "details": "Service: terapia_emocional",
-      "timestamp": "2025-07-28T17:55:43.206926"
+      "timestamp": "2025-07-28T18:03:48.122839"
     },
     {
       "name": "Create Session",
       "success": true,
-      "details": "Session ID: 053d3aad...",
-      "timestamp": "2025-07-28T17:55:43.251463"
+      "details": "Session ID: 101dad82...",
+      "timestamp": "2025-07-28T18:03:48.147926"
     },
     {
       "name": "Get Session",
       "success": true,
       "details": "Messages count: 0",
-      "timestamp": "2025-07-28T17:55:43.273392"
+      "timestamp": "2025-07-28T18:03:48.171385"
     },
     {
       "name": "Chat Functionality",
-      "success": false,
-      "details": "Portuguese: True, Therapeutic: False",
-      "timestamp": "2025-07-28T17:55:43.309977"
+      "success": true,
+      "details": "Response length: 429 chars, Therapeutic: Yes",
+      "timestamp": "2025-07-28T18:03:54.173006"
     },
     {
       "name": "Session History",
       "success": true,
       "details": "Found 2 messages in history",
-      "timestamp": "2025-07-28T17:55:43.339122"
+      "timestamp": "2025-07-28T18:03:54.223823"
     },
     {
       "name": "Multiple Chat Messages",
       "success": true,
       "details": "Successfully sent and received 2 message pairs",
-      "timestamp": "2025-07-28T17:55:43.382669"
+      "timestamp": "2025-07-28T18:04:09.364628"
     },
     {
       "name": "Error Handling",
       "success": true,
       "details": "Properly handles invalid requests",
-      "timestamp": "2025-07-28T17:55:43.427438"
+      "timestamp": "2025-07-28T18:04:16.537289"
     }
   ],
-  "timestamp": "2025-07-28T17:55:43.427624"
+  "timestamp": "2025-07-28T18:04:16.537487"
 }
