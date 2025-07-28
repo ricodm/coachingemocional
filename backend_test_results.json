@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed": 0,
+    "failed": 7,
+    "success_rate": "0.0%"
+  },
+  "results": [
+    {
+      "name": "Health Check",
+      "success": false,
+      "details": "Response: {'raw_response': '', 'status_code': 502}",
+      "timestamp": "2025-07-28T17:54:47.651891"
+    },
+    {
+      "name": "Create Session",
+      "success": false,
+      "details": "Response: {'raw_response': '', 'status_code': 502}",
+      "timestamp": "2025-07-28T17:54:47.670952"
+    },
+    {
+      "name": "Get Session",
+      "success": false,
+      "details": "No session ID available",
+      "timestamp": "2025-07-28T17:54:47.670970"
+    },
+    {
+      "name": "Chat Functionality",
+      "success": false,
+      "details": "No session ID available",
+      "timestamp": "2025-07-28T17:54:47.670976"
+    },
+    {
+      "name": "Session History",
+      "success": false,
+      "details": "No session ID available",
+      "timestamp": "2025-07-28T17:54:47.670982"
+    },
+    {
+      "name": "Multiple Chat Messages",
+      "success": false,
+      "details": "No session ID available",
+      "timestamp": "2025-07-28T17:54:47.670987"
+    },
+    {
+      "name": "Error Handling",
+      "success": false,
+      "details": "Invalid session should return 404",
+      "timestamp": "2025-07-28T17:54:47.691988"
+    }
+  ],
+  "timestamp": "2025-07-28T17:54:47.692146"
+}
