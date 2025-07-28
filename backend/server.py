@@ -28,9 +28,13 @@ db = client[os.environ['DB_NAME']]
 
 # OpenAI setup
 try:
-    openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+    openai_client = OpenAI(
+        api_key=os.environ.get('OPENAI_API_KEY')
+    )
+    # Test the client
+    logger.info("OpenAI client initialized successfully")
 except Exception as e:
-    logger.error(f"Warning: OpenAI client initialization failed: {e}")
+    logger.error(f"OpenAI client initialization failed: {e}")
     openai_client = None
 
 # Create the main app without a prefix
