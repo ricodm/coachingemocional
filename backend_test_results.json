@@ -1,53 +1,53 @@
 {
   "summary": {
     "total_tests": 7,
-    "passed": 0,
-    "failed": 7,
-    "success_rate": "0.0%"
+    "passed": 6,
+    "failed": 1,
+    "success_rate": "85.7%"
   },
   "results": [
     {
       "name": "Health Check",
-      "success": false,
-      "details": "Response: {'raw_response': '', 'status_code': 502}",
-      "timestamp": "2025-07-28T17:54:47.651891"
+      "success": true,
+      "details": "Service: terapia_emocional",
+      "timestamp": "2025-07-28T17:55:43.206926"
     },
     {
       "name": "Create Session",
-      "success": false,
-      "details": "Response: {'raw_response': '', 'status_code': 502}",
-      "timestamp": "2025-07-28T17:54:47.670952"
+      "success": true,
+      "details": "Session ID: 053d3aad...",
+      "timestamp": "2025-07-28T17:55:43.251463"
     },
     {
       "name": "Get Session",
-      "success": false,
-      "details": "No session ID available",
-      "timestamp": "2025-07-28T17:54:47.670970"
+      "success": true,
+      "details": "Messages count: 0",
+      "timestamp": "2025-07-28T17:55:43.273392"
     },
     {
       "name": "Chat Functionality",
       "success": false,
-      "details": "No session ID available",
-      "timestamp": "2025-07-28T17:54:47.670976"
+      "details": "Portuguese: True, Therapeutic: False",
+      "timestamp": "2025-07-28T17:55:43.309977"
     },
     {
       "name": "Session History",
-      "success": false,
-      "details": "No session ID available",
-      "timestamp": "2025-07-28T17:54:47.670982"
+      "success": true,
+      "details": "Found 2 messages in history",
+      "timestamp": "2025-07-28T17:55:43.339122"
     },
     {
       "name": "Multiple Chat Messages",
-      "success": false,
-      "details": "No session ID available",
-      "timestamp": "2025-07-28T17:54:47.670987"
+      "success": true,
+      "details": "Successfully sent and received 2 message pairs",
+      "timestamp": "2025-07-28T17:55:43.382669"
     },
     {
       "name": "Error Handling",
-      "success": false,
-      "details": "Invalid session should return 404",
-      "timestamp": "2025-07-28T17:54:47.691988"
+      "success": true,
+      "details": "Properly handles invalid requests",
+      "timestamp": "2025-07-28T17:55:43.427438"
     }
   ],
-  "timestamp": "2025-07-28T17:54:47.692146"
+  "timestamp": "2025-07-28T17:55:43.427624"
 }
