@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import uuid
 from datetime import datetime
-import openai
+from openai import OpenAI
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -20,7 +20,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # OpenAI setup
-openai.api_key = os.environ.get('OPENAI_API_KEY')
+openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -99,7 +99,7 @@ async def create_openai_response(session_id: str, user_message: str) -> str:
         messages.append({"role": "user", "content": user_message})
         
         # Chama OpenAI
-        response = openai.ChatCompletion.create(
+        response = openai_client.chat.completions.create(
             model="gpt-4",
             messages=messages,
             max_tokens=500,
