@@ -88,6 +88,10 @@ async def get_session_history(session_id: str) -> List[Message]:
 async def create_openai_response(session_id: str, user_message: str) -> str:
     """Cria resposta usando OpenAI com contexto da sessão"""
     try:
+        # Check if OpenAI client is available
+        if openai_client is None:
+            return "Desculpe, o serviço de IA está temporariamente indisponível. Mas posso te ouvir: que tal me contar mais sobre como você está se sentindo?"
+        
         # Recupera histórico da sessão
         history = await get_session_history(session_id)
         
