@@ -342,11 +342,13 @@ Como você está se sentindo hoje? O que trouxe você até aqui?`,
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState({});
+  const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user, token } = useAuth();
 
   useEffect(() => {
     fetchPlans();
+    fetchPaymentHistory();
   }, []);
 
   const fetchPlans = async () => {
@@ -357,6 +359,17 @@ const SubscriptionPlans = () => {
       setPlans(response.data.plans);
     } catch (error) {
       console.error('Erro ao carregar planos:', error);
+    }
+  };
+
+  const fetchPaymentHistory = async () => {
+    try {
+      const response = await axios.get(`${API}/subscription/payments`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPaymentHistory(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
     }
   };
 
@@ -378,10 +391,36 @@ const SubscriptionPlans = () => {
     }
   };
 
+  const cancelSubscription = async () => {
+    if (!confirm('Tem certeza que deseja cancelar sua assinatura?')) return;
+    
+    setLoading(true);
+    try {
+      await axios.post(`${API}/subscription/cancel`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Assinatura cancelada com sucesso!');
+      window.location.reload();
+    } catch (error) {
+      console.error('Erro ao cancelar:', error);
+      alert('Erro ao cancelar assinatura. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="plans-container">
       <h2>Escolha seu Plano</h2>
       <p>Seu plano atual: <strong>{user.subscription_plan}</strong></p>
+      
+      {user.subscription_plan !== 'free' && (
+        <div className="cancel-section">
+          <button onClick={cancelSubscription} disabled={loading} className="cancel-btn">
+            {loading ? 'Cancelando...' : 'Cancelar Assinatura'}
+          </button>
+        </div>
+      )}
       
       <div className="plans-grid">
         {Object.entries(plans).map(([planId, plan]) => (
@@ -409,6 +448,26 @@ const SubscriptionPlans = () => {
           </div>
         ))}
       </div>
+
+      {paymentHistory.length > 0 && (
+        <div className="payment-history">
+          <h3>Histórico de Pagamentos</h3>
+          <div className="payments-list">
+            {paymentHistory.map((payment) => (
+              <div key={payment.id} className="payment-card">
+                <div className="payment-info">
+                  <strong>{payment.plan_name}</strong>
+                  <span className="payment-amount">R$ {payment.amount.toFixed(2)}</span>
+                </div>
+                <div className="payment-date">
+                  {new Date(payment.date).toLocaleDateString('pt-BR')}
+                </div>
+                <div className="payment-status">✅ Pago</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
