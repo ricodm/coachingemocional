@@ -476,17 +476,22 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     name: '',
     phone: '',
-    password: ''
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const { user, token } = useAuth();
 
   useEffect(() => {
     setProfileData({
       name: user.name || '',
       phone: user.phone || '',
-      password: ''
+      email: user.email || '',
+      password: '',
+      confirmPassword: ''
     });
   }, [user]);
 
@@ -494,6 +499,20 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setError('');
+
+    // Validate passwords if provided
+    if (profileData.password && profileData.password !== profileData.confirmPassword) {
+      setError('As senhas não coincidem');
+      setLoading(false);
+      return;
+    }
+
+    if (profileData.password && profileData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
 
     try {
       const updateData = {};
@@ -506,9 +525,12 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessage('Perfil atualizado com sucesso!');
+        setProfileData({...profileData, password: '', confirmPassword: ''});
+      } else {
+        setMessage('Nenhuma alteração detectada.');
       }
     } catch (error) {
-      setMessage('Erro ao atualizar perfil');
+      setError('Erro ao atualizar perfil');
     } finally {
       setLoading(false);
     }
@@ -518,34 +540,85 @@ const Profile = () => {
     <div className="profile-container">
       <h2>Meu Perfil</h2>
       
-      {message && <div className="message">{message}</div>}
+      {message && <div className="success-message">{message}</div>}
+      {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={profileData.name}
-          onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-        />
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            value={profileData.email}
+            disabled
+            className="disabled-input"
+          />
+          <small>O email não pode ser alterado</small>
+        </div>
         
-        <input
-          type="tel"
-          placeholder="Telefone"
-          value={profileData.phone}
-          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-        />
+        <div className="form-group">
+          <label>Nome</label>
+          <input
+            type="text"
+            placeholder="Nome completo"
+            value={profileData.name}
+            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+          />
+        </div>
         
-        <input
-          type="password"
-          placeholder="Nova senha (deixe em branco para não alterar)"
-          value={profileData.password}
-          onChange={(e) => setProfileData({...profileData, password: e.target.value})}
-        />
+        <div className="form-group">
+          <label>Telefone</label>
+          <input
+            type="tel"
+            placeholder="Telefone"
+            value={profileData.phone}
+            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+          />
+        </div>
+        
+        <div className="form-group">
+          <label>Nova Senha (deixe em branco para não alterar)</label>
+          <input
+            type="password"
+            placeholder="Nova senha"
+            value={profileData.password}
+            onChange={(e) => setProfileData({...profileData, password: e.target.value})}
+          />
+        </div>
+        
+        {profileData.password && (
+          <div className="form-group">
+            <label>Confirmar Nova Senha</label>
+            <input
+              type="password"
+              placeholder="Confirme a nova senha"
+              value={profileData.confirmPassword}
+              onChange={(e) => setProfileData({...profileData, confirmPassword: e.target.value})}
+            />
+          </div>
+        )}
         
         <button type="submit" disabled={loading}>
           {loading ? 'Salvando...' : 'Salvar Alterações'}
         </button>
       </form>
+      
+      <div className="user-stats">
+        <h3>Estatísticas</h3>
+        <div className="stats-grid">
+          <div className="stat-item">
+            <label>Plano Atual:</label>
+            <span>{user.subscription_plan}</span>
+          </div>
+          <div className="stat-item">
+            <label>Mensagens Hoje:</label>
+            <span>{user.messages_used_today}</span>
+          </div>
+          <div className="stat-item">
+            <label>Mensagens Este Mês:</label>
+            <span>{user.messages_used_this_month}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
