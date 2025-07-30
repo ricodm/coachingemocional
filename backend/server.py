@@ -498,6 +498,7 @@ async def login_user(login_data: UserLogin):
             "phone": user.phone,
             "subscription_plan": user.subscription_plan,
             "messages_used_today": user.messages_used_today,
+            "messages_used_this_month": user.messages_used_this_month,
             "is_admin": user.is_admin,
             "is_support": user.is_support
         },
