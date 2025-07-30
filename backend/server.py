@@ -425,9 +425,23 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
         session = Session(id=request.session_id, user_id=current_user.id)
         await db.sessions.insert_one(session.dict())
     
-    # Get user's session summaries for context
+    # Get user's session summaries for context - FORCE SUMMARY GENERATION
+    # First, find sessions without summaries that have messages and generate summaries
+    sessions_without_summaries = await db.sessions.find(
+        {
+            "user_id": current_user.id, 
+            "messages_count": {"$gte": 4},
+            "$or": [{"summary": {"$exists": False}}, {"summary": None}, {"summary": ""}]
+        }
+    ).to_list(10)
+    
+    # Generate summaries for sessions that don't have them
+    for session in sessions_without_summaries:
+        await generate_and_save_session_summary(session["id"], current_user.id)
+    
+    # Now get sessions with summaries for context
     user_sessions = await db.sessions.find(
-        {"user_id": current_user.id, "summary": {"$ne": None}}
+        {"user_id": current_user.id, "summary": {"$ne": None}, "summary": {"$ne": ""}}
     ).sort("created_at", -1).limit(5).to_list(5)
     
     history_summary = ""
