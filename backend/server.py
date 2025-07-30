@@ -318,7 +318,12 @@ async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = ""
     base_prompt = prompts.get("base_prompt", "") if prompts else ""
     additional_prompt = prompts.get("additional_prompt", "") if prompts else ""
     
-    # Get admin documents
+    # Get system documents (theory and support)
+    system_docs = await db.admin_settings.find_one({"type": "system_documents"})
+    theory_document = system_docs.get("theory_document", "") if system_docs else ""
+    support_document = system_docs.get("support_document", SUPPORT_DOCUMENT) if system_docs else SUPPORT_DOCUMENT
+    
+    # Get admin documents (additional guidelines)
     documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(10)
     
     # FORCE GENERATION OF SUMMARIES - Find sessions without summaries that have enough messages
@@ -355,15 +360,19 @@ DIRETRIZES FUNDAMENTAIS:
     if additional_prompt:
         full_prompt += "\n\nDIRETRIZES ADICIONAIS:\n" + additional_prompt
     
+    # Add theory document if exists
+    if theory_document:
+        full_prompt += "\n\nDOCUMENTO DE TEORIAS E CONHECIMENTO BASE:\n" + theory_document
+    
     if documents:
-        full_prompt += "\n\nDOCUMENTOS DE REFERÊNCIA:\n"
+        full_prompt += "\n\nDOCUMENTOS DE REFERÊNCIA ADICIONAIS:\n"
         for doc in documents:
             full_prompt += f"\n=== {doc['title']} ===\n{doc['content']}\n"
     
     # Add support document
     full_prompt += "\n\nCAPACIDADE DE SUPORTE TÉCNICO:\n"
     full_prompt += "Se a pessoa fizer perguntas sobre o funcionamento do app, limites de mensagens, planos ou problemas técnicos, use as informações abaixo:\n\n"
-    full_prompt += SUPPORT_DOCUMENT
+    full_prompt += support_document
     
     # Add comprehensive user history from multiple sessions
     full_prompt += "\n\n🧠 MEMÓRIA COMPLETA DO USUÁRIO:\n"
@@ -382,7 +391,7 @@ DIRETRIZES FUNDAMENTAIS:
     
     # Special handling for support requests
     if is_support_request:
-        full_prompt += "\n🔧 MODO SUPORTE ATIVADO: Esta mensagem parece ser uma solicitação de suporte técnico. Priorize informações técnicas e de suporte, mas mantenha o tom empático e terapêutico.\n\n"
+        full_prompt += "\n🔧 MODO SUPORTE ATIVADO: Esta mensagem parece ser uma solicitação de suporte técnico. Priorize informações técnicas e de suporte, mas mantenha o tom empático e terapêutico. IMPORTANTE: Esta resposta de suporte NÃO consumirá o limite de mensagens do usuário.\n\n"
     
     full_prompt += "INSTRUÇÃO FINAL: Sempre demonstre que você tem memória das sessões anteriores quando existirem. Se o usuário perguntar sobre conversas passadas, faça referência específica aos resumos acima."
     
