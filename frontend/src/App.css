@@ -1045,7 +1045,424 @@ body {
   cursor: not-allowed;
 }
 
-/* ============ ANIMATIONS ============ */
+/* ============ MODAL STYLES ============ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 800px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h2 {
+  color: #333;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #666;
+}
+
+.modal-subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.modal-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.modal-plan-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #e1e1e1;
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.modal-plan-card:hover {
+  transform: translateY(-5px);
+  border-color: #667eea;
+}
+
+.modal-plan-card h3 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.modal-price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 1rem;
+}
+
+.modal-features {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.modal-subscribe-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+  width: 100%;
+}
+
+.modal-subscribe-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.modal-subscribe-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ============ PLANS - DISCRETE CANCEL ============ */
+.cancel-section-discrete {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancel-link {
+  background: none;
+  border: none;
+  color: #f44336;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.cancel-link:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.cancel-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ ADMIN EXPANDED ============ */
+.search-input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  color: #333;
+}
+
+.user-row {
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.user-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.system-docs-section {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+}
+
+.system-doc {
+  margin-bottom: 2rem;
+}
+
+.system-doc label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.system-doc textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  color: #333;
+  resize: vertical;
+}
+
+/* ============ USER DETAIL PANEL ============ */
+.user-detail-panel {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.user-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.user-detail-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.user-detail-tabs button {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.user-detail-tabs button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.user-detail-tabs button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+}
+
+.user-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: white;
+}
+
+.info-item span {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.plan-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.plan-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.plan-btn.current {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.payments-admin-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.payment-admin-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  color: white;
+}
+
+.refund-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.refund-btn:hover {
+  background: #d32f2f;
+}
+
+.sessions-admin-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.session-admin-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.session-admin-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.session-admin-card h5 {
+  color: #4CAF50;
+  margin-bottom: 0.5rem;
+}
+
+.session-summary {
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-messages-list {
+  display: grid;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.admin-message {
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-message.user {
+  background: rgba(102, 126, 234, 0.2);
+  border-left: 4px solid #667eea;
+}
+
+.admin-message.ai {
+  background: rgba(76, 175, 80, 0.2);
+  border-left: 4px solid #4CAF50;
+}
+
+.admin-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.admin-message-header strong {
+  color: white;
+}
+
+.admin-message-header span {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.admin-message-content {
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: white;
+}
 @keyframes fadeInUp {
   from {
     opacity: 0;
