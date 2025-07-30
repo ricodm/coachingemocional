@@ -447,12 +447,15 @@ async def register_user(user_data: UserRegister):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create new user
+    # Create new user with proper initialization
     user = User(
         email=user_data.email,
         name=user_data.name,
         phone=user_data.phone,
-        password_hash=hash_password(user_data.password)
+        password_hash=hash_password(user_data.password),
+        messages_used_today=0,
+        messages_used_this_month=0,
+        last_message_date=None
     )
     
     await db.users.insert_one(user.dict())
@@ -467,7 +470,8 @@ async def register_user(user_data: UserRegister):
             "name": user.name,
             "phone": user.phone,
             "subscription_plan": user.subscription_plan,
-            "messages_used_today": user.messages_used_today
+            "messages_used_today": user.messages_used_today,
+            "messages_used_this_month": user.messages_used_this_month
         },
         "token": token
     }
