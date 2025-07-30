@@ -167,6 +167,7 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [remainingMessages, setRemainingMessages] = useState(0);
+  const [showPlansModal, setShowPlansModal] = useState(false);
   const messagesEndRef = useRef(null);
   const { user, token } = useAuth();
 
@@ -239,6 +240,8 @@ Como você está se sentindo hoje? O que trouxe você até aqui?`,
       
       if (error.response?.status === 429) {
         errorMsg = error.response.data.detail;
+        // Show plans modal when messages are exhausted
+        setShowPlansModal(true);
       }
       
       const errorMessage = {
@@ -268,72 +271,155 @@ Como você está se sentindo hoje? O que trouxe você até aqui?`,
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="user-info">
-          <span>Olá, {user.name}</span>
-          <span className="plan-badge">{user.subscription_plan}</span>
-          {remainingMessages >= 0 && (
-            <span className="messages-count">
-              {remainingMessages === -1 ? '∞' : remainingMessages} msgs restantes
-            </span>
+    <>
+      <div className="chat-container">
+        <div className="chat-header">
+          <div className="user-info">
+            <span>Olá, {user.name}</span>
+            <span className="plan-badge">{user.subscription_plan}</span>
+            {remainingMessages >= 0 && (
+              <span className="messages-count">
+                {remainingMessages === -1 ? '∞' : remainingMessages} msgs restantes
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="messages-container">
+          {messages.map((message) => (
+            <div key={message.id} className={`message ${message.is_user ? 'user' : 'ai'}`}>
+              <div className="message-content">
+                <div className="message-text">
+                  {message.content}
+                </div>
+                <div className="message-time">
+                  {formatTime(message.timestamp)}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {isLoading && (
+            <div className="message ai">
+              <div className="message-content">
+                <div className="typing-indicator">
+                  <div className="typing-dots">
+                    <div className="dot"></div>
+                    <div className="dot"></div>
+                    <div className="dot"></div>
+                  </div>
+                  <span>Refletindo...</span>
+                </div>
+              </div>
+            </div>
           )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="input-container">
+          <div className="input-wrapper">
+            <textarea
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Compartilhe seus sentimentos..."
+              className="message-input"
+              rows="1"
+              disabled={isLoading}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!inputMessage.trim() || isLoading}
+              className="send-button"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="messages-container">
-        {messages.map((message) => (
-          <div key={message.id} className={`message ${message.is_user ? 'user' : 'ai'}`}>
-            <div className="message-content">
-              <div className="message-text">
-                {message.content}
-              </div>
-              <div className="message-time">
-                {formatTime(message.timestamp)}
-              </div>
-            </div>
-          </div>
-        ))}
-        
-        {isLoading && (
-          <div className="message ai">
-            <div className="message-content">
-              <div className="typing-indicator">
-                <div className="typing-dots">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
-                <span>Refletindo...</span>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </div>
+      {/* Plans Modal */}
+      {showPlansModal && <PlansModal onClose={() => setShowPlansModal(false)} />}
+    </>
+  );
+};
 
-      <div className="input-container">
-        <div className="input-wrapper">
-          <textarea
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Compartilhe seus sentimentos..."
-            className="message-input"
-            rows="1"
-            disabled={isLoading}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!inputMessage.trim() || isLoading}
-            className="send-button"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+// Plans Modal Component
+const PlansModal = ({ onClose }) => {
+  const [plans, setPlans] = useState({});
+  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      const response = await axios.get(`${API}/plans`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPlans(response.data.plans);
+    } catch (error) {
+      console.error('Erro ao carregar planos:', error);
+    }
+  };
+
+  const subscribeToPlan = async (planId) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/subscribe`, 
+        { plan_id: planId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Redirect to Stripe checkout
+      window.location.href = response.data.checkout_url;
+    } catch (error) {
+      console.error('Erro na assinatura:', error);
+      alert('Erro ao processar assinatura. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Suas mensagens esgotaram!</h2>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        
+        <p className="modal-subtitle">Escolha um plano para continuar conversando:</p>
+        
+        <div className="modal-plans">
+          {Object.entries(plans).map(([planId, plan]) => (
+            <div key={planId} className="modal-plan-card">
+              <h3>{plan.name}</h3>
+              <div className="modal-price">R$ {plan.price.toFixed(2)}/mês</div>
+              <div className="modal-features">
+                <p>
+                  {plan.messages_per_day === -1 
+                    ? 'Mensagens ilimitadas' 
+                    : `${plan.messages_per_day} mensagens por dia`
+                  }
+                </p>
+              </div>
+              
+              <button 
+                onClick={() => subscribeToPlan(planId)}
+                disabled={loading}
+                className="modal-subscribe-btn"
+              >
+                {loading ? 'Processando...' : 'Assinar Agora'}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>
