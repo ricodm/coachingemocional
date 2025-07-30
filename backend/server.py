@@ -665,6 +665,105 @@ async def get_subscription_status(session_id: str, current_user: User = Depends(
         logger.error(f"Status check error: {str(e)}")
         raise HTTPException(status_code=500, detail="Error checking payment status")
 
+@api_router.post("/subscription/cancel")
+async def cancel_subscription(current_user: User = Depends(get_current_user)):
+    """Cancel user subscription"""
+    await db.users.update_one(
+        {"id": current_user.id},
+        {
+            "$set": {
+                "subscription_plan": "free",
+                "subscription_status": "canceled",
+                "messages_used_today": 0,
+                "messages_used_this_month": 0
+            }
+        }
+    )
+    
+    return {"message": "Assinatura cancelada com sucesso"}
+
+@api_router.get("/subscription/payments")
+async def get_payment_history(current_user: User = Depends(get_current_user)):
+    """Get user's payment history"""
+    payments = await db.payment_transactions.find(
+        {"user_id": current_user.id, "payment_status": "paid"}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    payment_history = []
+    for payment in payments:
+        plan_info = SUBSCRIPTION_PLANS.get(payment.get("plan_id"), {})
+        payment_history.append({
+            "id": payment["id"],
+            "date": payment["created_at"],
+            "amount": payment["amount"],
+            "plan_name": plan_info.get("name", payment.get("plan_id")),
+            "plan_id": payment.get("plan_id"),
+            "status": payment["payment_status"]
+        })
+    
+    return payment_history
+
+@api_router.post("/session/{session_id}/summary")
+async def generate_session_summary(session_id: str, current_user: User = Depends(get_current_user)):
+    """Generate summary for a session"""
+    # Verify session belongs to user
+    session = await db.sessions.find_one({"id": session_id, "user_id": current_user.id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Get session messages
+    messages = await db.messages.find(
+        {"session_id": session_id}
+    ).sort("timestamp", 1).to_list(1000)
+    
+    if not messages:
+        return {"summary": "Nenhuma mensagem encontrada nesta sessão."}
+    
+    # Create summary prompt
+    conversation_text = ""
+    for msg in messages:
+        role = "Usuário" if msg.get("is_user") else "Terapeuta"
+        conversation_text += f"{role}: {msg.get('content', '')}\n\n"
+    
+    try:
+        summary_prompt = f"""
+Você é um assistente especializado em criar resumos de sessões de terapia. 
+Analise a conversa abaixo e crie um resumo terapêutico focando em:
+
+1. Principais questões emocionais apresentadas
+2. Insights descobertos
+3. Técnicas aplicadas
+4. Progresso observado
+5. Pontos para próximas sessões
+
+Mantenha o resumo profissional, respeitoso e focado no desenvolvimento emocional do usuário.
+
+CONVERSA:
+{conversation_text}
+
+RESUMO:"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": summary_prompt}],
+            max_tokens=400,
+            temperature=0.3
+        )
+        
+        summary = response.choices[0].message.content
+        
+        # Save summary to session
+        await db.sessions.update_one(
+            {"id": session_id},
+            {"$set": {"summary": summary}}
+        )
+        
+        return {"summary": summary}
+        
+    except Exception as e:
+        logger.error(f"Summary generation error: {str(e)}")
+        return {"summary": "Erro ao gerar resumo da sessão."}
+
 @api_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
     """Handle Stripe webhooks"""
