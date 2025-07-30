@@ -1021,6 +1021,52 @@ class DocumentUpload(BaseModel):
     title: str
     content: str
 
+class AdminDocuments(BaseModel):
+    theory_document: Optional[str] = None  # Documento de teorias gerais
+    support_document: Optional[str] = None  # Documento de suporte técnico
+
+@api_router.get("/admin/documents/system")
+async def get_admin_system_documents(admin_user: User = Depends(check_admin_access)):
+    """Get system documents (theory and support)"""
+    documents = await db.admin_settings.find_one({"type": "system_documents"})
+    if not documents:
+        # Create default with current support document
+        default_docs = {
+            "type": "system_documents",
+            "theory_document": "",
+            "support_document": SUPPORT_DOCUMENT,
+            "updated_at": datetime.utcnow()
+        }
+        await db.admin_settings.insert_one(default_docs)
+        documents = default_docs
+    
+    return {
+        "theory_document": documents.get("theory_document", ""),
+        "support_document": documents.get("support_document", SUPPORT_DOCUMENT),
+        "updated_at": documents.get("updated_at")
+    }
+
+@api_router.put("/admin/documents/system")
+async def update_admin_system_documents(
+    doc_data: AdminDocuments,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Update system documents"""
+    update_data = {"updated_at": datetime.utcnow()}
+    
+    if doc_data.theory_document is not None:
+        update_data["theory_document"] = doc_data.theory_document
+    if doc_data.support_document is not None:
+        update_data["support_document"] = doc_data.support_document
+    
+    await db.admin_settings.update_one(
+        {"type": "system_documents"},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Documentos do sistema atualizados com sucesso"}
+
 @api_router.get("/admin/prompts")
 async def get_admin_prompts(admin_user: User = Depends(check_admin_access)):
     """Get current admin prompts"""
