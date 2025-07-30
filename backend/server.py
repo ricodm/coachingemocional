@@ -955,6 +955,32 @@ async def update_user_plan(
     
     return {"message": "User plan updated successfully"}
 
+@api_router.post("/admin/create-admin")
+async def create_admin_user():
+    """Create initial admin user (remove this endpoint in production)"""
+    # Check if admin already exists
+    existing_admin = await db.users.find_one({"is_admin": True})
+    if existing_admin:
+        raise HTTPException(status_code=400, detail="Admin user already exists")
+    
+    # Create admin user
+    admin_user = User(
+        email="admin@terapia.com",
+        name="Admin Master",
+        phone="11999999999",
+        password_hash=hash_password("admin123"),
+        is_admin=True,
+        subscription_plan="ilimitado"
+    )
+    
+    await db.users.insert_one(admin_user.dict())
+    
+    return {
+        "message": "Admin user created successfully",
+        "email": "admin@terapia.com",
+        "password": "admin123"
+    }
+
 # Health check
 @api_router.get("/health")
 async def health_check():
