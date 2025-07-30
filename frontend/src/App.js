@@ -839,17 +839,39 @@ const SessionHistory = () => {
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('prompts');
   const [prompts, setPrompts] = useState({ base_prompt: '', additional_prompt: '' });
+  const [systemDocs, setSystemDocs] = useState({ theory_document: '', support_document: '' });
   const [documents, setDocuments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [activeUserTab, setActiveUserTab] = useState('profile');
   const [loading, setLoading] = useState(false);
   const [newDocument, setNewDocument] = useState({ title: '', content: '' });
   const { token } = useAuth();
 
   useEffect(() => {
     if (activeTab === 'prompts') fetchPrompts();
-    if (activeTab === 'documents') fetchDocuments();
+    if (activeTab === 'documents') {
+      fetchDocuments();
+      fetchSystemDocuments();
+    }
     if (activeTab === 'users') fetchUsers();
   }, [activeTab]);
+
+  useEffect(() => {
+    // Filter users based on search term
+    if (searchTerm) {
+      const filtered = users.filter(user => 
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchTerm, users]);
 
   const fetchPrompts = async () => {
     try {
@@ -862,6 +884,17 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchSystemDocuments = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/documents/system`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSystemDocs(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar documentos do sistema:', error);
+    }
+  };
+
   const updatePrompts = async () => {
     setLoading(true);
     try {
@@ -871,6 +904,20 @@ const AdminPanel = () => {
       alert('Prompts atualizados com sucesso!');
     } catch (error) {
       alert('Erro ao atualizar prompts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSystemDocuments = async () => {
+    setLoading(true);
+    try {
+      await axios.put(`${API}/admin/documents/system`, systemDocs, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Documentos do sistema atualizados com sucesso!');
+    } catch (error) {
+      alert('Erro ao atualizar documentos do sistema');
     } finally {
       setLoading(false);
     }
@@ -924,7 +971,7 @@ const AdminPanel = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${API}/admin/users`, {
+      const response = await axios.get(`${API}/admin/users?search=${searchTerm}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(response.data);
@@ -933,118 +980,409 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchUserDetails = async (userId) => {
+    try {
+      const response = await axios.get(`${API}/admin/user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserDetails(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar detalhes do usuário:', error);
+    }
+  };
+
+  const selectUser = (user) => {
+    setSelectedUser(user);
+    setActiveUserTab('profile');
+    fetchUserDetails(user.id);
+  };
+
+  const updateUserPlan = async (userId, planId) => {
+    try {
+      await axios.put(`${API}/admin/user/${userId}/plan`, { plan_id: planId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Plano do usuário atualizado!');
+      fetchUserDetails(userId);
+    } catch (error) {
+      alert('Erro ao atualizar plano');
+    }
+  };
+
+  const refundPayment = async (userId, paymentId) => {
+    if (!confirm('Tem certeza que deseja reembolsar este pagamento?')) return;
+    
+    try {
+      await axios.post(`${API}/admin/user/${userId}/refund/${paymentId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Pagamento reembolsado com sucesso!');
+      fetchUserDetails(userId);
+    } catch (error) {
+      alert('Erro ao reembolsar pagamento');
+    }
+  };
+
   return (
     <div className="admin-container">
       <h2>Painel Admin</h2>
       
-      <div className="admin-tabs">
-        <button 
-          className={activeTab === 'prompts' ? 'active' : ''} 
-          onClick={() => setActiveTab('prompts')}
-        >
-          Prompts do GPT
-        </button>
-        <button 
-          className={activeTab === 'documents' ? 'active' : ''} 
-          onClick={() => setActiveTab('documents')}
-        >
-          Documentos
-        </button>
-        <button 
-          className={activeTab === 'users' ? 'active' : ''} 
-          onClick={() => setActiveTab('users')}
-        >
-          Usuários
-        </button>
-      </div>
-
-      {activeTab === 'prompts' && (
-        <div className="admin-section">
-          <h3>Configurar Prompts do GPT</h3>
-          
-          <div className="prompt-section">
-            <label>Prompt Base:</label>
-            <textarea
-              value={prompts.base_prompt}
-              onChange={(e) => setPrompts({...prompts, base_prompt: e.target.value})}
-              rows="10"
-              placeholder="Prompt principal para o GPT..."
-            />
-          </div>
-
-          <div className="prompt-section">
-            <label>Prompt Adicional:</label>
-            <textarea
-              value={prompts.additional_prompt}
-              onChange={(e) => setPrompts({...prompts, additional_prompt: e.target.value})}
-              rows="6"
-              placeholder="Diretrizes adicionais..."
-            />
-          </div>
-
-          <button onClick={updatePrompts} disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar Prompts'}
-          </button>
-        </div>
-      )}
-
-      {activeTab === 'documents' && (
-        <div className="admin-section">
-          <h3>Documentos de Referência</h3>
-          
-          <div className="upload-section">
-            <h4>Novo Documento</h4>
-            <input
-              type="text"
-              placeholder="Título do documento"
-              value={newDocument.title}
-              onChange={(e) => setNewDocument({...newDocument, title: e.target.value})}
-            />
-            <textarea
-              placeholder="Conteúdo do documento (teorias, diretrizes, etc.)"
-              value={newDocument.content}
-              onChange={(e) => setNewDocument({...newDocument, content: e.target.value})}
-              rows="8"
-            />
-            <button onClick={uploadDocument} disabled={loading}>
-              {loading ? 'Enviando...' : 'Enviar Documento'}
+      {!selectedUser ? (
+        <>
+          <div className="admin-tabs">
+            <button 
+              className={activeTab === 'prompts' ? 'active' : ''} 
+              onClick={() => setActiveTab('prompts')}
+            >
+              Prompts do GPT
+            </button>
+            <button 
+              className={activeTab === 'documents' ? 'active' : ''} 
+              onClick={() => setActiveTab('documents')}
+            >
+              Documentos
+            </button>
+            <button 
+              className={activeTab === 'users' ? 'active' : ''} 
+              onClick={() => setActiveTab('users')}
+            >
+              Usuários
             </button>
           </div>
 
-          <div className="documents-list">
-            <h4>Documentos Existentes</h4>
-            {documents.map((doc) => (
-              <div key={doc.id} className="document-card">
-                <h5>{doc.title}</h5>
-                <p>{doc.content.substring(0, 200)}...</p>
-                <small>{new Date(doc.created_at).toLocaleDateString('pt-BR')}</small>
-                <button onClick={() => deleteDocument(doc.id)} className="delete-btn">
-                  Deletar
+          {activeTab === 'prompts' && (
+            <div className="admin-section">
+              <h3>Configurar Prompts do GPT</h3>
+              
+              <div className="prompt-section">
+                <label>Prompt Base:</label>
+                <textarea
+                  value={prompts.base_prompt}
+                  onChange={(e) => setPrompts({...prompts, base_prompt: e.target.value})}
+                  rows="10"
+                  placeholder="Prompt principal para o GPT..."
+                />
+              </div>
+
+              <div className="prompt-section">
+                <label>Prompt Adicional:</label>
+                <textarea
+                  value={prompts.additional_prompt}
+                  onChange={(e) => setPrompts({...prompts, additional_prompt: e.target.value})}
+                  rows="6"
+                  placeholder="Diretrizes adicionais..."
+                />
+              </div>
+
+              <button onClick={updatePrompts} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Prompts'}
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'documents' && (
+            <div className="admin-section">
+              <h3>Documentos do Sistema</h3>
+              
+              <div className="system-docs-section">
+                <div className="system-doc">
+                  <label>Documento de Teorias Base:</label>
+                  <textarea
+                    value={systemDocs.theory_document}
+                    onChange={(e) => setSystemDocs({...systemDocs, theory_document: e.target.value})}
+                    rows="8"
+                    placeholder="Teorias, conhecimentos e diretrizes gerais que o GPT deve seguir..."
+                  />
+                </div>
+
+                <div className="system-doc">
+                  <label>Documento de Suporte Técnico:</label>
+                  <textarea
+                    value={systemDocs.support_document}
+                    onChange={(e) => setSystemDocs({...systemDocs, support_document: e.target.value})}
+                    rows="8"
+                    placeholder="Informações para suporte técnico (não consome mensagens)..."
+                  />
+                </div>
+
+                <button onClick={updateSystemDocuments} disabled={loading}>
+                  {loading ? 'Salvando...' : 'Salvar Documentos do Sistema'}
                 </button>
               </div>
-            ))}
+              
+              <div className="upload-section">
+                <h4>Adicionar Documento de Referência</h4>
+                <input
+                  type="text"
+                  placeholder="Título do documento"
+                  value={newDocument.title}
+                  onChange={(e) => setNewDocument({...newDocument, title: e.target.value})}
+                />
+                <textarea
+                  placeholder="Conteúdo do documento (teorias, diretrizes, etc.)"
+                  value={newDocument.content}
+                  onChange={(e) => setNewDocument({...newDocument, content: e.target.value})}
+                  rows="8"
+                />
+                <button onClick={uploadDocument} disabled={loading}>
+                  {loading ? 'Enviando...' : 'Enviar Documento'}
+                </button>
+              </div>
+
+              <div className="documents-list">
+                <h4>Documentos de Referência Existentes</h4>
+                {documents.map((doc) => (
+                  <div key={doc.id} className="document-card">
+                    <h5>{doc.title}</h5>
+                    <p>{doc.content.substring(0, 200)}...</p>
+                    <small>{new Date(doc.created_at).toLocaleDateString('pt-BR')}</small>
+                    <button onClick={() => deleteDocument(doc.id)} className="delete-btn">
+                      Deletar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'users' && (
+            <div className="admin-section">
+              <h3>Gerenciar Usuários</h3>
+              
+              <div className="user-search">
+                <input
+                  type="text"
+                  placeholder="Buscar por nome ou email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+              
+              <div className="users-table">
+                {filteredUsers.map((user) => (
+                  <div key={user.id} className="user-row" onClick={() => selectUser(user)}>
+                    <div>
+                      <strong>{user.name}</strong>
+                      <br />
+                      {user.email}
+                    </div>
+                    <div>Plano: {user.subscription_plan}</div>
+                    <div>Msgs hoje: {user.messages_used_today}</div>
+                    <div>{new Date(user.created_at).toLocaleDateString('pt-BR')}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <UserDetailPanel 
+          user={selectedUser}
+          userDetails={userDetails}
+          activeTab={activeUserTab}
+          setActiveTab={setActiveUserTab}
+          onBack={() => setSelectedUser(null)}
+          onUpdatePlan={updateUserPlan}
+          onRefundPayment={refundPayment}
+          token={token}
+        />
+      )}
+    </div>
+  );
+};
+
+// User Detail Panel Component
+const UserDetailPanel = ({ user, userDetails, activeTab, setActiveTab, onBack, onUpdatePlan, onRefundPayment, token }) => {
+  const [userSessions, setUserSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [sessionMessages, setSessionMessages] = useState([]);
+
+  useEffect(() => {
+    if (activeTab === 'history') {
+      fetchUserSessions();
+    }
+  }, [activeTab]);
+
+  const fetchUserSessions = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/user/${user.id}/sessions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserSessions(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar sessões:', error);
+    }
+  };
+
+  const fetchSessionMessages = async (sessionId) => {
+    try {
+      const response = await axios.get(`${API}/admin/user/${user.id}/session/${sessionId}/messages`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSessionMessages(response.data);
+      setSelectedSession(sessionId);
+    } catch (error) {
+      console.error('Erro ao carregar mensagens:', error);
+    }
+  };
+
+  const SUBSCRIPTION_PLANS = {
+    "free": "Gratuito",
+    "basico": "Básico",
+    "premium": "Premium", 
+    "ilimitado": "Ilimitado"
+  };
+
+  return (
+    <div className="user-detail-panel">
+      <div className="user-detail-header">
+        <button onClick={onBack} className="back-btn">← Voltar</button>
+        <h3>Detalhes do Usuário: {user.name}</h3>
+      </div>
+
+      <div className="user-detail-tabs">
+        <button 
+          className={activeTab === 'profile' ? 'active' : ''} 
+          onClick={() => setActiveTab('profile')}
+        >
+          Perfil
+        </button>
+        <button 
+          className={activeTab === 'plans' ? 'active' : ''} 
+          onClick={() => setActiveTab('plans')}
+        >
+          Planos
+        </button>
+        <button 
+          className={activeTab === 'history' ? 'active' : ''} 
+          onClick={() => setActiveTab('history')}
+        >
+          Histórico
+        </button>
+      </div>
+
+      {activeTab === 'profile' && userDetails && (
+        <div className="user-profile-section">
+          <h4>Informações do Usuário</h4>
+          <div className="user-info-grid">
+            <div className="info-item">
+              <label>Nome:</label>
+              <span>{userDetails.user.name}</span>
+            </div>
+            <div className="info-item">
+              <label>Email:</label>
+              <span>{userDetails.user.email}</span>
+            </div>
+            <div className="info-item">
+              <label>Telefone:</label>
+              <span>{userDetails.user.phone}</span>
+            </div>
+            <div className="info-item">
+              <label>Plano:</label>
+              <span>{userDetails.user.subscription_plan}</span>
+            </div>
+            <div className="info-item">
+              <label>Status:</label>
+              <span>{userDetails.user.subscription_status}</span>
+            </div>
+            <div className="info-item">
+              <label>Mensagens hoje:</label>
+              <span>{userDetails.user.messages_used_today}</span>
+            </div>
+            <div className="info-item">
+              <label>Mensagens este mês:</label>
+              <span>{userDetails.user.messages_used_this_month}</span>
+            </div>
+            <div className="info-item">
+              <label>Criado em:</label>
+              <span>{new Date(userDetails.user.created_at).toLocaleDateString('pt-BR')}</span>
+            </div>
           </div>
         </div>
       )}
 
-      {activeTab === 'users' && (
-        <div className="admin-section">
-          <h3>Gerenciar Usuários</h3>
+      {activeTab === 'plans' && userDetails && (
+        <div className="user-plans-section">
+          <h4>Gerenciar Plano e Pagamentos</h4>
           
-          <div className="users-table">
-            {users.map((user) => (
-              <div key={user.id} className="user-row">
-                <div>
-                  <strong>{user.name}</strong>
-                  <br />
-                  {user.email}
-                </div>
-                <div>Plano: {user.subscription_plan}</div>
-                <div>Msgs hoje: {user.messages_used_today}</div>
-                <div>{new Date(user.created_at).toLocaleDateString('pt-BR')}</div>
-              </div>
-            ))}
+          <div className="current-plan">
+            <h5>Plano Atual: {SUBSCRIPTION_PLANS[userDetails.user.subscription_plan]}</h5>
+            <div className="plan-actions">
+              {Object.entries(SUBSCRIPTION_PLANS).map(([planId, planName]) => (
+                <button 
+                  key={planId}
+                  onClick={() => onUpdatePlan(user.id, planId)}
+                  className={`plan-btn ${userDetails.user.subscription_plan === planId ? 'current' : ''}`}
+                >
+                  {planName}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <div className="payment-history-admin">
+            <h5>Histórico de Pagamentos</h5>
+            {userDetails.payments && userDetails.payments.length > 0 ? (
+              <div className="payments-admin-list">
+                {userDetails.payments.map((payment) => (
+                  <div key={payment.id} className="payment-admin-card">
+                    <div>
+                      <strong>R$ {payment.amount.toFixed(2)}</strong>
+                      <br />
+                      <small>{new Date(payment.created_at).toLocaleDateString('pt-BR')}</small>
+                    </div>
+                    <div>Status: {payment.payment_status}</div>
+                    {payment.payment_status === 'paid' && (
+                      <button 
+                        onClick={() => onRefundPayment(user.id, payment.id)}
+                        className="refund-btn"
+                      >
+                        Reembolsar
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Nenhum pagamento encontrado.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'history' && (
+        <div className="user-history-section">
+          <h4>Histórico de Sessões</h4>
+          
+          {!selectedSession ? (
+            <div className="sessions-admin-list">
+              {userSessions.map((session) => (
+                <div key={session.id} className="session-admin-card" onClick={() => fetchSessionMessages(session.id)}>
+                  <h5>Sessão {session.id.slice(0, 8)}</h5>
+                  <p>{session.messages_count} mensagens</p>
+                  <p>{new Date(session.created_at).toLocaleDateString('pt-BR')}</p>
+                  {session.summary && <p className="session-summary">{session.summary.substring(0, 150)}...</p>}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="session-messages-view">
+              <button onClick={() => setSelectedSession(null)} className="back-btn">← Voltar às Sessões</button>
+              <h5>Mensagens da Sessão</h5>
+              <div className="admin-messages-list">
+                {sessionMessages.map((message) => (
+                  <div key={message.id} className={`admin-message ${message.is_user ? 'user' : 'ai'}`}>
+                    <div className="admin-message-header">
+                      <strong>{message.is_user ? 'Usuário' : 'IA'}</strong>
+                      <span>{new Date(message.timestamp).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div className="admin-message-content">{message.content}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
