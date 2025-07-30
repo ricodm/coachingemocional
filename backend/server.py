@@ -508,17 +508,26 @@ async def login_user(login_data: UserLogin):
 @api_router.get("/auth/me")
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user info"""
+    # Get fresh user data from database
+    fresh_user_data = await db.users.find_one({"id": current_user.id})
+    if not fresh_user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    fresh_user = User(**fresh_user_data)
+    remaining_messages = calculate_remaining_messages(fresh_user)
+    
     return {
-        "id": current_user.id,
-        "email": current_user.email,
-        "name": current_user.name,
-        "phone": current_user.phone,
-        "subscription_plan": current_user.subscription_plan,
-        "subscription_status": current_user.subscription_status,
-        "messages_used_today": current_user.messages_used_today,
-        "messages_used_this_month": current_user.messages_used_this_month,
-        "is_admin": current_user.is_admin,
-        "is_support": current_user.is_support
+        "id": fresh_user.id,
+        "email": fresh_user.email,
+        "name": fresh_user.name,
+        "phone": fresh_user.phone,
+        "subscription_plan": fresh_user.subscription_plan,
+        "subscription_status": fresh_user.subscription_status,
+        "messages_used_today": fresh_user.messages_used_today,
+        "messages_used_this_month": fresh_user.messages_used_this_month,
+        "messages_remaining_today": remaining_messages,
+        "is_admin": fresh_user.is_admin,
+        "is_support": fresh_user.is_support
     }
 
 @api_router.put("/auth/profile")
