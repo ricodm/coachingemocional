@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total_tests": 7,
-    "passed": 7,
+    "total_tests": 15,
+    "passed": 15,
     "failed": 0,
     "success_rate": "100.0%"
   },
@@ -9,45 +9,93 @@
     {
       "name": "Health Check",
       "success": true,
-      "details": "Service: terapia_emocional",
-      "timestamp": "2025-07-28T18:03:48.122839"
+      "details": "Service: terapia_emocional_v2",
+      "timestamp": "2025-07-30T15:03:49.983153"
+    },
+    {
+      "name": "Create Admin",
+      "success": true,
+      "details": "Admin created: admin@terapia.com",
+      "timestamp": "2025-07-30T15:03:50.266277"
+    },
+    {
+      "name": "Admin Login",
+      "success": true,
+      "details": "Admin status: True",
+      "timestamp": "2025-07-30T15:03:50.521062"
+    },
+    {
+      "name": "User Registration",
+      "success": true,
+      "details": "User: test_user_150349@test.com",
+      "timestamp": "2025-07-30T15:03:50.781047"
+    },
+    {
+      "name": "User Login",
+      "success": true,
+      "details": "Token received, User: Test User",
+      "timestamp": "2025-07-30T15:03:51.044347"
+    },
+    {
+      "name": "Auth Me",
+      "success": true,
+      "details": "User: Test User, Plan: free",
+      "timestamp": "2025-07-30T15:03:51.065722"
     },
     {
       "name": "Create Session",
       "success": true,
-      "details": "Session ID: 101dad82...",
-      "timestamp": "2025-07-28T18:03:48.147926"
+      "details": "Session ID: e780303b-62c9-450f-b73d-e3921c8bdaaf",
+      "timestamp": "2025-07-30T15:03:51.108225"
     },
     {
-      "name": "Get Session",
+      "name": "Chat Message",
       "success": true,
-      "details": "Messages count: 0",
-      "timestamp": "2025-07-28T18:03:48.171385"
+      "details": "AI responded (649 chars), Remaining: 6",
+      "timestamp": "2025-07-30T15:04:01.587977"
     },
     {
-      "name": "Chat Functionality",
+      "name": "Get Sessions",
       "success": true,
-      "details": "Response length: 429 chars, Therapeutic: Yes",
-      "timestamp": "2025-07-28T18:03:54.173006"
+      "details": "Found 1 sessions",
+      "timestamp": "2025-07-30T15:04:01.639362"
     },
     {
-      "name": "Session History",
+      "name": "Session Messages",
       "success": true,
-      "details": "Found 2 messages in history",
-      "timestamp": "2025-07-28T18:03:54.223823"
+      "details": "Found 2 messages",
+      "timestamp": "2025-07-30T15:04:01.663430"
     },
     {
-      "name": "Multiple Chat Messages",
+      "name": "Subscription Plans",
       "success": true,
-      "details": "Successfully sent and received 2 message pairs",
-      "timestamp": "2025-07-28T18:04:09.364628"
+      "details": "Plans: ['basico', 'premium', 'ilimitado']",
+      "timestamp": "2025-07-30T15:04:01.684627"
     },
     {
-      "name": "Error Handling",
+      "name": "Admin Prompts",
       "success": true,
-      "details": "Properly handles invalid requests",
-      "timestamp": "2025-07-28T18:04:16.537289"
+      "details": "Base prompt length: 653 chars",
+      "timestamp": "2025-07-30T15:04:01.723425"
+    },
+    {
+      "name": "Admin Users",
+      "success": true,
+      "details": "Found 2 users",
+      "timestamp": "2025-07-30T15:04:01.745984"
+    },
+    {
+      "name": "Admin Documents",
+      "success": true,
+      "details": "Found 0 documents",
+      "timestamp": "2025-07-30T15:04:01.768744"
+    },
+    {
+      "name": "Profile Update",
+      "success": true,
+      "details": "Profile updated successfully",
+      "timestamp": "2025-07-30T15:04:01.789428"
     }
   ],
-  "timestamp": "2025-07-28T18:04:16.537487"
+  "timestamp": "2025-07-30T15:04:01.789590"
 }
