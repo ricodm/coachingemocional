@@ -451,8 +451,8 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
             {"session_id": request.session_id}
         ).sort("timestamp", 1).limit(20).to_list(20)
         
-        # Prepare messages for OpenAI
-        messages = [{"role": "system", "content": create_enhanced_system_prompt(history_summary)}]
+        # Call OpenAI with admin-enhanced prompt
+        messages = [{"role": "system", "content": await get_admin_enhanced_prompt(history_summary)}]
         
         for msg in session_messages[:-1]:  # Exclude the current message we just added
             role = "user" if msg.get("is_user") else "assistant"
