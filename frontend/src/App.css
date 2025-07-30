@@ -930,6 +930,7 @@ body {
   font-size: 1rem;
   font-family: 'Courier New', monospace;
   resize: vertical;
+  color: #333;
 }
 
 .upload-section {
@@ -952,6 +953,18 @@ body {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
+  color: #333;
+}
+
+.upload-section textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  color: #333;
+  resize: vertical;
 }
 
 .documents-list {
@@ -971,6 +984,16 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.document-card p {
+  color: white;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.document-card small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .delete-btn {
   background: #f44336;
   color: white;
@@ -979,6 +1002,10 @@ body {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 1rem;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
 }
 
 .users-table {
@@ -994,6 +1021,28 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   align-items: center;
+  color: white;
+}
+
+.admin-section button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.admin-section button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.admin-section button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* ============ ANIMATIONS ============ */
