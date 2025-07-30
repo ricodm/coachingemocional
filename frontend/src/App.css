@@ -586,16 +586,40 @@ body {
   padding: 2rem;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: white;
 }
 
 .profile-container input {
   width: 100%;
   padding: 1rem;
-  margin-bottom: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
+  color: #333;
+}
+
+.disabled-input {
+  background: rgba(255, 255, 255, 0.5) !important;
+  cursor: not-allowed;
+}
+
+.profile-container small {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem;
 }
 
 .profile-container button {
@@ -615,13 +639,58 @@ body {
   transform: translateY(-2px);
 }
 
-.message {
+.success-message {
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 10px;
   background: rgba(76, 175, 80, 0.2);
   border: 1px solid rgba(76, 175, 80, 0.5);
   color: white;
+}
+
+.error-message {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.5);
+  color: white;
+}
+
+.user-stats {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.user-stats h3 {
+  margin-bottom: 1rem;
+  color: #4CAF50;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.stat-item label {
+  font-weight: 600;
+}
+
+.stat-item span {
+  color: #4CAF50;
+  font-weight: bold;
 }
 
 /* ============ HISTORY ============ */
