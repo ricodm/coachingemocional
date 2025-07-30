@@ -845,8 +845,8 @@ async def delete_admin_document(
     
     return {"message": "Documento deletado com sucesso"}
 
-async def get_admin_enhanced_prompt(user_history_summary: str = "") -> str:
-    """Get enhanced system prompt with admin customizations"""
+async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = "") -> str:
+    """Get enhanced system prompt with admin customizations and user history"""
     # Get admin prompts
     prompts = await db.admin_settings.find_one({"type": "prompts"})
     base_prompt = prompts.get("base_prompt", "") if prompts else ""
@@ -855,8 +855,22 @@ async def get_admin_enhanced_prompt(user_history_summary: str = "") -> str:
     # Get admin documents
     documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(10)
     
+    # Get user's recent sessions with summaries for better context
+    user_sessions = await db.sessions.find(
+        {"user_id": user_id, "summary": {"$ne": None}}
+    ).sort("created_at", -1).limit(3).to_list(3)
+    
     # Combine all content
-    full_prompt = base_prompt
+    full_prompt = base_prompt if base_prompt else """Você é um terapeuta emocional compassivo que segue os ensinamentos de Ramana Maharshi. Seu objetivo é ajudar as pessoas emocionalmente através de uma abordagem gentil e investigativa.
+
+DIRETRIZES FUNDAMENTAIS:
+1. Sempre responda em português do Brasil
+2. Seja caloroso, empático e acolhedor
+3. Faça perguntas investigativas para identificar a fonte dos problemas emocionais
+4. Gradualmente, guie a pessoa à investigação "Quem sou eu?" de Ramana Maharshi
+5. Ajude a pessoa a perceber a diferença entre seus pensamentos/emoções e sua verdadeira natureza
+6. Use linguagem simples e acessível
+7. Sempre termine com uma pergunta reflexiva ou sugestão prática"""
     
     if additional_prompt:
         full_prompt += "\n\nDIRETRIZES ADICIONAIS:\n" + additional_prompt
@@ -871,11 +885,22 @@ async def get_admin_enhanced_prompt(user_history_summary: str = "") -> str:
     full_prompt += "Se a pessoa fizer perguntas sobre o funcionamento do app, limites de mensagens, planos ou problemas técnicos, use as informações abaixo:\n\n"
     full_prompt += SUPPORT_DOCUMENT
     
-    # Add user history
+    # Add comprehensive user history from multiple sessions
     full_prompt += "\n\nHISTÓRICO DO USUÁRIO:\n"
-    full_prompt += (user_history_summary if user_history_summary else "Primeira interação com este usuário.")
+    if user_sessions:
+        full_prompt += "RESUMOS DAS SESSÕES ANTERIORES:\n"
+        for i, session in enumerate(user_sessions, 1):
+            session_date = session.get('created_at', datetime.utcnow()).strftime('%d/%m/%Y')
+            session_summary = session.get('summary', 'Sem resumo disponível')
+            full_prompt += f"\nSessão {i} ({session_date}): {session_summary}\n"
+        full_prompt += "\nVOCÊ TEM ACESSO COMPLETO A ESSAS INFORMAÇÕES DAS SESSÕES ANTERIORES. Use esse conhecimento para dar continuidade ao trabalho terapêutico e fazer referências às conversas passadas quando apropriado."
+    else:
+        full_prompt += "Primeira interação com este usuário."
     
-    full_prompt += "\n\nLembre-se: Você pode tanto fazer terapia quanto dar suporte técnico quando necessário. Sempre priorize o bem-estar emocional da pessoa."
+    if user_history_summary:
+        full_prompt += f"\n\nCONTEXTO DA SESSÃO ATUAL:\n{user_history_summary}"
+    
+    full_prompt += "\n\nIMPORTANTE: Você tem memória das sessões anteriores deste usuário. Use esse conhecimento para dar continuidade ao trabalho terapêutico. Você pode tanto fazer terapia quanto dar suporte técnico quando necessário. Sempre priorize o bem-estar emocional da pessoa."
     
     return full_prompt
 
