@@ -1147,9 +1147,19 @@ async def delete_admin_document(
 # ============ ADMIN ENDPOINTS ============
 
 @api_router.get("/admin/users")
-async def get_all_users(admin_user: User = Depends(check_admin_access)):
-    """Get all users (admin only)"""
-    users = await db.users.find({}).to_list(1000)
+async def get_all_users(search: str = "", admin_user: User = Depends(check_admin_access)):
+    """Get all users with optional search filter (admin only)"""
+    # Build search query
+    query = {}
+    if search:
+        query = {
+            "$or": [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}}
+            ]
+        }
+    
+    users = await db.users.find(query).to_list(1000)
     return [
         {
             "id": user["id"],
@@ -1175,10 +1185,10 @@ async def get_user_details(user_id: str, admin_user: User = Depends(check_suppor
         raise HTTPException(status_code=404, detail="User not found")
     
     # Get user's sessions
-    sessions = await db.sessions.find({"user_id": user_id}).sort("created_at", -1).to_list(50)
+    sessions = await db.sessions.find({"user_id": user_id}).sort("created_at", -1).limit(50).to_list(50)
     
     # Get payment history
-    payments = await db.payment_transactions.find({"user_id": user_id}).sort("created_at", -1).to_list(50)
+    payments = await db.payment_transactions.find({"user_id": user_id}).sort("created_at", -1).limit(50).to_list(50)
     
     return {
         "user": {
@@ -1196,6 +1206,29 @@ async def get_user_details(user_id: str, admin_user: User = Depends(check_suppor
         "payments": [PaymentTransaction(**payment) for payment in payments]
     }
 
+@api_router.put("/admin/user/{user_id}/profile")
+async def update_user_profile(
+    user_id: str,
+    profile_data: UserUpdate,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Update user profile (admin only)"""
+    update_dict = {}
+    
+    if profile_data.name:
+        update_dict["name"] = profile_data.name
+    if profile_data.phone:
+        update_dict["phone"] = profile_data.phone
+    if profile_data.password:
+        update_dict["password_hash"] = hash_password(profile_data.password)
+    
+    if update_dict:
+        result = await db.users.update_one({"id": user_id}, {"$set": update_dict})
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User profile updated successfully"}
+
 @api_router.put("/admin/user/{user_id}/plan")
 async def update_user_plan(
     user_id: str, 
@@ -1206,7 +1239,7 @@ async def update_user_plan(
     if plan_data.plan_id not in ["free"] + list(SUBSCRIPTION_PLANS.keys()):
         raise HTTPException(status_code=400, detail="Invalid plan")
     
-    await db.users.update_one(
+    result = await db.users.update_one(
         {"id": user_id},
         {
             "$set": {
@@ -1218,7 +1251,78 @@ async def update_user_plan(
         }
     )
     
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
     return {"message": "User plan updated successfully"}
+
+@api_router.post("/admin/user/{user_id}/refund/{payment_id}")
+async def refund_payment(
+    user_id: str,
+    payment_id: str,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Refund a payment (admin only)"""
+    # Find the payment
+    payment = await db.payment_transactions.find_one({"id": payment_id, "user_id": user_id})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Mark as refunded (in a real scenario, you'd also call Stripe API)
+    await db.payment_transactions.update_one(
+        {"id": payment_id},
+        {"$set": {"payment_status": "refunded", "refunded_at": datetime.utcnow()}}
+    )
+    
+    # Update user plan to free
+    await db.users.update_one(
+        {"id": user_id},
+        {
+            "$set": {
+                "subscription_plan": "free",
+                "subscription_status": "canceled"
+            }
+        }
+    )
+    
+    return {"message": "Payment refunded successfully"}
+
+@api_router.get("/admin/user/{user_id}/sessions")
+async def get_user_sessions_admin(user_id: str, admin_user: User = Depends(check_support_access)):
+    """Get user sessions with summaries (admin/support)"""
+    sessions = await db.sessions.find({"user_id": user_id}).sort("created_at", -1).limit(100).to_list(100)
+    
+    session_details = []
+    for session in sessions:
+        # Get message count for each session
+        message_count = await db.messages.count_documents({"session_id": session["id"]})
+        
+        session_details.append({
+            "id": session["id"],
+            "created_at": session["created_at"],
+            "messages_count": message_count,
+            "summary": session.get("summary", "")
+        })
+    
+    return session_details
+
+@api_router.get("/admin/user/{user_id}/session/{session_id}/messages")
+async def get_user_session_messages_admin(
+    user_id: str, 
+    session_id: str, 
+    admin_user: User = Depends(check_support_access)
+):
+    """Get messages from a specific user session (admin/support)"""
+    # Verify session belongs to user
+    session = await db.sessions.find_one({"id": session_id, "user_id": user_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    messages = await db.messages.find(
+        {"session_id": session_id}
+    ).sort("timestamp", 1).to_list(1000)
+    
+    return [Message(**msg) for msg in messages]
 
 @api_router.get("/debug/user-sessions/{user_id}")
 async def debug_user_sessions(user_id: str, admin_user: User = Depends(check_admin_access)):
