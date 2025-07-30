@@ -166,7 +166,7 @@ const Chat = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const [remainingMessages, setRemainingMessages] = useState(0);
+  const [remainingMessages, setRemainingMessages] = useState(7); // Default for free users
   const [showPlansModal, setShowPlansModal] = useState(false);
   const messagesEndRef = useRef(null);
   const { user, token } = useAuth();
@@ -181,7 +181,20 @@ const Chat = () => {
 
   useEffect(() => {
     createSession();
+    updateRemainingMessages();
   }, []);
+
+  const updateRemainingMessages = async () => {
+    try {
+      const response = await axios.get(`${API}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const remaining = response.data.messages_remaining_today;
+      setRemainingMessages(remaining);
+    } catch (error) {
+      console.error('Erro ao atualizar contador:', error);
+    }
+  };
 
   const createSession = async () => {
     try {
@@ -277,11 +290,9 @@ Como você está se sentindo hoje? O que trouxe você até aqui?`,
           <div className="user-info">
             <span>Olá, {user.name}</span>
             <span className="plan-badge">{user.subscription_plan}</span>
-            {remainingMessages >= 0 && (
-              <span className="messages-count">
-                {remainingMessages === -1 ? '∞' : remainingMessages} msgs restantes
-              </span>
-            )}
+            <span className="messages-count">
+              {remainingMessages === -1 ? '∞' : remainingMessages} msgs restantes
+            </span>
           </div>
         </div>
 
