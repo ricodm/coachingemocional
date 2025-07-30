@@ -500,14 +500,6 @@ const SubscriptionPlans = () => {
       <h2>Escolha seu Plano</h2>
       <p>Seu plano atual: <strong>{user.subscription_plan}</strong></p>
       
-      {user.subscription_plan !== 'free' && (
-        <div className="cancel-section">
-          <button onClick={cancelSubscription} disabled={loading} className="cancel-btn">
-            {loading ? 'Cancelando...' : 'Cancelar Assinatura'}
-          </button>
-        </div>
-      )}
-      
       <div className="plans-grid">
         {Object.entries(plans).map(([planId, plan]) => (
           <div key={planId} className={`plan-card ${user.subscription_plan === planId ? 'current' : ''}`}>
@@ -534,6 +526,15 @@ const SubscriptionPlans = () => {
           </div>
         ))}
       </div>
+
+      {/* Discrete cancel button */}
+      {user.subscription_plan !== 'free' && (
+        <div className="cancel-section-discrete">
+          <button onClick={cancelSubscription} disabled={loading} className="cancel-link">
+            Cancelar assinatura
+          </button>
+        </div>
+      )}
 
       {paymentHistory.length > 0 && (
         <div className="payment-history">
