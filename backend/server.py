@@ -486,11 +486,16 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
     # Update message counts
     await increment_message_count(current_user.id)
     
-    # Update session
+    # Update session and generate summary if this is the end of a conversation
     await db.sessions.update_one(
         {"id": request.session_id},
         {"$inc": {"messages_count": 2}}
     )
+    
+    # Auto-generate summary after every 5 messages to maintain context
+    session_message_count = len(session_messages) + 1  # +1 for the new AI message
+    if session_message_count >= 4 and session_message_count % 4 == 0:  # Every 4 messages
+        await generate_and_save_session_summary(request.session_id, current_user.id)
     
     # Calculate remaining messages
     current_user_updated = await db.users.find_one({"id": current_user.id})
