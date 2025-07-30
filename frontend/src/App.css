@@ -11,127 +11,247 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
-.app {
-  height: 100vh;
+.App {
+  min-height: 100vh;
+}
+
+/* ============ LOADING ============ */
+.loading-container {
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Background Decoration */
-.background-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.decoration-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  animation: float 6s ease-in-out infinite;
-}
-
-.circle-1 {
-  width: 200px;
-  height: 200px;
-  top: 10%;
-  left: 80%;
-  animation-delay: 0s;
-}
-
-.circle-2 {
-  width: 150px;
-  height: 150px;
-  top: 60%;
-  left: 10%;
-  animation-delay: 2s;
-}
-
-.circle-3 {
-  width: 100px;
-  height: 100px;
-  top: 80%;
-  left: 70%;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(180deg); }
-}
-
-/* Header */
-.header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1rem 1.5rem;
-  z-index: 10;
-  position: relative;
-}
-
-.header-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.therapist-info {
-  display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  height: 100vh;
+  color: white;
 }
 
-.therapist-avatar {
-  width: 50px;
-  height: 50px;
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============ AUTH ============ */
+.auth-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  padding: 1rem;
 }
 
-.therapist-name {
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid #e1e1e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.auth-card button[type="submit"] {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.therapist-status {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+.auth-card button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-2px);
 }
 
-/* Chat Container */
-.chat-container {
-  flex: 1;
+.auth-card button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  border: 1px solid #ffcdd2;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1rem;
+  color: #666;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ============ MAIN LAYOUT ============ */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
-  max-width: 800px;
-  margin: 0 auto;
+  color: white;
+}
+
+.nav-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.nav-links {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.nav-links button {
   width: 100%;
-  position: relative;
-  z-index: 10;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-left: 3px solid transparent;
+}
+
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-links button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left-color: white;
+}
+
+.nav-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.main-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* ============ CHAT ============ */
+.chat-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+}
+
+.plan-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.messages-count {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
 }
 
 .messages-container {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
-  padding-bottom: 0;
   scroll-behavior: smooth;
 }
 
@@ -149,7 +269,6 @@ body {
   border-radius: 3px;
 }
 
-/* Messages */
 .message {
   display: flex;
   margin-bottom: 1.5rem;
@@ -203,7 +322,6 @@ body {
   text-align: left;
 }
 
-/* Typing Indicator */
 .typing-indicator {
   display: flex;
   align-items: center;
@@ -234,7 +352,6 @@ body {
   30% { transform: translateY(-10px); opacity: 1; }
 }
 
-/* Input Container */
 .input-container {
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.1);
@@ -293,17 +410,325 @@ body {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.send-button:active {
-  transform: translateY(0);
-}
-
 .send-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Animations */
+/* ============ PLANS ============ */
+.plans-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+}
+
+.plans-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.plan-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+}
+
+.plan-card.current {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.plan-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 1rem;
+}
+
+.features {
+  margin-bottom: 2rem;
+}
+
+.subscribe-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.subscribe-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.subscribe-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ============ PROFILE ============ */
+.profile-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  color: white;
+}
+
+.profile-container h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.profile-container form {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-container input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.profile-container button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-container button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.message {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  color: white;
+}
+
+/* ============ HISTORY ============ */
+.history-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: white;
+}
+
+.history-container h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.sessions-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.session-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: transform 0.3s;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+}
+
+.session-card h3 {
+  margin-bottom: 0.5rem;
+  color: #4CAF50;
+}
+
+.summary {
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+/* ============ ADMIN ============ */
+.admin-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+}
+
+.admin-container h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.admin-tabs button {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.admin-tabs button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-tabs button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+}
+
+.admin-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.prompt-section {
+  margin-bottom: 2rem;
+}
+
+.prompt-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.prompt-section textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  resize: vertical;
+}
+
+.upload-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+}
+
+.upload-section h4 {
+  margin-bottom: 1rem;
+  color: #4CAF50;
+}
+
+.upload-section input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.documents-list {
+  margin-top: 2rem;
+}
+
+.document-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.document-card h5 {
+  color: #4CAF50;
+  margin-bottom: 0.5rem;
+}
+
+.delete-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.users-table {
+  display: grid;
+  gap: 1rem;
+}
+
+.user-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  align-items: center;
+}
+
+/* ============ ANIMATIONS ============ */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -315,22 +740,62 @@ body {
   }
 }
 
-/* Responsive */
+/* ============ RESPONSIVE ============ */
 @media (max-width: 768px) {
-  .header {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  
+  .nav-links {
+    display: flex;
+    padding: 0;
+  }
+  
+  .nav-links button {
+    white-space: nowrap;
     padding: 1rem;
   }
   
-  .therapist-name {
-    font-size: 1.1rem;
+  .nav-footer {
+    display: none;
   }
   
-  .therapist-status {
-    font-size: 0.8rem;
+  .plans-grid {
+    grid-template-columns: 1fr;
   }
   
-  .messages-container {
+  .user-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .admin-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .admin-tabs button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .plans-container,
+  .profile-container,
+  .history-container,
+  .admin-container {
     padding: 1rem;
+  }
+  
+  .auth-card {
+    padding: 1.5rem;
   }
   
   .message-content {
@@ -339,26 +804,5 @@ body {
   
   .input-container {
     padding: 1rem;
-  }
-  
-  .circle-1, .circle-2, .circle-3 {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .therapist-info {
-    gap: 0.75rem;
-  }
-  
-  .therapist-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-  }
-  
-  .message-text {
-    padding: 0.8rem 1.2rem;
-    font-size: 0.9rem;
   }
 }
