@@ -1,101 +1,101 @@
 {
   "summary": {
     "total_tests": 15,
-    "passed": 10,
-    "failed": 5,
-    "success_rate": "66.7%"
+    "passed": 14,
+    "failed": 1,
+    "success_rate": "93.3%"
   },
   "results": [
     {
       "name": "Health Check",
       "success": true,
       "details": "Service: terapia_emocional_v2",
-      "timestamp": "2025-07-30T17:47:08.566149"
+      "timestamp": "2025-07-30T18:07:44.907123"
     },
     {
       "name": "Create Admin",
       "success": false,
       "details": "Response: {'detail': 'Admin user already exists'}",
-      "timestamp": "2025-07-30T17:47:08.595063"
+      "timestamp": "2025-07-30T18:07:44.941453"
     },
     {
       "name": "Admin Login",
-      "success": false,
-      "details": "Response: {'detail': 'Invalid credentials'}",
-      "timestamp": "2025-07-30T17:47:08.859562"
+      "success": true,
+      "details": "Admin status: True",
+      "timestamp": "2025-07-30T18:07:45.198846"
     },
     {
       "name": "User Registration",
       "success": true,
-      "details": "User: test_user_174708@test.com",
-      "timestamp": "2025-07-30T17:47:09.155722"
+      "details": "User: test_user_180744@test.com",
+      "timestamp": "2025-07-30T18:07:45.463500"
     },
     {
       "name": "User Login",
       "success": true,
       "details": "Token received, User: Test User",
-      "timestamp": "2025-07-30T17:47:09.409819"
+      "timestamp": "2025-07-30T18:07:45.722974"
     },
     {
       "name": "Auth Me",
       "success": true,
       "details": "User: Test User, Plan: free",
-      "timestamp": "2025-07-30T17:47:09.430854"
+      "timestamp": "2025-07-30T18:07:45.749748"
     },
     {
       "name": "Create Session",
       "success": true,
-      "details": "Session ID: 28a4aa50-f89c-457e-ac49-599e0ba2efe3",
-      "timestamp": "2025-07-30T17:47:09.490868"
+      "details": "Session ID: 4eb0c056-0666-4d24-83d3-e4981ac653f8",
+      "timestamp": "2025-07-30T18:07:45.772221"
     },
     {
       "name": "Chat Message",
       "success": true,
-      "details": "AI responded (218 chars), Remaining: 7",
-      "timestamp": "2025-07-30T17:47:13.175436"
+      "details": "AI responded (305 chars), Remaining: 7",
+      "timestamp": "2025-07-30T18:07:55.408322"
     },
     {
       "name": "Get Sessions",
       "success": true,
       "details": "Found 1 sessions",
-      "timestamp": "2025-07-30T17:47:13.201798"
+      "timestamp": "2025-07-30T18:07:55.462135"
     },
     {
       "name": "Session Messages",
       "success": true,
       "details": "Found 2 messages",
-      "timestamp": "2025-07-30T17:47:13.228486"
+      "timestamp": "2025-07-30T18:07:55.494111"
     },
     {
       "name": "Subscription Plans",
       "success": true,
       "details": "Plans: ['basico', 'premium', 'ilimitado']",
-      "timestamp": "2025-07-30T17:47:13.249732"
+      "timestamp": "2025-07-30T18:07:55.513371"
     },
     {
       "name": "Admin Prompts",
-      "success": false,
-      "details": "No admin token available",
-      "timestamp": "2025-07-30T17:47:13.249751"
+      "success": true,
+      "details": "Base prompt length: 23 chars",
+      "timestamp": "2025-07-30T18:07:55.534355"
     },
     {
       "name": "Admin Users",
-      "success": false,
-      "details": "No admin token available",
-      "timestamp": "2025-07-30T17:47:13.249759"
+      "success": true,
+      "details": "Found 17 users",
+      "timestamp": "2025-07-30T18:07:55.558716"
     },
     {
       "name": "Admin Documents",
-      "success": false,
-      "details": "No admin token available",
-      "timestamp": "2025-07-30T17:47:13.249766"
+      "success": true,
+      "details": "Found 0 documents",
+      "timestamp": "2025-07-30T18:07:55.583490"
     },
     {
       "name": "Profile Update",
       "success": true,
       "details": "Profile updated successfully",
-      "timestamp": "2025-07-30T17:47:13.272802"
+      "timestamp": "2025-07-30T18:07:55.605030"
     }
   ],
-  "timestamp": "2025-07-30T17:47:13.272991"
+  "timestamp": "2025-07-30T18:07:55.605245"
 }
