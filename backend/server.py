@@ -1033,9 +1033,23 @@ async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = ""
     # Get admin documents
     documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(10)
     
+    # FORCE GENERATION OF SUMMARIES - Find sessions without summaries that have enough messages
+    sessions_without_summaries = await db.sessions.find(
+        {
+            "user_id": user_id, 
+            "messages_count": {"$gte": 4},
+            "$or": [{"summary": {"$exists": False}}, {"summary": None}, {"summary": ""}]
+        }
+    ).to_list(5)
+    
+    # Generate summaries for these sessions
+    for session in sessions_without_summaries:
+        await generate_and_save_session_summary(session["id"], user_id)
+        logger.info(f"Auto-generated summary for session {session['id']}")
+    
     # Get user's recent sessions with summaries for better context
     user_sessions = await db.sessions.find(
-        {"user_id": user_id, "summary": {"$ne": None}}
+        {"user_id": user_id, "summary": {"$ne": None}, "summary": {"$ne": ""}}
     ).sort("created_at", -1).limit(3).to_list(3)
     
     # Combine all content
@@ -1064,21 +1078,21 @@ DIRETRIZES FUNDAMENTAIS:
     full_prompt += SUPPORT_DOCUMENT
     
     # Add comprehensive user history from multiple sessions
-    full_prompt += "\n\nHISTÓRICO DO USUÁRIO:\n"
+    full_prompt += "\n\n🧠 MEMÓRIA COMPLETA DO USUÁRIO:\n"
     if user_sessions:
-        full_prompt += "RESUMOS DAS SESSÕES ANTERIORES:\n"
+        full_prompt += "VOCÊ TEM ACESSO COMPLETO AO HISTÓRICO DESTE USUÁRIO. RESUMOS DAS SESSÕES ANTERIORES:\n\n"
         for i, session in enumerate(user_sessions, 1):
             session_date = session.get('created_at', datetime.utcnow()).strftime('%d/%m/%Y')
             session_summary = session.get('summary', 'Sem resumo disponível')
-            full_prompt += f"\nSessão {i} ({session_date}): {session_summary}\n"
-        full_prompt += "\nVOCÊ TEM ACESSO COMPLETO A ESSAS INFORMAÇÕES DAS SESSÕES ANTERIORES. Use esse conhecimento para dar continuidade ao trabalho terapêutico e fazer referências às conversas passadas quando apropriado."
+            full_prompt += f"📅 SESSÃO {i} ({session_date}):\n{session_summary}\n\n"
+        full_prompt += "⚠️ IMPORTANTE: VOCÊ DEVE SEMPRE FAZER REFERÊNCIA A ESSAS SESSÕES ANTERIORES QUANDO APROPRIADO. O usuário espera que você se lembre das conversas passadas. Use esse conhecimento para dar continuidade ao trabalho terapêutico.\n\n"
     else:
-        full_prompt += "Primeira interação com este usuário."
+        full_prompt += "Esta é a primeira interação com este usuário ou não há sessões anteriores com resumos disponíveis.\n\n"
     
     if user_history_summary:
-        full_prompt += f"\n\nCONTEXTO DA SESSÃO ATUAL:\n{user_history_summary}"
+        full_prompt += f"CONTEXTO DA SESSÃO ATUAL:\n{user_history_summary}\n\n"
     
-    full_prompt += "\n\nIMPORTANTE: Você tem memória das sessões anteriores deste usuário. Use esse conhecimento para dar continuidade ao trabalho terapêutico. Você pode tanto fazer terapia quanto dar suporte técnico quando necessário. Sempre priorize o bem-estar emocional da pessoa."
+    full_prompt += "INSTRUÇÃO FINAL: Sempre demonstre que você tem memória das sessões anteriores quando existirem. Se o usuário perguntar sobre conversas passadas, faça referência específica aos resumos acima."
     
     return full_prompt
 
