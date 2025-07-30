@@ -713,6 +713,172 @@ async def stripe_webhook(request: Request):
         logger.error(f"Webhook error: {str(e)}")
         return {"status": "error", "message": str(e)}
 
+# ============ ADMIN PROMPTS & DOCUMENTS ============
+
+class AdminPromptUpdate(BaseModel):
+    base_prompt: Optional[str] = None
+    additional_prompt: Optional[str] = None
+
+class DocumentUpload(BaseModel):
+    title: str
+    content: str
+
+@api_router.get("/admin/prompts")
+async def get_admin_prompts(admin_user: User = Depends(check_admin_access)):
+    """Get current admin prompts"""
+    prompts = await db.admin_settings.find_one({"type": "prompts"})
+    if not prompts:
+        # Create default
+        default_prompts = {
+            "type": "prompts",
+            "base_prompt": """Você é um terapeuta emocional compassivo que segue os ensinamentos de Ramana Maharshi. Seu objetivo é ajudar as pessoas emocionalmente através de uma abordagem gentil e investigativa.
+
+DIRETRIZES FUNDAMENTAIS:
+1. Sempre responda em português do Brasil
+2. Seja caloroso, empático e acolhedor
+3. Faça perguntas investigativas para identificar a fonte dos problemas emocionais
+4. Gradualmente, guie a pessoa à investigação "Quem sou eu?" de Ramana Maharshi
+5. Ajude a pessoa a perceber a diferença entre seus pensamentos/emoções e sua verdadeira natureza
+6. Use linguagem simples e acessível
+7. Sempre termine com uma pergunta reflexiva ou sugestão prática""",
+            "additional_prompt": "",
+            "updated_at": datetime.utcnow()
+        }
+        await db.admin_settings.insert_one(default_prompts)
+        prompts = default_prompts
+    
+    return {
+        "base_prompt": prompts.get("base_prompt", ""),
+        "additional_prompt": prompts.get("additional_prompt", ""),
+        "updated_at": prompts.get("updated_at")
+    }
+
+@api_router.put("/admin/prompts")
+async def update_admin_prompts(
+    prompt_data: AdminPromptUpdate,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Update admin prompts"""
+    update_data = {"updated_at": datetime.utcnow()}
+    
+    if prompt_data.base_prompt is not None:
+        update_data["base_prompt"] = prompt_data.base_prompt
+    if prompt_data.additional_prompt is not None:
+        update_data["additional_prompt"] = prompt_data.additional_prompt
+    
+    await db.admin_settings.update_one(
+        {"type": "prompts"},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Prompts atualizados com sucesso"}
+
+@api_router.post("/admin/documents")
+async def upload_admin_document(
+    document: DocumentUpload,
+    admin_user: User = Depends(check_admin_access)  
+):
+    """Upload admin document with guidelines"""
+    doc_data = {
+        "id": str(uuid.uuid4()),
+        "title": document.title,
+        "content": document.content,
+        "type": "admin_guideline",
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
+    
+    await db.admin_documents.insert_one(doc_data)
+    
+    return {"message": f"Documento '{document.title}' enviado com sucesso", "id": doc_data["id"]}
+
+@api_router.get("/admin/documents")
+async def get_admin_documents(admin_user: User = Depends(check_admin_access)):
+    """Get all admin documents"""
+    documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(50)
+    
+    return [
+        {
+            "id": doc["id"],
+            "title": doc["title"],
+            "content": doc["content"],
+            "created_at": doc["created_at"],
+            "updated_at": doc["updated_at"]
+        }
+        for doc in documents
+    ]
+
+@api_router.put("/admin/documents/{document_id}")
+async def update_admin_document(
+    document_id: str,
+    document: DocumentUpload,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Update admin document"""
+    result = await db.admin_documents.update_one(
+        {"id": document_id},
+        {
+            "$set": {
+                "title": document.title,
+                "content": document.content,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Documento não encontrado")
+    
+    return {"message": f"Documento '{document.title}' atualizado com sucesso"}
+
+@api_router.delete("/admin/documents/{document_id}")
+async def delete_admin_document(
+    document_id: str,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Delete admin document"""
+    result = await db.admin_documents.delete_one({"id": document_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Documento não encontrado")
+    
+    return {"message": "Documento deletado com sucesso"}
+
+async def get_admin_enhanced_prompt(user_history_summary: str = "") -> str:
+    """Get enhanced system prompt with admin customizations"""
+    # Get admin prompts
+    prompts = await db.admin_settings.find_one({"type": "prompts"})
+    base_prompt = prompts.get("base_prompt", "") if prompts else ""
+    additional_prompt = prompts.get("additional_prompt", "") if prompts else ""
+    
+    # Get admin documents
+    documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(10)
+    
+    # Combine all content
+    full_prompt = base_prompt
+    
+    if additional_prompt:
+        full_prompt += "\n\nDIRETRIZES ADICIONAIS:\n" + additional_prompt
+    
+    if documents:
+        full_prompt += "\n\nDOCUMENTOS DE REFERÊNCIA:\n"
+        for doc in documents:
+            full_prompt += f"\n=== {doc['title']} ===\n{doc['content']}\n"
+    
+    # Add support document
+    full_prompt += "\n\nCAPACIDADE DE SUPORTE TÉCNICO:\n"
+    full_prompt += "Se a pessoa fizer perguntas sobre o funcionamento do app, limites de mensagens, planos ou problemas técnicos, use as informações abaixo:\n\n"
+    full_prompt += SUPPORT_DOCUMENT
+    
+    # Add user history
+    full_prompt += "\n\nHISTÓRICO DO USUÁRIO:\n"
+    full_prompt += (user_history_summary if user_history_summary else "Primeira interação com este usuário.")
+    
+    full_prompt += "\n\nLembre-se: Você pode tanto fazer terapia quanto dar suporte técnico quando necessário. Sempre priorize o bem-estar emocional da pessoa."
+    
+    return full_prompt
+
 # ============ ADMIN ENDPOINTS ============
 
 @api_router.get("/admin/users")
