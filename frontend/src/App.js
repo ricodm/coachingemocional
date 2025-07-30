@@ -625,7 +625,10 @@ const Profile = () => {
 
 const SessionHistory = () => {
   const [sessions, setSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [sessionDetails, setSessionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -645,25 +648,102 @@ const SessionHistory = () => {
     }
   };
 
-  if (loading) return <div>Carregando histórico...</div>;
+  const fetchSessionDetails = async (sessionId) => {
+    setLoadingDetails(true);
+    try {
+      // Get messages
+      const messagesResponse = await axios.get(`${API}/session/${sessionId}/messages`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Generate or get summary
+      const summaryResponse = await axios.post(`${API}/session/${sessionId}/summary`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setSessionDetails({
+        messages: messagesResponse.data,
+        summary: summaryResponse.data.summary
+      });
+    } catch (error) {
+      console.error('Erro ao carregar detalhes:', error);
+      alert('Erro ao carregar detalhes da sessão');
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const openSession = (session) => {
+    setSelectedSession(session);
+    fetchSessionDetails(session.id);
+  };
+
+  const closeSession = () => {
+    setSelectedSession(null);
+    setSessionDetails(null);
+  };
+
+  if (loading) return <div className="loading">Carregando histórico...</div>;
 
   return (
     <div className="history-container">
       <h2>Histórico de Sessões</h2>
       
-      {sessions.length === 0 ? (
-        <p>Nenhuma sessão encontrada.</p>
-      ) : (
-        <div className="sessions-list">
-          {sessions.map((session) => (
-            <div key={session.id} className="session-card">
-              <h3>{session.title || `Sessão ${session.id.slice(0, 8)}`}</h3>
-              <p>{session.messages_count} mensagens</p>
-              <p>{new Date(session.created_at).toLocaleDateString('pt-BR')}</p>
-              {session.summary && <p className="summary">{session.summary}</p>}
+      {selectedSession ? (
+        <div className="session-detail">
+          <div className="session-detail-header">
+            <h3>Sessão de {new Date(selectedSession.created_at).toLocaleDateString('pt-BR')}</h3>
+            <button onClick={closeSession} className="close-btn">✖ Fechar</button>
+          </div>
+          
+          {loadingDetails ? (
+            <div className="loading">Carregando detalhes...</div>
+          ) : sessionDetails ? (
+            <div className="session-content">
+              <div className="session-summary">
+                <h4>Resumo da Sessão</h4>
+                <div className="summary-text">
+                  {sessionDetails.summary}
+                </div>
+              </div>
+              
+              <div className="session-messages">
+                <h4>Conversa Completa ({sessionDetails.messages.length} mensagens)</h4>
+                <div className="messages-list">
+                  {sessionDetails.messages.map((message, index) => (
+                    <div key={message.id} className={`history-message ${message.is_user ? 'user' : 'ai'}`}>
+                      <div className="message-header">
+                        <strong>{message.is_user ? 'Você' : 'Terapeuta'}</strong>
+                        <span className="message-time">
+                          {new Date(message.timestamp).toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      <div className="message-content">{message.content}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          ))}
+          ) : null}
         </div>
+      ) : (
+        <>
+          {sessions.length === 0 ? (
+            <p>Nenhuma sessão encontrada.</p>
+          ) : (
+            <div className="sessions-list">
+              {sessions.map((session) => (
+                <div key={session.id} className="session-card" onClick={() => openSession(session)}>
+                  <h3>{session.title || `Sessão ${session.id.slice(0, 8)}`}</h3>
+                  <p>{session.messages_count} mensagens</p>
+                  <p>{new Date(session.created_at).toLocaleDateString('pt-BR')}</p>
+                  {session.summary && <p className="summary-preview">{session.summary.substring(0, 100)}...</p>}
+                  <div className="session-action">Clique para ver detalhes →</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
