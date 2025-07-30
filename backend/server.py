@@ -703,6 +703,66 @@ async def get_payment_history(current_user: User = Depends(get_current_user)):
     
     return payment_history
 
+async def generate_and_save_session_summary(session_id: str, user_id: str):
+    """Generate and save summary for a session (internal function)"""
+    try:
+        # Verify session belongs to user
+        session = await db.sessions.find_one({"id": session_id, "user_id": user_id})
+        if not session:
+            logger.warning(f"Session {session_id} not found for user {user_id}")
+            return
+        
+        # Get session messages
+        messages = await db.messages.find(
+            {"session_id": session_id}
+        ).sort("timestamp", 1).to_list(1000)
+        
+        if not messages or len(messages) < 4:  # Don't generate summary for very short conversations
+            return
+        
+        # Create summary prompt
+        conversation_text = ""
+        for msg in messages:
+            role = "Usuário" if msg.get("is_user") else "Terapeuta"
+            conversation_text += f"{role}: {msg.get('content', '')}\n\n"
+        
+        summary_prompt = f"""
+Você é um assistente especializado em criar resumos de sessões de terapia. 
+Analise a conversa abaixo e crie um resumo terapêutico focando em:
+
+1. Principais questões emocionais apresentadas
+2. Insights descobertos
+3. Técnicas aplicadas
+4. Progresso observado
+5. Pontos para próximas sessões
+
+Mantenha o resumo profissional, respeitoso e focado no desenvolvimento emocional do usuário.
+
+CONVERSA:
+{conversation_text}
+
+RESUMO:"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": summary_prompt}],
+            max_tokens=400,
+            temperature=0.3
+        )
+        
+        summary = response.choices[0].message.content
+        
+        # Save summary to session
+        await db.sessions.update_one(
+            {"id": session_id},
+            {"$set": {"summary": summary}}
+        )
+        
+        logger.info(f"Generated summary for session {session_id}")
+        
+    except Exception as e:
+        logger.error(f"Auto-summary generation error for session {session_id}: {str(e)}")
+
 @api_router.post("/session/{session_id}/summary")
 async def generate_session_summary(session_id: str, current_user: User = Depends(get_current_user)):
     """Generate summary for a session"""
