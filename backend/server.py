@@ -303,6 +303,131 @@ Lembre-se: Você pode tanto fazer terapia quanto dar suporte técnico quando nec
 """
     return base_prompt
 
+async def get_session_history(session_id: str) -> List[Message]:
+    """Get session message history"""
+    messages = await db.messages.find(
+        {"session_id": session_id}
+    ).sort("timestamp", 1).to_list(1000)
+    
+    return [Message(**msg) for msg in messages]
+
+async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = "", is_support_request: bool = False) -> str:
+    """Get enhanced system prompt with admin customizations and user history"""
+    # Get admin prompts
+    prompts = await db.admin_settings.find_one({"type": "prompts"})
+    base_prompt = prompts.get("base_prompt", "") if prompts else ""
+    additional_prompt = prompts.get("additional_prompt", "") if prompts else ""
+    
+    # Get admin documents
+    documents = await db.admin_documents.find({"type": "admin_guideline"}).sort("created_at", -1).to_list(10)
+    
+    # FORCE GENERATION OF SUMMARIES - Find sessions without summaries that have enough messages
+    sessions_without_summaries = await db.sessions.find(
+        {
+            "user_id": user_id, 
+            "messages_count": {"$gte": 4},
+            "$or": [{"summary": {"$exists": False}}, {"summary": None}, {"summary": ""}]
+        }
+    ).to_list(5)
+    
+    # Generate summaries for these sessions
+    for session in sessions_without_summaries:
+        await generate_and_save_session_summary(session["id"], user_id)
+        logger.info(f"Auto-generated summary for session {session['id']}")
+    
+    # Get user's recent sessions with summaries for better context
+    user_sessions = await db.sessions.find(
+        {"user_id": user_id, "summary": {"$ne": None}, "summary": {"$ne": ""}}
+    ).sort("created_at", -1).limit(3).to_list(3)
+    
+    # Combine all content
+    full_prompt = base_prompt if base_prompt else """Você é um terapeuta emocional compassivo que segue os ensinamentos de Ramana Maharshi. Seu objetivo é ajudar as pessoas emocionalmente através de uma abordagem gentil e investigativa.
+
+DIRETRIZES FUNDAMENTAIS:
+1. Sempre responda em português do Brasil
+2. Seja caloroso, empático e acolhedor
+3. Faça perguntas investigativas para identificar a fonte dos problemas emocionais
+4. Gradualmente, guie a pessoa à investigação "Quem sou eu?" de Ramana Maharshi
+5. Ajude a pessoa a perceber a diferença entre seus pensamentos/emoções e sua verdadeira natureza
+6. Use linguagem simples e acessível
+7. Sempre termine com uma pergunta reflexiva ou sugestão prática"""
+    
+    if additional_prompt:
+        full_prompt += "\n\nDIRETRIZES ADICIONAIS:\n" + additional_prompt
+    
+    if documents:
+        full_prompt += "\n\nDOCUMENTOS DE REFERÊNCIA:\n"
+        for doc in documents:
+            full_prompt += f"\n=== {doc['title']} ===\n{doc['content']}\n"
+    
+    # Add support document
+    full_prompt += "\n\nCAPACIDADE DE SUPORTE TÉCNICO:\n"
+    full_prompt += "Se a pessoa fizer perguntas sobre o funcionamento do app, limites de mensagens, planos ou problemas técnicos, use as informações abaixo:\n\n"
+    full_prompt += SUPPORT_DOCUMENT
+    
+    # Add comprehensive user history from multiple sessions
+    full_prompt += "\n\n🧠 MEMÓRIA COMPLETA DO USUÁRIO:\n"
+    if user_sessions:
+        full_prompt += "VOCÊ TEM ACESSO COMPLETO AO HISTÓRICO DESTE USUÁRIO. RESUMOS DAS SESSÕES ANTERIORES:\n\n"
+        for i, session in enumerate(user_sessions, 1):
+            session_date = session.get('created_at', datetime.utcnow()).strftime('%d/%m/%Y')
+            session_summary = session.get('summary', 'Sem resumo disponível')
+            full_prompt += f"📅 SESSÃO {i} ({session_date}):\n{session_summary}\n\n"
+        full_prompt += "⚠️ IMPORTANTE: VOCÊ DEVE SEMPRE FAZER REFERÊNCIA A ESSAS SESSÕES ANTERIORES QUANDO APROPRIADO. O usuário espera que você se lembre das conversas passadas. Use esse conhecimento para dar continuidade ao trabalho terapêutico.\n\n"
+    else:
+        full_prompt += "Esta é a primeira interação com este usuário ou não há sessões anteriores com resumos disponíveis.\n\n"
+    
+    if user_history_summary:
+        full_prompt += f"CONTEXTO DA SESSÃO ATUAL:\n{user_history_summary}\n\n"
+    
+    # Special handling for support requests
+    if is_support_request:
+        full_prompt += "\n🔧 MODO SUPORTE ATIVADO: Esta mensagem parece ser uma solicitação de suporte técnico. Priorize informações técnicas e de suporte, mas mantenha o tom empático e terapêutico.\n\n"
+    
+    full_prompt += "INSTRUÇÃO FINAL: Sempre demonstre que você tem memória das sessões anteriores quando existirem. Se o usuário perguntar sobre conversas passadas, faça referência específica aos resumos acima."
+    
+    return full_prompt
+
+async def create_openai_response(session_id: str, user_message: str, current_user: User) -> tuple[str, bool]:
+    """Cria resposta usando OpenAI com contexto da sessão"""
+    try:
+        # Check if this is a support request (doesn't consume messages)
+        support_keywords = [
+            'limite', 'mensagens', 'plano', 'assinatura', 'pagamento', 'cancelar', 
+            'problema', 'erro', 'bug', 'suporte', 'ajuda', 'funciona', 'como usar',
+            'stripe', 'cobrança', 'fatura', 'preço', 'valor', 'grátis'
+        ]
+        
+        is_support_request = any(keyword in user_message.lower() for keyword in support_keywords)
+        
+        # Recupera histórico da sessão
+        history = await get_session_history(session_id)
+        
+        # Constrói contexto das mensagens anteriores
+        messages = [{"role": "system", "content": await get_admin_enhanced_prompt(current_user.id, "", is_support_request)}]
+        
+        # Adiciona histórico
+        for msg in history[-10:]:  # Últimas 10 mensagens para contexto
+            role = "user" if msg.is_user else "assistant"
+            messages.append({"role": role, "content": msg.content})
+        
+        # Adiciona mensagem atual
+        messages.append({"role": "user", "content": user_message})
+        
+        # Chama OpenAI
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=messages,
+            max_tokens=600,
+            temperature=0.7
+        )
+        
+        return response.choices[0].message.content, is_support_request
+        
+    except Exception as e:
+        logger.error(f"Erro ao chamar OpenAI: {str(e)}")
+        return "Desculpe, estou tendo dificuldades técnicas. Pode tentar novamente em alguns momentos? Enquanto isso, que tal respirar fundo e observar seus pensamentos com gentileza?", False
+
 # ============ AUTH ENDPOINTS ============
 
 @api_router.post("/auth/register")
