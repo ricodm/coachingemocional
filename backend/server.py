@@ -529,26 +529,35 @@ async def update_profile(update_data: UserUpdate, current_user: User = Depends(g
 @api_router.post("/chat", response_model=ChatResponse)
 async def chat_with_therapist(request: ChatRequest, current_user: User = Depends(get_current_user)):
     """Enhanced chat endpoint with user context and support"""
-    # Check message limits
-    if not await check_message_limit(current_user):
-        plan_info = SUBSCRIPTION_PLANS.get(current_user.subscription_plan, {})
-        if current_user.subscription_plan == "free":
-            raise HTTPException(
-                status_code=429, 
-                detail=f"Você esgotou suas {current_user.messages_used_this_month}/7 mensagens gratuitas mensais. Assine um plano para continuar."
-            )
-        else:
-            raise HTTPException(
-                status_code=429,
-                detail=f"Você esgotou suas mensagens diárias do plano {plan_info.get('name')}. Tente novamente amanhã ou faça upgrade."
-            )
-    
     # Get session and user history
     session_data = await db.sessions.find_one({"id": request.session_id, "user_id": current_user.id})
     if not session_data:
         # Create new session
         session = Session(id=request.session_id, user_id=current_user.id)
         await db.sessions.insert_one(session.dict())
+    
+    # Check if this might be a support request before checking limits
+    support_keywords = [
+        'limite', 'mensagens', 'plano', 'assinatura', 'pagamento', 'cancelar', 
+        'problema', 'erro', 'bug', 'suporte', 'ajuda', 'funciona', 'como usar',
+        'stripe', 'cobrança', 'fatura', 'preço', 'valor', 'grátis'
+    ]
+    
+    is_support_request = any(keyword in request.message.lower() for keyword in support_keywords)
+    
+    # Check message limits only if it's not a support request
+    if not is_support_request and not await check_message_limit(current_user):
+        plan_info = SUBSCRIPTION_PLANS.get(current_user.subscription_plan, {})
+        if current_user.subscription_plan == "free":
+            raise HTTPException(
+                status_code=429, 
+                detail=f"Você esgotou suas {current_user.messages_used_this_month}/7 mensagens gratuitas mensais. Para continuar conversando, escolha um de nossos planos."
+            )
+        else:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Você esgotou suas mensagens diárias do plano {plan_info.get('name')}. Tente novamente amanhã ou faça upgrade para um plano superior."
+            )
     
     # Get user's session summaries for context - FORCE SUMMARY GENERATION
     # First, find sessions without summaries that have messages and generate summaries
@@ -590,28 +599,13 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
             {"session_id": request.session_id}
         ).sort("timestamp", 1).limit(20).to_list(20)
         
-        # Call OpenAI with admin-enhanced prompt
-        messages = [{"role": "system", "content": await get_admin_enhanced_prompt(current_user.id, history_summary)}]
-        
-        for msg in session_messages[:-1]:  # Exclude the current message we just added
-            role = "user" if msg.get("is_user") else "assistant"
-            messages.append({"role": role, "content": msg.get("content", "")})
-        
-        messages.append({"role": "user", "content": request.message})
-        
-        # Call OpenAI
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            max_tokens=600,
-            temperature=0.7
-        )
-        
-        ai_response = response.choices[0].message.content
+        # Use the new create_openai_response function
+        ai_response, was_support_request = await create_openai_response(request.session_id, request.message, current_user)
         
     except Exception as e:
         logger.error(f"OpenAI error: {str(e)}")
         ai_response = "Desculpe, estou tendo dificuldades técnicas no momento. Pode tentar novamente? Enquanto isso, respire fundo e observe seus pensamentos com gentileza."
+        was_support_request = False
     
     # Save AI response
     ai_message = Message(
@@ -622,8 +616,9 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
     )
     await db.messages.insert_one(ai_message.dict())
     
-    # Update message counts
-    await increment_message_count(current_user.id)
+    # Update message counts only if it wasn't a support request
+    if not was_support_request:
+        await increment_message_count(current_user.id)
     
     # Update session and generate summary if this is the end of a conversation
     await db.sessions.update_one(
@@ -631,7 +626,7 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
         {"$inc": {"messages_count": 2}}
     )
     
-    # Auto-generate summary after every 5 messages to maintain context
+    # Auto-generate summary after every 4 messages to maintain context
     session_message_count = len(session_messages) + 1  # +1 for the new AI message
     if session_message_count >= 4 and session_message_count % 4 == 0:  # Every 4 messages
         await generate_and_save_session_summary(request.session_id, current_user.id)
