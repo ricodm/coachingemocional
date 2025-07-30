@@ -1172,6 +1172,49 @@ async def update_user_plan(
     
     return {"message": "User plan updated successfully"}
 
+@api_router.get("/debug/user-sessions/{user_id}")
+async def debug_user_sessions(user_id: str, admin_user: User = Depends(check_admin_access)):
+    """Debug endpoint to check user sessions and summaries"""
+    # Get all sessions for user
+    all_sessions = await db.sessions.find({"user_id": user_id}).sort("created_at", -1).to_list(20)
+    
+    # Get sessions with summaries
+    sessions_with_summaries = await db.sessions.find(
+        {"user_id": user_id, "summary": {"$ne": None}, "summary": {"$ne": ""}}
+    ).sort("created_at", -1).to_list(20)
+    
+    # Force generate summaries for sessions without them
+    sessions_without_summaries = await db.sessions.find(
+        {
+            "user_id": user_id, 
+            "messages_count": {"$gte": 4},
+            "$or": [{"summary": {"$exists": False}}, {"summary": None}, {"summary": ""}]
+        }
+    ).to_list(10)
+    
+    for session in sessions_without_summaries:
+        await generate_and_save_session_summary(session["id"], user_id)
+    
+    # Get the enhanced prompt to see what the AI sees
+    enhanced_prompt = await get_admin_enhanced_prompt(user_id, "")
+    
+    return {
+        "user_id": user_id,
+        "total_sessions": len(all_sessions),
+        "sessions_with_summaries": len(sessions_with_summaries),
+        "sessions_without_summaries_processed": len(sessions_without_summaries),
+        "all_sessions": [
+            {
+                "id": s["id"][:8],
+                "created_at": s["created_at"],
+                "messages_count": s.get("messages_count", 0),
+                "has_summary": bool(s.get("summary"))
+            }
+            for s in all_sessions
+        ],
+        "enhanced_prompt_preview": enhanced_prompt[:1000] + "..." if len(enhanced_prompt) > 1000 else enhanced_prompt
+    }
+
 @api_router.post("/admin/create-admin")
 async def create_admin_user():
     """Create initial admin user (remove this endpoint in production)"""
