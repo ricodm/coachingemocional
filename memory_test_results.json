@@ -1,0 +1,59 @@
+{
+  "summary": {
+    "total_tests": 8,
+    "passed": 6,
+    "failed": 2,
+    "success_rate": "75.0%"
+  },
+  "results": [
+    {
+      "name": "Admin Setup",
+      "success": false,
+      "details": "Failed to create admin: {'detail': 'Admin user already exists'}",
+      "timestamp": "2025-07-30T15:51:18.233956"
+    },
+    {
+      "name": "Test User Creation",
+      "success": true,
+      "details": "User: memory_test_155118@test.com",
+      "timestamp": "2025-07-30T15:51:18.491429"
+    },
+    {
+      "name": "Session 1 Creation",
+      "success": true,
+      "details": "Session ID: d056aa29-bdac-4ef2-bc78-98b85605a17e",
+      "timestamp": "2025-07-30T15:51:18.518087"
+    },
+    {
+      "name": "Session 1 Conversation",
+      "success": true,
+      "details": "Sent 4 messages about divorce",
+      "timestamp": "2025-07-30T15:52:41.327265"
+    },
+    {
+      "name": "Session 2 Creation",
+      "success": true,
+      "details": "Session ID: dc3ec9b7-79b9-476c-954a-7e8189aa62ca",
+      "timestamp": "2025-07-30T15:52:41.382735"
+    },
+    {
+      "name": "Memory Check",
+      "success": true,
+      "details": "AI remembered! Keywords found: ['div\u00f3rcio', 'casamento', 'filhos', 'conversamos', 'falamos', 'compartilhou', 'mencionou', '15 anos']",
+      "timestamp": "2025-07-30T15:53:04.220726"
+    },
+    {
+      "name": "Debug Endpoint",
+      "success": false,
+      "details": "Missing admin token or user ID",
+      "timestamp": "2025-07-30T15:53:04.220765"
+    },
+    {
+      "name": "Summary Generation",
+      "success": true,
+      "details": "Summary contains: ['div\u00f3rcio', 'casamento', 'filhos']",
+      "timestamp": "2025-07-30T15:53:24.392704"
+    }
+  ],
+  "timestamp": "2025-07-30T15:53:24.392875"
+}
