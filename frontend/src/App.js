@@ -124,6 +124,83 @@ const ForgotPasswordForm = ({ onBack }) => {
   );
 };
 
+const ResetPasswordForm = ({ token, onSuccess }) => {
+  const [formData, setFormData] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      if (formData.newPassword !== formData.confirmPassword) {
+        throw new Error('As senhas não coincidem');
+      }
+      
+      if (formData.newPassword.length < 6) {
+        throw new Error('A senha deve ter pelo menos 6 caracteres');
+      }
+
+      await axios.post(`${API}/auth/reset-password`, {
+        token: token,
+        new_password: formData.newPassword
+      });
+      
+      onSuccess();
+    } catch (error) {
+      setError(error.response?.data?.detail || error.message || 'Erro ao redefinir senha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-form">
+        <h2>Redefinir Senha</h2>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            name="newPassword"
+            placeholder="Nova senha"
+            value={formData.newPassword}
+            onChange={handleChange}
+            required
+          />
+          
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirmar nova senha"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+          
+          <button type="submit" disabled={loading}>
+            {loading ? 'Redefinindo...' : 'Redefinir Senha'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
