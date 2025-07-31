@@ -14,6 +14,9 @@ import bcrypt
 import jwt
 from openai import OpenAI
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+import secrets
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
