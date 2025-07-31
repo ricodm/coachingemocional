@@ -866,8 +866,15 @@ async def get_payment_history(current_user: User = Depends(get_current_user)):
     return payment_history
 
 async def generate_and_save_session_summary(session_id: str, user_id: str):
-    """Generate and save summary for a session (internal function)"""
+    """Generate and save summary for a session only if it has messages"""
     try:
+        # First check if session has any messages
+        message_count = await db.messages.count_documents({"session_id": session_id})
+        
+        if message_count == 0:
+            logger.info(f"Skipping summary for empty session {session_id}")
+            return None
+        
         # Verify session belongs to user
         session = await db.sessions.find_one({"id": session_id, "user_id": user_id})
         if not session:
@@ -920,10 +927,12 @@ RESUMO:"""
             {"$set": {"summary": summary}}
         )
         
-        logger.info(f"Generated summary for session {session_id}")
+        logger.info(f"Generated summary for session {session_id} with {message_count} messages")
+        return summary
         
     except Exception as e:
         logger.error(f"Auto-summary generation error for session {session_id}: {str(e)}")
+        return None
 
 @api_router.post("/session/{session_id}/summary")
 async def generate_session_summary(session_id: str, current_user: User = Depends(get_current_user)):
