@@ -464,12 +464,21 @@ class TerapiaEmocionalAPITester:
         
         # Run tests in logical order
         tests = [
-            self.test_health_check,
+            self.test_backend_health_on_port_8001,
             self.test_create_admin,
             self.test_admin_login,
             self.test_user_registration,
             self.test_user_login,
             self.test_auth_me,
+            # Forgot Password Tests
+            self.test_forgot_password_valid_email,
+            self.test_forgot_password_invalid_email,
+            self.test_forgot_password_malformed_email,
+            self.test_reset_password_invalid_token,
+            self.test_reset_password_short_password,
+            self.test_database_password_reset_tokens,
+            self.test_existing_auth_endpoints,
+            # Other existing tests
             self.test_create_session,
             self.test_chat_message,
             self.test_get_sessions,
