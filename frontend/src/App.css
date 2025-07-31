@@ -410,9 +410,8 @@ body {
 
 .input-container {
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border-top: 3px solid rgba(37, 22, 66, 0.2);
 }
 
 .input-wrapper {
@@ -420,11 +419,11 @@ body {
   align-items: flex-end;
   gap: 1rem;
   max-width: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  background: #ffffff;
   border-radius: 25px;
   padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(37, 22, 66, 0.1);
+  border: 2px solid #251642;
 }
 
 .message-input {
@@ -435,15 +434,15 @@ body {
   background: transparent;
   font-size: 1rem;
   line-height: 1.5;
-  color: #333;
+  color: #251642;
   min-height: 24px;
   max-height: 120px;
   overflow-y: auto;
-  font-family: inherit;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .message-input::placeholder {
-  color: #999;
+  color: rgba(37, 22, 66, 0.6);
 }
 
 .send-button {
@@ -451,7 +450,7 @@ body {
   height: 44px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #251642;
   color: white;
   cursor: pointer;
   display: flex;
