@@ -795,13 +795,16 @@ body {
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
-  color: white;
+  color: #2D1B69;
 }
 
 .history-container h2 {
   margin-bottom: 2rem;
   text-align: center;
   font-size: 2rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  color: #2D1B69;
 }
 
 .sessions-list {
@@ -810,9 +813,8 @@ body {
 }
 
 .session-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(45, 27, 105, 0.05);
+  border: 2px solid rgba(45, 27, 105, 0.1);
   border-radius: 15px;
   padding: 1.5rem;
   transition: transform 0.3s;
@@ -821,12 +823,15 @@ body {
 
 .session-card:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(45, 27, 105, 0.1);
+  border-color: rgba(45, 27, 105, 0.2);
 }
 
 .session-card h3 {
   margin-bottom: 0.5rem;
-  color: #4CAF50;
+  color: #2D1B69;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
 }
 
 .summary-preview {
@@ -834,19 +839,21 @@ body {
   opacity: 0.8;
   margin-top: 0.5rem;
   font-size: 0.9rem;
+  color: #5B2C87;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .session-action {
   margin-top: 1rem;
-  color: #667eea;
+  color: #8E44AD;
   font-weight: 600;
   font-size: 0.9rem;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .session-detail {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(45, 27, 105, 0.05);
+  border: 2px solid rgba(45, 27, 105, 0.1);
   border-radius: 20px;
   padding: 2rem;
 }
