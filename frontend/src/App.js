@@ -1675,6 +1675,17 @@ function App() {
 
 const AppContent = () => {
   const { user, loading } = useAuth();
+  const [resetToken, setResetToken] = useState(null);
+  const [showResetSuccess, setShowResetSuccess] = useState(false);
+
+  useEffect(() => {
+    // Check if URL contains reset token
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      setResetToken(token);
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -1682,6 +1693,39 @@ const AppContent = () => {
         <div className="loading-spinner"></div>
         <p>Carregando...</p>
       </div>
+    );
+  }
+
+  // Show reset password form if token is present
+  if (resetToken && !user) {
+    if (showResetSuccess) {
+      return (
+        <div className="auth-container">
+          <div className="auth-form">
+            <h2>Senha Redefinida!</h2>
+            <div className="success-message">
+              Sua senha foi redefinida com sucesso! Você já pode fazer login com sua nova senha.
+            </div>
+            <button 
+              onClick={() => {
+                setResetToken(null);
+                setShowResetSuccess(false);
+                window.history.replaceState({}, document.title, window.location.pathname);
+              }}
+              className="auth-button"
+            >
+              Fazer Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <ResetPasswordForm 
+        token={resetToken} 
+        onSuccess={() => setShowResetSuccess(true)} 
+      />
     );
   }
 
