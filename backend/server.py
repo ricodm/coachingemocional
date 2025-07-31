@@ -1833,8 +1833,37 @@ async def import_data(import_data: dict, admin_user: User = Depends(check_admin_
         logger.error(f"Import error: {str(e)}")
         raise HTTPException(status_code=500, detail="Import failed")
 
-@api_router.post("/admin/create-admin")
-async def create_admin_user():
+@api_router.post("/admin/cleanup-empty-sessions")
+async def admin_cleanup_empty_sessions(current_admin: User = Depends(check_admin_access)):
+    """Admin endpoint to clean up empty sessions"""
+    try:
+        # Find sessions with 0 messages or no messages_count field
+        empty_sessions = await db.sessions.find({
+            "$or": [
+                {"messages_count": {"$lte": 0}},
+                {"messages_count": {"$exists": False}}
+            ]
+        }).to_list(1000)
+        
+        if empty_sessions:
+            session_ids = [session["id"] for session in empty_sessions]
+            # Delete empty sessions
+            result = await db.sessions.delete_many({"id": {"$in": session_ids}})
+            logger.info(f"Admin cleanup: Deleted {result.deleted_count} empty sessions")
+            
+            return {
+                "message": f"Successfully cleaned up {result.deleted_count} empty sessions",
+                "deleted_sessions": len(session_ids)
+            }
+        else:
+            return {
+                "message": "No empty sessions found to clean up",
+                "deleted_sessions": 0
+            }
+        
+    except Exception as e:
+        logger.error(f"Error in admin cleanup: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error cleaning up empty sessions")
     """Create initial admin user (remove this endpoint in production)"""
     # Check if admin already exists
     existing_admin = await db.users.find_one({"is_admin": True})
