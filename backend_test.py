@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class TerapiaEmocionalAPITester:
-    def __init__(self, base_url: str = "https://431abbe8-54e5-4686-ae34-fef4fe187f36.preview.emergentagent.com"):
+    def __init__(self, base_url: str = "https://46e5dc81-5d7b-439c-bf84-9e6b622cc977.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None
