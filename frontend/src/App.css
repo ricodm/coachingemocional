@@ -423,64 +423,63 @@ body {
 
 .input-container {
   padding: 2rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border-top: 4px solid rgba(142, 68, 173, 0.3);
-  backdrop-filter: blur(15px);
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
 }
 
 .input-wrapper {
   display: flex;
   align-items: flex-end;
-  gap: 1.5rem;
+  gap: 1rem;
   max-width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 30px;
-  padding: 0.8rem 0.8rem 0.8rem 2rem;
-  box-shadow: 0 10px 30px rgba(45, 27, 105, 0.2);
-  border: 3px solid #8E44AD;
-  backdrop-filter: blur(10px);
+  background: #ffffff;
+  padding: 0.5rem 0;
 }
 
 .message-input {
   flex: 1;
   border: none;
+  border-bottom: 2px solid #2D1B69;
   outline: none;
   resize: none;
   background: transparent;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   color: #2D1B69;
   min-height: 30px;
   max-height: 150px;
   overflow-y: auto;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 500;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  padding: 0.5rem 0;
 }
 
 .message-input::placeholder {
-  color: rgba(45, 27, 105, 0.6);
+  color: rgba(45, 27, 105, 0.5);
   font-style: italic;
 }
 
+.message-input:focus {
+  border-bottom-color: #5B2C87;
+}
+
 .send-button {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2D1B69 0%, #5B2C87 100%);
+  background: #2D1B69;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s ease;
-  box-shadow: 0 6px 20px rgba(45, 27, 105, 0.4);
+  transition: all 0.3s ease;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
 }
 
 .send-button:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 10px 30px rgba(45, 27, 105, 0.6);
-  background: linear-gradient(135deg, #5B2C87 0%, #8E44AD 100%);
+  background: #5B2C87;
 }
 
 .send-button:disabled {
