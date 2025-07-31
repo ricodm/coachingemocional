@@ -50,80 +50,75 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%);
+  background-color: #ffffff;
   padding: 20px;
 }
 
 .auth-form {
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   padding: 3rem;
-  border-radius: 30px;
-  box-shadow: 0 20px 40px rgba(45, 27, 105, 0.3);
   width: 100%;
   max-width: 450px;
-  border: 3px solid #8E44AD;
-  backdrop-filter: blur(10px);
 }
 
 .auth-form h2 {
   text-align: center;
   margin-bottom: 2rem;
   color: #2D1B69;
-  font-family: 'Dancing Script', cursive;
-  font-size: 3rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(45, 27, 105, 0.2);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
 }
 
 .auth-form input {
   width: 100%;
-  padding: 18px;
+  padding: 18px 0;
   margin-bottom: 1.5rem;
-  border: 3px solid #8E44AD;
-  border-radius: 20px;
+  border: none;
+  border-bottom: 2px solid #2D1B69;
   font-size: 18px;
   color: #2D1B69 !important;
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 500;
+  background-color: transparent !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
 }
 
 .auth-form input:focus {
   outline: none;
-  border-color: #5B2C87;
-  box-shadow: 0 0 0 4px rgba(139, 69, 19, 0.3);
-  background-color: rgba(255, 255, 255, 1) !important;
+  border-bottom-color: #5B2C87;
+}
+
+.auth-form input::placeholder {
+  color: rgba(45, 27, 105, 0.6);
+  font-style: italic;
 }
 
 .auth-form button {
   width: 100%;
   padding: 18px;
-  background: linear-gradient(135deg, #2D1B69 0%, #5B2C87 50%, #8E44AD 100%);
+  background: #2D1B69;
   color: white;
   border: none;
-  border-radius: 20px;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  transition: all 0.4s ease;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
-  box-shadow: 0 8px 20px rgba(45, 27, 105, 0.4);
+  transition: all 0.3s ease;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .auth-form button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5B2C87 0%, #8E44AD 50%, #AF7AC5 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(45, 27, 105, 0.5);
+  background: #5B2C87;
 }
 
 .auth-form button:disabled {
   opacity: 0.7;
-  transform: none;
   cursor: not-allowed;
 }
 
 .auth-links {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   text-align: center;
 }
 
@@ -134,23 +129,22 @@ body {
   cursor: pointer;
   text-decoration: underline;
   font-size: 16px;
-  margin: 0.8rem 0;
+  margin: 1rem 0;
   display: block;
   width: 100%;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
 }
 
 .link-button:hover {
   color: #5B2C87;
-  text-shadow: 1px 1px 2px rgba(45, 27, 105, 0.3);
 }
 
 .forgot-password-link {
-  margin-top: 0.8rem;
+  margin-top: 1rem;
   font-size: 15px;
   color: #8E44AD;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .forgot-password-link:hover {
@@ -158,27 +152,25 @@ body {
 }
 
 .success-message {
-  background: linear-gradient(135deg, rgba(215, 189, 226, 0.3) 0%, rgba(195, 155, 211, 0.3) 100%);
+  background: rgba(45, 27, 105, 0.05);
   color: #2D1B69;
   padding: 18px;
-  border-radius: 15px;
   margin-bottom: 1.5rem;
-  border: 2px solid #8E44AD;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
   text-align: center;
+  border-left: 4px solid #2D1B69;
 }
 
 .error-message {
-  background: rgba(231, 76, 60, 0.1);
+  background: rgba(231, 76, 60, 0.05);
   color: #C0392B;
   padding: 18px;
-  border-radius: 15px;
   margin-bottom: 1.5rem;
-  border: 2px solid #E74C3C;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
   text-align: center;
+  border-left: 4px solid #E74C3C;
 }
 
 /* ============ MAIN LAYOUT ============ */
