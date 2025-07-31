@@ -1618,25 +1618,25 @@ const Navigation = () => {
             className={activeView === 'chat' ? 'active' : ''} 
             onClick={() => setActiveView('chat')}
           >
-            💬 Chat
+            Chat
           </button>
           <button 
             className={activeView === 'plans' ? 'active' : ''} 
             onClick={() => setActiveView('plans')}
           >
-            💳 Planos
+            Planos
           </button>
           <button 
             className={activeView === 'profile' ? 'active' : ''} 
             onClick={() => setActiveView('profile')}
           >
-            👤 Perfil
+            Perfil
           </button>
           <button 
             className={activeView === 'history' ? 'active' : ''} 
             onClick={() => setActiveView('history')}
           >
-            📝 Histórico
+            Histórico
           </button>
           
           {user.is_admin && (
@@ -1644,15 +1644,15 @@ const Navigation = () => {
               className={activeView === 'admin' ? 'active' : ''} 
               onClick={() => setActiveView('admin')}
             >
-              ⚙️ Admin
+              Admin
             </button>
           )}
         </div>
         
         <div className="nav-footer">
-          <button onClick={logout} className="logout-btn">
-            🚪 Sair
-          </button>
+          <a href="#" onClick={(e) => { e.preventDefault(); logout(); }} className="logout-link">
+            Sair
+          </a>
         </div>
       </nav>
       
