@@ -1608,7 +1608,7 @@ const Navigation = () => {
     <div className="app-container">
       <nav className="sidebar">
         <div className="nav-header">
-          <h2>Terapia Emocional</h2>
+          <h2>Anantara</h2>
         </div>
         
         <div className="nav-links">
