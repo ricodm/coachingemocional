@@ -107,51 +107,63 @@ user_problem_statement: "Implementar funcionalidade de 'Esqueci minha senha' par
 backend:
   - task: "SendGrid Email Service Integration"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Integrated SendGrid API with credentials from user. Added email service functions send_password_reset_email, generate_reset_token, validate_reset_token, and mark_token_as_used"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: SendGrid integration working correctly. Email service functions properly implemented. Password reset emails are being sent successfully with proper HTML formatting and reset URLs. API credentials are configured and functional."
 
   - task: "Password Reset Token Model"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added PasswordResetToken model with id, user_id, token, expires_at, created_at, and used fields. Also added ForgotPasswordRequest and ResetPasswordRequest models"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Password reset token model working perfectly. Tokens are properly stored in MongoDB password_reset_tokens collection with correct structure (id, user_id, token, expires_at, created_at, used). Database integration verified - tokens are created, validated, and marked as used correctly."
 
   - task: "Forgot Password API Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added /api/auth/forgot-password endpoint that validates email, generates secure token, and sends recovery email via SendGrid"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: /api/auth/forgot-password endpoint working correctly. ✅ Valid email returns proper security message. ✅ Invalid/non-existent email returns same message (security best practice). ✅ Malformed email returns 422 validation error. ✅ Tokens are generated and stored in database. ✅ Email integration functional."
 
   - task: "Reset Password API Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added /api/auth/reset-password endpoint that validates token, checks password strength, updates user password, and marks token as used"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: /api/auth/reset-password endpoint working perfectly. ✅ Invalid token returns 400 error with proper message. ✅ Password validation enforces minimum 6 characters. ✅ Valid token successfully resets password. ✅ Token marked as used after successful reset. ✅ Used tokens cannot be reused. ✅ Complete password reset flow tested end-to-end successfully."
 
 frontend:
   - task: "Forgot Password Form Component"
