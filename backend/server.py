@@ -51,7 +51,7 @@ stripe_checkout = None
 security = HTTPBearer()
 
 # Create the main app without a prefix
-app = FastAPI(title="Terapia Emocional API", version="1.0.0")
+app = FastAPI(title="Anantara API", version="1.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
