@@ -255,41 +255,49 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         # Create HTML email content
         html_content = f"""
         <html>
-            <body style="font-family: 'Playwrite Magyarország', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; border: 2px solid #251642;">
-                    <h1 style="color: #251642; text-align: center; margin-bottom: 30px; font-family: 'Playwrite Magyarország', cursive;">Recuperação de Senha</h1>
+            <head>
+                <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+            </head>
+            <body style="font-family: 'Dancing Script', cursive; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%); min-height: 100vh;">
+                <div style="background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 30px; border: 3px solid #8E44AD; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(45, 27, 105, 0.3);">
+                    <h1 style="color: #2D1B69; text-align: center; margin-bottom: 30px; font-family: 'Dancing Script', cursive; font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(45, 27, 105, 0.2);">✨ Recuperação de Senha ✨</h1>
                     
-                    <p style="color: #251642; font-size: 16px; line-height: 1.6; font-family: 'Playwrite Magyarország', cursive;">
-                        Você solicitou a recuperação de sua senha no Anantara.
+                    <p style="color: #2D1B69; font-size: 20px; line-height: 1.8; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; margin-bottom: 20px;">
+                        Você solicitou a recuperação de sua senha no <strong>Anantara</strong> 🙏
                     </p>
                     
-                    <p style="color: #251642; font-size: 16px; line-height: 1.6; font-family: 'Playwrite Magyarország', cursive;">
-                        Clique no link abaixo para redefinir sua senha:
+                    <p style="color: #2D1B69; font-size: 18px; line-height: 1.6; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; margin-bottom: 30px;">
+                        Clique no botão abaixo para redefinir sua senha com amor e serenidade:
                     </p>
                     
-                    <div style="text-align: center; margin: 30px 0;">
+                    <div style="text-align: center; margin: 40px 0;">
                         <a href="{reset_url}" 
-                           style="background-color: #251642; color: white; padding: 15px 30px; 
-                                  text-decoration: none; border-radius: 10px; font-size: 16px; 
-                                  display: inline-block; font-family: 'Playwrite Magyarország', cursive;">
-                            Redefinir Senha
+                           style="background: linear-gradient(135deg, #2D1B69 0%, #5B2C87 50%, #8E44AD 100%); color: white; padding: 18px 35px; 
+                                  text-decoration: none; border-radius: 25px; font-size: 20px; 
+                                  display: inline-block; font-family: 'Dancing Script', cursive; font-weight: 600;
+                                  box-shadow: 0 10px 25px rgba(45, 27, 105, 0.4); transition: all 0.3s ease;">
+                            🔑 Redefinir Minha Senha
                         </a>
                     </div>
                     
-                    <p style="color: #251642; font-size: 14px; line-height: 1.5; font-family: 'Playwrite Magyarország', cursive;">
-                        Se você não conseguir clicar no botão, copie e cole este link no seu navegador:
+                    <p style="color: #5B2C87; font-size: 16px; line-height: 1.6; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; padding: 20px; background: rgba(139, 69, 19, 0.1); border-radius: 15px; border: 2px solid #8E44AD;">
+                        Se você não conseguir clicar no botão, copie e cole este link sagrado no seu navegador:
+                        <br><br>
+                        <a href="{reset_url}" style="color: #2D1B69; word-break: break-all;">{reset_url}</a>
+                    </p>
+                    
+                    <p style="color: #8E44AD; font-size: 16px; line-height: 1.6; margin-top: 30px; font-family: 'Dancing Script', cursive; font-weight: 600; text-align: center;">
+                        <strong>🕰️ Importante:</strong> Este link sagrado expira em 1 hora. Se você não solicitou esta recuperação, simplesmente ignore este email com paz.
+                    </p>
+                    
+                    <hr style="border: none; border-top: 3px solid #8E44AD; margin: 30px 0; opacity: 0.6;">
+                    
+                    <p style="color: #2D1B69; font-size: 18px; text-align: center; font-family: 'Dancing Script', cursive; font-weight: 600; margin-top: 20px;">
+                        🧘‍♀️ <em>Anantara</em> 🧘‍♂️
                         <br>
-                        <a href="{reset_url}" style="color: #251642;">{reset_url}</a>
-                    </p>
-                    
-                    <p style="color: #251642; font-size: 14px; line-height: 1.5; margin-top: 30px; font-family: 'Playwrite Magyarország', cursive;">
-                        <strong>Importante:</strong> Este link expira em 1 hora. Se você não solicitou esta recuperação, ignore este email.
-                    </p>
-                    
-                    <hr style="border: none; border-top: 1px solid #251642; margin: 30px 0;">
-                    
-                    <p style="color: #251642; font-size: 12px; text-align: center; font-family: 'Playwrite Magyarország', cursive;">
-                        Anantara - Cuidando da sua mente com carinho
+                        <span style="font-size: 16px; color: #5B2C87;">Cuidando da sua alma com amor e sabedoria</span>
+                        <br>
+                        ✨ Namastê ✨
                     </p>
                 </div>
             </body>
@@ -300,7 +308,7 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         message = Mail(
             from_email=sender_email,
             to_emails=email,
-            subject="Recuperação de Senha - Anantara",
+            subject="🔑 Recuperação de Senha - Anantara ✨",
             html_content=html_content
         )
         
