@@ -1436,6 +1436,149 @@ async def debug_user_sessions(user_id: str, admin_user: User = Depends(check_adm
         "enhanced_prompt_preview": enhanced_prompt[:1000] + "..." if len(enhanced_prompt) > 1000 else enhanced_prompt
     }
 
+@api_router.get("/admin/export-user-data/{user_id}")
+async def export_user_data(user_id: str, admin_user: User = Depends(check_admin_access)):
+    """Export complete user data for migration"""
+    try:
+        # Get user data
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user sessions
+        sessions = await db.sessions.find({"user_id": user_id}).to_list(1000)
+        
+        # Get all messages
+        messages = await db.messages.find({"user_id": user_id}).to_list(10000)
+        
+        # Get payment transactions
+        payments = await db.payment_transactions.find({"user_id": user_id}).to_list(1000)
+        
+        # Prepare export data
+        export_data = {
+            "user": user,
+            "sessions": sessions,
+            "messages": messages,
+            "payments": payments,
+            "export_date": datetime.utcnow(),
+            "export_version": "1.0"
+        }
+        
+        return export_data
+        
+    except Exception as e:
+        logger.error(f"Export error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Export failed")
+
+@api_router.get("/admin/export-all-data")
+async def export_all_data(admin_user: User = Depends(check_admin_access)):
+    """Export complete system data for migration"""
+    try:
+        # Get all collections
+        users = await db.users.find({}).to_list(10000)
+        sessions = await db.sessions.find({}).to_list(10000)
+        messages = await db.messages.find({}).to_list(100000)
+        payments = await db.payment_transactions.find({}).to_list(10000)
+        admin_settings = await db.admin_settings.find({}).to_list(100)
+        admin_documents = await db.admin_documents.find({}).to_list(100)
+        
+        # Prepare complete export
+        export_data = {
+            "users": users,
+            "sessions": sessions, 
+            "messages": messages,
+            "payments": payments,
+            "admin_settings": admin_settings,
+            "admin_documents": admin_documents,
+            "export_date": datetime.utcnow(),
+            "export_version": "1.0",
+            "total_users": len(users),
+            "total_sessions": len(sessions),
+            "total_messages": len(messages)
+        }
+        
+        return export_data
+        
+    except Exception as e:
+        logger.error(f"Complete export error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Complete export failed")
+
+@api_router.post("/admin/import-data")
+async def import_data(import_data: dict, admin_user: User = Depends(check_admin_access)):
+    """Import data from backup (for migration)"""
+    try:
+        imported_counts = {}
+        
+        # Import users
+        if "users" in import_data:
+            for user_data in import_data["users"]:
+                await db.users.update_one(
+                    {"id": user_data["id"]},
+                    {"$set": user_data},
+                    upsert=True
+                )
+            imported_counts["users"] = len(import_data["users"])
+        
+        # Import sessions
+        if "sessions" in import_data:
+            for session_data in import_data["sessions"]:
+                await db.sessions.update_one(
+                    {"id": session_data["id"]},
+                    {"$set": session_data},
+                    upsert=True
+                )
+            imported_counts["sessions"] = len(import_data["sessions"])
+        
+        # Import messages
+        if "messages" in import_data:
+            for message_data in import_data["messages"]:
+                await db.messages.update_one(
+                    {"id": message_data["id"]},
+                    {"$set": message_data},
+                    upsert=True
+                )
+            imported_counts["messages"] = len(import_data["messages"])
+        
+        # Import payments
+        if "payments" in import_data:
+            for payment_data in import_data["payments"]:
+                await db.payment_transactions.update_one(
+                    {"id": payment_data["id"]},
+                    {"$set": payment_data},
+                    upsert=True
+                )
+            imported_counts["payments"] = len(import_data["payments"])
+        
+        # Import admin settings
+        if "admin_settings" in import_data:
+            for setting_data in import_data["admin_settings"]:
+                await db.admin_settings.update_one(
+                    {"type": setting_data["type"]},
+                    {"$set": setting_data},
+                    upsert=True
+                )
+            imported_counts["admin_settings"] = len(import_data["admin_settings"])
+        
+        # Import admin documents
+        if "admin_documents" in import_data:
+            for doc_data in import_data["admin_documents"]:
+                await db.admin_documents.update_one(
+                    {"id": doc_data["id"]},
+                    {"$set": doc_data},
+                    upsert=True
+                )
+            imported_counts["admin_documents"] = len(import_data["admin_documents"])
+        
+        return {
+            "message": "Data imported successfully",
+            "imported_counts": imported_counts,
+            "import_date": datetime.utcnow()
+        }
+        
+    except Exception as e:
+        logger.error(f"Import error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Import failed")
+
 @api_router.post("/admin/create-admin")
 async def create_admin_user():
     """Create initial admin user (remove this endpoint in production)"""
