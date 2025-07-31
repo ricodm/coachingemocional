@@ -50,64 +50,70 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
+  background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%);
   padding: 20px;
 }
 
 .auth-form {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(37, 22, 66, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3rem;
+  border-radius: 30px;
+  box-shadow: 0 20px 40px rgba(45, 27, 105, 0.3);
   width: 100%;
-  max-width: 400px;
-  border: 2px solid #251642;
+  max-width: 450px;
+  border: 3px solid #8E44AD;
+  backdrop-filter: blur(10px);
 }
 
 .auth-form h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #251642;
-  font-family: 'Playwrite Magyarország', cursive;
-  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2D1B69;
+  font-family: 'Dancing Script', cursive;
+  font-size: 3rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(45, 27, 105, 0.2);
 }
 
 .auth-form input {
   width: 100%;
-  padding: 15px;
-  margin-bottom: 1rem;
-  border: 2px solid #251642;
-  border-radius: 10px;
-  font-size: 16px;
-  color: #251642 !important;
-  background-color: #ffffff !important;
-  font-family: 'Playwrite Magyarország', cursive;
+  padding: 18px;
+  margin-bottom: 1.5rem;
+  border: 3px solid #8E44AD;
+  border-radius: 20px;
+  font-size: 18px;
+  color: #2D1B69 !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 500;
 }
 
 .auth-form input:focus {
   outline: none;
-  border-color: #251642;
-  box-shadow: 0 0 0 3px rgba(37, 22, 66, 0.2);
+  border-color: #5B2C87;
+  box-shadow: 0 0 0 4px rgba(139, 69, 19, 0.3);
+  background-color: rgba(255, 255, 255, 1) !important;
 }
 
 .auth-form button {
   width: 100%;
-  padding: 15px;
-  background: #251642;
+  padding: 18px;
+  background: linear-gradient(135deg, #2D1B69 0%, #5B2C87 50%, #8E44AD 100%);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
+  border-radius: 20px;
+  font-size: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Playwrite Magyarország', cursive;
-  font-weight: 300;
+  transition: all 0.4s ease;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(45, 27, 105, 0.4);
 }
 
 .auth-form button:hover:not(:disabled) {
-  background: #3d2a5e;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(37, 22, 66, 0.3);
+  background: linear-gradient(135deg, #5B2C87 0%, #8E44AD 50%, #AF7AC5 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(45, 27, 105, 0.5);
 }
 
 .auth-form button:disabled {
@@ -117,55 +123,62 @@ body {
 }
 
 .auth-links {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
 }
 
 .link-button {
   background: none;
   border: none;
-  color: #251642;
+  color: #2D1B69;
   cursor: pointer;
   text-decoration: underline;
-  font-size: 14px;
-  margin: 0.5rem 0;
+  font-size: 16px;
+  margin: 0.8rem 0;
   display: block;
   width: 100%;
-  font-family: 'Playwrite Magyarország', cursive;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
 }
 
 .link-button:hover {
-  color: #3d2a5e;
+  color: #5B2C87;
+  text-shadow: 1px 1px 2px rgba(45, 27, 105, 0.3);
 }
 
 .forgot-password-link {
-  margin-top: 0.5rem;
-  font-size: 13px;
-  color: #251642;
+  margin-top: 0.8rem;
+  font-size: 15px;
+  color: #8E44AD;
+  font-weight: 500;
 }
 
 .forgot-password-link:hover {
-  color: #3d2a5e;
+  color: #5B2C87;
 }
 
 .success-message {
-  background-color: rgba(37, 22, 66, 0.1);
-  color: #251642;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  border: 2px solid #251642;
-  font-family: 'Playwrite Magyarország', cursive;
+  background: linear-gradient(135deg, rgba(215, 189, 226, 0.3) 0%, rgba(195, 155, 211, 0.3) 100%);
+  color: #2D1B69;
+  padding: 18px;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #8E44AD;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  text-align: center;
 }
 
 .error-message {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  border: 2px solid #dc3545;
-  font-family: 'Playwrite Magyarország', cursive;
+  background: rgba(231, 76, 60, 0.1);
+  color: #C0392B;
+  padding: 18px;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #E74C3C;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* ============ MAIN LAYOUT ============ */
