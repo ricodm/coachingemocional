@@ -698,6 +698,74 @@ async def update_profile(update_data: UserUpdate, current_user: User = Depends(g
     
     return {"message": "Profile updated successfully"}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """Request password reset"""
+    try:
+        # Find user by email
+        user_data = await db.users.find_one({"email": request.email})
+        if not user_data:
+            # Don't reveal if email exists or not for security
+            return {"message": "Se o email existir em nossa base, você receberá as instruções de recuperação."}
+        
+        user = User(**user_data)
+        
+        # Generate reset token
+        reset_token = await generate_reset_token(user.id)
+        
+        # Send reset email
+        email_sent = await send_password_reset_email(user.email, reset_token)
+        
+        if not email_sent:
+            logger.error(f"Failed to send password reset email to {user.email}")
+            raise HTTPException(status_code=500, detail="Erro ao enviar email de recuperação")
+        
+        logger.info(f"Password reset requested for {user.email}")
+        return {"message": "Se o email existir em nossa base, você receberá as instruções de recuperação."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in forgot password: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Reset password using token"""
+    try:
+        # Validate token
+        user_id = await validate_reset_token(request.token)
+        if not user_id:
+            raise HTTPException(status_code=400, detail="Token inválido ou expirado")
+        
+        # Validate password strength
+        if len(request.new_password) < 6:
+            raise HTTPException(status_code=400, detail="A senha deve ter pelo menos 6 caracteres")
+        
+        # Hash new password
+        new_password_hash = hash_password(request.new_password)
+        
+        # Update user password
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"password_hash": new_password_hash}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Mark token as used
+        await mark_token_as_used(request.token)
+        
+        logger.info(f"Password reset successful for user {user_id}")
+        return {"message": "Senha redefinida com sucesso! Você já pode fazer login com sua nova senha."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in reset password: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 # ============ CHAT ENDPOINTS ============
 
 @api_router.post("/chat", response_model=ChatResponse)
