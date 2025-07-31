@@ -101,3 +101,136 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Implementar funcionalidade de 'Esqueci minha senha' para o sistema de terapia emocional, permitindo que usuários solicitem reset de senha via email e redefinam suas senhas usando token seguro."
+
+backend:
+  - task: "SendGrid Email Service Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Integrated SendGrid API with credentials from user. Added email service functions send_password_reset_email, generate_reset_token, validate_reset_token, and mark_token_as_used"
+
+  - task: "Password Reset Token Model"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added PasswordResetToken model with id, user_id, token, expires_at, created_at, and used fields. Also added ForgotPasswordRequest and ResetPasswordRequest models"
+
+  - task: "Forgot Password API Endpoint"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added /api/auth/forgot-password endpoint that validates email, generates secure token, and sends recovery email via SendGrid"
+
+  - task: "Reset Password API Endpoint"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added /api/auth/reset-password endpoint that validates token, checks password strength, updates user password, and marks token as used"
+
+frontend:
+  - task: "Forgot Password Form Component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created ForgotPasswordForm component with email input, loading states, success/error handling, and API integration"
+
+  - task: "Reset Password Form Component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created ResetPasswordForm component with new password and confirm password fields, validation, and API integration"
+
+  - task: "Login Form Enhancement"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced LoginForm to include 'Esqueci minha senha' link and integration with ForgotPasswordForm component"
+
+  - task: "URL Token Detection and Routing"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Modified AppContent to detect reset tokens in URL parameters and show appropriate form (ResetPasswordForm or success message)"
+
+  - task: "CSS Styling for Auth Components"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.css"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated CSS with new auth-form class, enhanced styling for inputs, added link buttons, success/error message styling, and forgot password link styling"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "SendGrid Email Service Integration"
+    - "Forgot Password API Endpoint"
+    - "Reset Password API Endpoint"
+    - "Forgot Password Form Component"
+    - "Reset Password Form Component"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Implemented complete forgot password functionality including SendGrid email integration, secure token generation, backend API endpoints, and frontend components. All services restarted successfully. Ready for comprehensive testing of the email flow, API endpoints, and UI components."
