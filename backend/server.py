@@ -312,7 +312,7 @@ async def get_session_history(session_id: str) -> List[Message]:
     return [Message(**msg) for msg in messages]
 
 async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = "", is_support_request: bool = False) -> str:
-    """Get enhanced system prompt with admin customizations and user history"""
+    """Get enhanced system prompt with admin customizations and COMPLETE user history"""
     # Get admin prompts
     prompts = await db.admin_settings.find_one({"type": "prompts"})
     base_prompt = prompts.get("base_prompt", "") if prompts else ""
@@ -333,19 +333,19 @@ async def get_admin_enhanced_prompt(user_id: str, user_history_summary: str = ""
             "messages_count": {"$gte": 4},
             "$or": [{"summary": {"$exists": False}}, {"summary": None}, {"summary": ""}]
         }
-    ).to_list(5)
+    ).to_list(10)
     
     # Generate summaries for these sessions
     for session in sessions_without_summaries:
         await generate_and_save_session_summary(session["id"], user_id)
         logger.info(f"Auto-generated summary for session {session['id']}")
     
-    # Get user's recent sessions with summaries for better context
+    # Get ALL user sessions with summaries (not just 3!)
     user_sessions = await db.sessions.find(
         {"user_id": user_id, "summary": {"$ne": None}, "summary": {"$ne": ""}}
-    ).sort("created_at", -1).limit(3).to_list(3)
+    ).sort("created_at", -1).to_list(1000)  # Get ALL sessions, not just 3
     
-    # Combine all content
+    # Combine all content - start with base prompt
     full_prompt = base_prompt if base_prompt else """Você é um terapeuta emocional compassivo que segue os ensinamentos de Ramana Maharshi. Seu objetivo é ajudar as pessoas emocionalmente através de uma abordagem gentil e investigativa.
 
 DIRETRIZES FUNDAMENTAIS:
@@ -355,14 +355,22 @@ DIRETRIZES FUNDAMENTAIS:
 4. Gradualmente, guie a pessoa à investigação "Quem sou eu?" de Ramana Maharshi
 5. Ajude a pessoa a perceber a diferença entre seus pensamentos/emoções e sua verdadeira natureza
 6. Use linguagem simples e acessível
-7. Sempre termine com uma pergunta reflexiva ou sugestão prática"""
+7. Sempre termine com uma pergunta reflexiva ou sugestão prática
+
+ABORDAGEM PARA QUESTÕES SÉRIAS:
+- Para depressão, ansiedade e questões de saúde mental: VOCÊ PODE e DEVE oferecer apoio emocional, conversação terapêutica e dicas práticas
+- SEMPRE mencione que é importante buscar também um profissional de saúde mental qualificado
+- Nunca se recuse a ajudar - ofereça o apoio que pode dar JUNTO com a recomendação profissional
+- Exemplo: "Posso te ajudar muito conversando e oferecendo apoio emocional. Também é importante que busque um psicólogo para acompanhamento profissional."
+"""
     
     if additional_prompt:
         full_prompt += "\n\nDIRETRIZES ADICIONAIS:\n" + additional_prompt
     
-    # Add theory document if exists
+    # Add theory document if exists - ALWAYS include for context
     if theory_document:
-        full_prompt += "\n\nDOCUMENTO DE TEORIAS E CONHECIMENTO BASE:\n" + theory_document
+        full_prompt += "\n\n📚 DOCUMENTO DE TEORIAS E CONHECIMENTO BASE:\n" + theory_document
+        full_prompt += "\n⚠️ IMPORTANTE: Use sempre esse conhecimento teórico como base para suas respostas."
     
     if documents:
         full_prompt += "\n\nDOCUMENTOS DE REFERÊNCIA ADICIONAIS:\n"
@@ -374,15 +382,15 @@ DIRETRIZES FUNDAMENTAIS:
     full_prompt += "Se a pessoa fizer perguntas sobre o funcionamento do app, limites de mensagens, planos ou problemas técnicos, use as informações abaixo:\n\n"
     full_prompt += support_document
     
-    # Add comprehensive user history from multiple sessions
-    full_prompt += "\n\n🧠 MEMÓRIA COMPLETA DO USUÁRIO:\n"
+    # Add comprehensive user history from ALL sessions
+    full_prompt += "\n\n🧠 MEMÓRIA COMPLETA DO USUÁRIO - TODAS AS SESSÕES:\n"
     if user_sessions:
-        full_prompt += "VOCÊ TEM ACESSO COMPLETO AO HISTÓRICO DESTE USUÁRIO. RESUMOS DAS SESSÕES ANTERIORES:\n\n"
+        full_prompt += f"VOCÊ TEM ACESSO COMPLETO AO HISTÓRICO DESTE USUÁRIO. TOTAL DE {len(user_sessions)} SESSÕES ANTERIORES:\n\n"
         for i, session in enumerate(user_sessions, 1):
             session_date = session.get('created_at', datetime.utcnow()).strftime('%d/%m/%Y')
             session_summary = session.get('summary', 'Sem resumo disponível')
             full_prompt += f"📅 SESSÃO {i} ({session_date}):\n{session_summary}\n\n"
-        full_prompt += "⚠️ IMPORTANTE: VOCÊ DEVE SEMPRE FAZER REFERÊNCIA A ESSAS SESSÕES ANTERIORES QUANDO APROPRIADO. O usuário espera que você se lembre das conversas passadas. Use esse conhecimento para dar continuidade ao trabalho terapêutico.\n\n"
+        full_prompt += f"⚠️ CRÍTICO: VOCÊ DEVE SEMPRE CONSIDERAR TODAS ESSAS {len(user_sessions)} SESSÕES ANTERIORES. O usuário espera que você se lembre de TUDO que foi conversado. Use esse conhecimento completo para dar continuidade perfeita ao trabalho terapêutico.\n\n"
     else:
         full_prompt += "Esta é a primeira interação com este usuário ou não há sessões anteriores com resumos disponíveis.\n\n"
     
@@ -393,7 +401,7 @@ DIRETRIZES FUNDAMENTAIS:
     if is_support_request:
         full_prompt += "\n🔧 MODO SUPORTE ATIVADO: Esta mensagem parece ser uma solicitação de suporte técnico. Priorize informações técnicas e de suporte, mas mantenha o tom empático e terapêutico. IMPORTANTE: Esta resposta de suporte NÃO consumirá o limite de mensagens do usuário.\n\n"
     
-    full_prompt += "INSTRUÇÃO FINAL: Sempre demonstre que você tem memória das sessões anteriores quando existirem. Se o usuário perguntar sobre conversas passadas, faça referência específica aos resumos acima."
+    full_prompt += "INSTRUÇÃO FINAL: Sempre demonstre que você tem memória completa de TODAS as sessões anteriores. Se o usuário perguntar sobre conversas passadas, faça referência específica aos resumos acima. Para questões de saúde mental, SEMPRE ofereça apoio enquanto recomenda acompanhamento profissional."
     
     return full_prompt
 
