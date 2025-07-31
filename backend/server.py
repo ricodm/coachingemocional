@@ -247,8 +247,9 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
             logger.error("SendGrid credentials not configured")
             return False
         
-        # Create the reset URL - using a placeholder for now
-        reset_url = f"https://cmind.com.br/reset-password?token={reset_token}"
+        # Create the reset URL - using the frontend URL from environment
+        frontend_url = "https://46e5dc81-5d7b-439c-bf84-9e6b622cc977.preview.emergentagent.com"
+        reset_url = f"{frontend_url}/reset-password?token={reset_token}"
         
         # Create HTML email content
         html_content = f"""
