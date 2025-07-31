@@ -898,17 +898,37 @@ def calculate_remaining_messages(user: User) -> int:
 
 @api_router.post("/session", response_model=Session)
 async def create_session(current_user: User = Depends(get_current_user)):
-    """Create new therapy session"""
+    """Create new therapy session - DEPRECATED: Sessions are created automatically when first message is sent"""
+    # Instead of creating empty sessions, return a new session ID that will be created when first message is sent
     session = Session(user_id=current_user.id)
-    await db.sessions.insert_one(session.dict())
+    # Don't insert into database yet - will be created when first message is sent
     return session
+
+async def cleanup_empty_sessions():
+    """Clean up sessions with no messages"""
+    try:
+        # Find sessions with 0 messages
+        empty_sessions = await db.sessions.find({"messages_count": {"$lte": 0}}).to_list(1000)
+        
+        if empty_sessions:
+            session_ids = [session["id"] for session in empty_sessions]
+            # Delete empty sessions
+            result = await db.sessions.delete_many({"id": {"$in": session_ids}})
+            logger.info(f"Cleaned up {result.deleted_count} empty sessions")
+        
+    except Exception as e:
+        logger.error(f"Error cleaning up empty sessions: {str(e)}")
 
 @api_router.get("/sessions", response_model=List[Session])
 async def get_user_sessions(current_user: User = Depends(get_current_user)):
-    """Get user's therapy sessions"""
-    sessions = await db.sessions.find(
-        {"user_id": current_user.id}
-    ).sort("created_at", -1).to_list(50)
+    """Get user's therapy sessions - only sessions with messages"""
+    # Clean up empty sessions first
+    await cleanup_empty_sessions()
+    
+    sessions = await db.sessions.find({
+        "user_id": current_user.id,
+        "messages_count": {"$gt": 0}  # Only sessions with messages
+    }).sort("created_at", -1).to_list(50)
     
     return [Session(**session) for session in sessions]
 
