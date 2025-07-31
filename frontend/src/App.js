@@ -397,9 +397,13 @@ const Chat = () => {
       
       setMessages([{
         id: 'welcome',
-        content: `Olá ${user.name}! 🌟 Sou sua terapeuta emocional virtual. Estou aqui para te ouvir com carinho e ajudar você a se conectar com sua essência mais profunda.
+        content: `Olá ${user.name}! 🕉️ Sou Anantara, seu mentor espiritual. Estou aqui com alma serena e presença iluminadora para guiá-lo de volta à paz interior.
 
-Como você está se sentindo hoje? O que trouxe você até aqui?`,
+Minha missão é ajudá-lo a se reconhecer como o Eu verdadeiro, livre de pensamentos e identidades ilusórias.
+
+O que move seu coração hoje? Qual inquietação trouxe você até esta jornada de autoconhecimento?
+
+✨ "A paz que busca já habita em você. Apenas precisa reconhecê-la." ✨`,
         is_user: false,
         timestamp: new Date()
       }]);
