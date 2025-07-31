@@ -772,13 +772,6 @@ async def reset_password(request: ResetPasswordRequest):
 @api_router.post("/chat", response_model=ChatResponse)
 async def chat_with_therapist(request: ChatRequest, current_user: User = Depends(get_current_user)):
     """Enhanced chat endpoint with user context and support"""
-    # Get session and user history
-    session_data = await db.sessions.find_one({"id": request.session_id, "user_id": current_user.id})
-    if not session_data:
-        # Create new session
-        session = Session(id=request.session_id, user_id=current_user.id)
-        await db.sessions.insert_one(session.dict())
-    
     # Check if this might be a support request before checking limits
     support_keywords = [
         'limite', 'mensagens', 'plano', 'assinatura', 'pagamento', 'cancelar', 
@@ -802,6 +795,14 @@ async def chat_with_therapist(request: ChatRequest, current_user: User = Depends
                 detail=f"Você esgotou suas mensagens diárias do plano {plan_info.get('name')}. Tente novamente amanhã ou faça upgrade para um plano superior."
             )
     
+    # ONLY CREATE SESSION WHEN FIRST ACTUAL MESSAGE IS SENT
+    session_data = await db.sessions.find_one({"id": request.session_id, "user_id": current_user.id})
+    if not session_data:
+        # Create new session only when there's an actual message to store
+        session = Session(id=request.session_id, user_id=current_user.id)
+        await db.sessions.insert_one(session.dict())
+        logger.info(f"Created new session {request.session_id} for user {current_user.id}")
+        
     # Get user's session summaries for context - FORCE SUMMARY GENERATION
     # First, find sessions without summaries that have messages and generate summaries
     sessions_without_summaries = await db.sessions.find(
