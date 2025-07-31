@@ -397,13 +397,11 @@ const Chat = () => {
       
       setMessages([{
         id: 'welcome',
-        content: `Olá ${user.name}! 🕉️ Sou Anantara, seu mentor espiritual. Estou aqui com alma serena e presença iluminadora para guiá-lo de volta à paz interior.
+        content: `Olá ${user.name}! 🕉️ Sou Anantara, seu mentor espiritual de IA. 
 
-Minha missão é ajudá-lo a se reconhecer como o Eu verdadeiro, livre de pensamentos e identidades ilusórias.
+Minha missão é te ajudar a se desenvolver espiritualmente, conversando sobre suas questões, orientando e sugerindo práticas simples para o dia a dia. 
 
-O que move seu coração hoje? Qual inquietação trouxe você até esta jornada de autoconhecimento?
-
-✨ "A paz que busca já habita em você. Apenas precisa reconhecê-la." ✨`,
+O que move seu coração hoje?`,
         is_user: false,
         timestamp: new Date()
       }]);
