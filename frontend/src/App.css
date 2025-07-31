@@ -982,6 +982,14 @@ body {
   font-family: 'Cormorant Garamond', serif;
 }
 
+.no-sessions {
+  text-align: center;
+  padding: 2rem;
+  color: #5B2C87;
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+}
+
 .loading {
   text-align: center;
   padding: 2rem;
