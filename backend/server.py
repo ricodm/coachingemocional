@@ -255,41 +255,41 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         # Create HTML email content
         html_content = f"""
         <html>
-            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px;">
-                    <h1 style="color: #333; text-align: center; margin-bottom: 30px;">Recuperação de Senha</h1>
+            <body style="font-family: 'Playwrite Magyarország', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; border: 2px solid #251642;">
+                    <h1 style="color: #251642; text-align: center; margin-bottom: 30px; font-family: 'Playwrite Magyarország', cursive;">Recuperação de Senha</h1>
                     
-                    <p style="color: #555; font-size: 16px; line-height: 1.6;">
-                        Você solicitou a recuperação de sua senha na Terapia Emocional.
+                    <p style="color: #251642; font-size: 16px; line-height: 1.6; font-family: 'Playwrite Magyarország', cursive;">
+                        Você solicitou a recuperação de sua senha no Anantara.
                     </p>
                     
-                    <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                    <p style="color: #251642; font-size: 16px; line-height: 1.6; font-family: 'Playwrite Magyarország', cursive;">
                         Clique no link abaixo para redefinir sua senha:
                     </p>
                     
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{reset_url}" 
-                           style="background-color: #007bff; color: white; padding: 15px 30px; 
-                                  text-decoration: none; border-radius: 5px; font-size: 16px; 
-                                  display: inline-block;">
+                           style="background-color: #251642; color: white; padding: 15px 30px; 
+                                  text-decoration: none; border-radius: 10px; font-size: 16px; 
+                                  display: inline-block; font-family: 'Playwrite Magyarország', cursive;">
                             Redefinir Senha
                         </a>
                     </div>
                     
-                    <p style="color: #666; font-size: 14px; line-height: 1.5;">
+                    <p style="color: #251642; font-size: 14px; line-height: 1.5; font-family: 'Playwrite Magyarország', cursive;">
                         Se você não conseguir clicar no botão, copie e cole este link no seu navegador:
                         <br>
-                        <a href="{reset_url}" style="color: #007bff;">{reset_url}</a>
+                        <a href="{reset_url}" style="color: #251642;">{reset_url}</a>
                     </p>
                     
-                    <p style="color: #666; font-size: 14px; line-height: 1.5; margin-top: 30px;">
+                    <p style="color: #251642; font-size: 14px; line-height: 1.5; margin-top: 30px; font-family: 'Playwrite Magyarország', cursive;">
                         <strong>Importante:</strong> Este link expira em 1 hora. Se você não solicitou esta recuperação, ignore este email.
                     </p>
                     
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                    <hr style="border: none; border-top: 1px solid #251642; margin: 30px 0;">
                     
-                    <p style="color: #999; font-size: 12px; text-align: center;">
-                        Terapia Emocional - Cuidando da sua mente com carinho
+                    <p style="color: #251642; font-size: 12px; text-align: center; font-family: 'Playwrite Magyarország', cursive;">
+                        Anantara - Cuidando da sua mente com carinho
                     </p>
                 </div>
             </body>
@@ -300,7 +300,7 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         message = Mail(
             from_email=sender_email,
             to_emails=email,
-            subject="Recuperação de Senha - Terapia Emocional",
+            subject="Recuperação de Senha - Anantara",
             html_content=html_content
         )
         
