@@ -1131,6 +1131,7 @@ async def generate_and_save_session_summary(session_id: str, user_id: str):
         ).sort("timestamp", 1).to_list(1000)
         
         if not messages or len(messages) < 4:  # Don't generate summary for very short conversations
+            logger.info(f"Skipping summary for session {session_id} with only {len(messages)} messages")
             return
         
         # Create summary prompt
