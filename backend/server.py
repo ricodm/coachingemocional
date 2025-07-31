@@ -256,48 +256,51 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         html_content = f"""
         <html>
             <head>
-                <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
             </head>
-            <body style="font-family: 'Dancing Script', cursive; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%); min-height: 100vh;">
-                <div style="background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 30px; border: 3px solid #8E44AD; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(45, 27, 105, 0.3);">
-                    <h1 style="color: #2D1B69; text-align: center; margin-bottom: 30px; font-family: 'Dancing Script', cursive; font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(45, 27, 105, 0.2);">✨ Recuperação de Senha ✨</h1>
+            <body style="font-family: 'Cormorant Garamond', serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #ffffff;">
+                <div style="background: #ffffff; padding: 40px 0;">
+                    <h1 style="color: #2D1B69; text-align: center; margin-bottom: 40px; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; font-style: italic;">Recuperação de Senha</h1>
                     
-                    <p style="color: #2D1B69; font-size: 20px; line-height: 1.8; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; margin-bottom: 20px;">
-                        Você solicitou a recuperação de sua senha no <strong>Anantara</strong> 🙏
-                    </p>
-                    
-                    <p style="color: #2D1B69; font-size: 18px; line-height: 1.6; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; margin-bottom: 30px;">
-                        Clique no botão abaixo para redefinir sua senha com amor e serenidade:
-                    </p>
+                    <div style="border-left: 4px solid #2D1B69; padding-left: 20px; margin-bottom: 30px;">
+                        <p style="color: #2D1B69; font-size: 18px; line-height: 1.8; font-family: 'Cormorant Garamond', serif; font-weight: 400; margin-bottom: 20px;">
+                            Você solicitou a recuperação de sua senha no <strong>Anantara</strong>.
+                        </p>
+                        
+                        <p style="color: #2D1B69; font-size: 18px; line-height: 1.8; font-family: 'Cormorant Garamond', serif; font-weight: 400;">
+                            Clique no botão abaixo para redefinir sua senha:
+                        </p>
+                    </div>
                     
                     <div style="text-align: center; margin: 40px 0;">
                         <a href="{reset_url}" 
-                           style="background: linear-gradient(135deg, #2D1B69 0%, #5B2C87 50%, #8E44AD 100%); color: white; padding: 18px 35px; 
-                                  text-decoration: none; border-radius: 25px; font-size: 20px; 
-                                  display: inline-block; font-family: 'Dancing Script', cursive; font-weight: 600;
-                                  box-shadow: 0 10px 25px rgba(45, 27, 105, 0.4); transition: all 0.3s ease;">
-                            🔑 Redefinir Minha Senha
+                           style="background: #2D1B69; color: white; padding: 15px 30px; 
+                                  text-decoration: none; font-size: 18px; 
+                                  display: inline-block; font-family: 'Cormorant Garamond', serif; font-weight: 500;
+                                  text-transform: uppercase; letter-spacing: 1px;">
+                            REDEFINIR SENHA
                         </a>
                     </div>
                     
-                    <p style="color: #5B2C87; font-size: 16px; line-height: 1.6; font-family: 'Dancing Script', cursive; font-weight: 500; text-align: center; padding: 20px; background: rgba(139, 69, 19, 0.1); border-radius: 15px; border: 2px solid #8E44AD;">
-                        Se você não conseguir clicar no botão, copie e cole este link sagrado no seu navegador:
-                        <br><br>
-                        <a href="{reset_url}" style="color: #2D1B69; word-break: break-all;">{reset_url}</a>
+                    <div style="border-left: 4px solid #8E44AD; padding-left: 20px; margin: 30px 0;">
+                        <p style="color: #2D1B69; font-size: 16px; line-height: 1.6; font-family: 'Cormorant Garamond', serif; font-weight: 400;">
+                            Se você não conseguir clicar no botão, copie e cole este link no seu navegador:
+                        </p>
+                        <p style="color: #5B2C87; font-size: 14px; word-break: break-all; margin-top: 10px;">
+                            <a href="{reset_url}" style="color: #5B2C87;">{reset_url}</a>
+                        </p>
+                    </div>
+                    
+                    <p style="color: #8E44AD; font-size: 16px; line-height: 1.6; margin-top: 40px; font-family: 'Cormorant Garamond', serif; font-weight: 400; font-style: italic; text-align: center;">
+                        Este link expira em 1 hora. Se você não solicitou esta recuperação, ignore este email.
                     </p>
                     
-                    <p style="color: #8E44AD; font-size: 16px; line-height: 1.6; margin-top: 30px; font-family: 'Dancing Script', cursive; font-weight: 600; text-align: center;">
-                        <strong>🕰️ Importante:</strong> Este link sagrado expira em 1 hora. Se você não solicitou esta recuperação, simplesmente ignore este email com paz.
-                    </p>
+                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 40px 0;">
                     
-                    <hr style="border: none; border-top: 3px solid #8E44AD; margin: 30px 0; opacity: 0.6;">
-                    
-                    <p style="color: #2D1B69; font-size: 18px; text-align: center; font-family: 'Dancing Script', cursive; font-weight: 600; margin-top: 20px;">
-                        🧘‍♀️ <em>Anantara</em> 🧘‍♂️
+                    <p style="color: #2D1B69; font-size: 18px; text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 400; font-style: italic;">
+                        <strong>Anantara</strong>
                         <br>
-                        <span style="font-size: 16px; color: #5B2C87;">Cuidando da sua alma com amor e sabedoria</span>
-                        <br>
-                        ✨ Namastê ✨
+                        <span style="font-size: 16px; color: #5B2C87;">Cuidando da sua alma com sabedoria</span>
                     </p>
                 </div>
             </body>
@@ -308,7 +311,7 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
         message = Mail(
             from_email=sender_email,
             to_emails=email,
-            subject="🔑 Recuperação de Senha - Anantara ✨",
+            subject="Recuperação de Senha - Anantara",
             html_content=html_content
         )
         
