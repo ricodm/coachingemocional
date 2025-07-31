@@ -65,6 +65,65 @@ const useAuth = () => {
 
 // ============ COMPONENTS ============
 
+const ForgotPasswordForm = ({ onBack }) => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      await axios.post(`${API}/auth/forgot-password`, { email });
+      setMessage('Se o email existir em nossa base, você receberá instruções para redefinir sua senha.');
+    } catch (error) {
+      setError(error.response?.data?.detail || 'Erro ao enviar email de recuperação');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-form">
+        <h2>Recuperar Senha</h2>
+        
+        {error && <div className="error-message">{error}</div>}
+        {message && <div className="success-message">{message}</div>}
+        
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Digite seu email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          
+          <button type="submit" disabled={loading}>
+            {loading ? 'Enviando...' : 'Enviar Email de Recuperação'}
+          </button>
+        </form>
+        
+        <div className="auth-links">
+          <button 
+            type="button" 
+            onClick={onBack} 
+            className="link-button"
+          >
+            ← Voltar ao login
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
