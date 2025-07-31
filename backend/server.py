@@ -234,6 +234,131 @@ def decode_jwt_token(token: str) -> dict:
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+# ============ EMAIL FUNCTIONS ============
+
+async def send_password_reset_email(email: str, reset_token: str) -> bool:
+    """Send password reset email using SendGrid"""
+    try:
+        # Get SendGrid API key and sender email from environment
+        sendgrid_api_key = os.environ.get('SENDGRID_API_KEY')
+        sender_email = os.environ.get('SENDER_EMAIL')
+        
+        if not sendgrid_api_key or not sender_email:
+            logger.error("SendGrid credentials not configured")
+            return False
+        
+        # Create the reset URL - using a placeholder for now
+        reset_url = f"https://cmind.com.br/reset-password?token={reset_token}"
+        
+        # Create HTML email content
+        html_content = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px;">
+                    <h1 style="color: #333; text-align: center; margin-bottom: 30px;">Recuperação de Senha</h1>
+                    
+                    <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                        Você solicitou a recuperação de sua senha na Terapia Emocional.
+                    </p>
+                    
+                    <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                        Clique no link abaixo para redefinir sua senha:
+                    </p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{reset_url}" 
+                           style="background-color: #007bff; color: white; padding: 15px 30px; 
+                                  text-decoration: none; border-radius: 5px; font-size: 16px; 
+                                  display: inline-block;">
+                            Redefinir Senha
+                        </a>
+                    </div>
+                    
+                    <p style="color: #666; font-size: 14px; line-height: 1.5;">
+                        Se você não conseguir clicar no botão, copie e cole este link no seu navegador:
+                        <br>
+                        <a href="{reset_url}" style="color: #007bff;">{reset_url}</a>
+                    </p>
+                    
+                    <p style="color: #666; font-size: 14px; line-height: 1.5; margin-top: 30px;">
+                        <strong>Importante:</strong> Este link expira em 1 hora. Se você não solicitou esta recuperação, ignore este email.
+                    </p>
+                    
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                    
+                    <p style="color: #999; font-size: 12px; text-align: center;">
+                        Terapia Emocional - Cuidando da sua mente com carinho
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+        
+        # Create the email message
+        message = Mail(
+            from_email=sender_email,
+            to_emails=email,
+            subject="Recuperação de Senha - Terapia Emocional",
+            html_content=html_content
+        )
+        
+        # Send the email
+        sg = SendGridAPIClient(sendgrid_api_key)
+        response = sg.send(message)
+        
+        logger.info(f"Password reset email sent to {email}, status: {response.status_code}")
+        return response.status_code == 202
+        
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        return False
+
+async def generate_reset_token(user_id: str) -> str:
+    """Generate and store password reset token"""
+    # Generate secure random token
+    token = secrets.token_urlsafe(32)
+    
+    # Set expiration time (1 hour from now)
+    expires_at = datetime.utcnow() + timedelta(hours=1)
+    
+    # Create reset token record
+    reset_token = PasswordResetToken(
+        user_id=user_id,
+        token=token,
+        expires_at=expires_at
+    )
+    
+    # Store in database
+    await db.password_reset_tokens.insert_one(reset_token.dict())
+    
+    return token
+
+async def validate_reset_token(token: str) -> Optional[str]:
+    """Validate reset token and return user_id if valid"""
+    try:
+        # Find token in database
+        reset_record = await db.password_reset_tokens.find_one({
+            "token": token,
+            "used": False,
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        
+        if not reset_record:
+            return None
+        
+        return reset_record["user_id"]
+        
+    except Exception as e:
+        logger.error(f"Error validating reset token: {str(e)}")
+        return None
+
+async def mark_token_as_used(token: str):
+    """Mark reset token as used"""
+    await db.password_reset_tokens.update_one(
+        {"token": token},
+        {"$set": {"used": True}}
+    )
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     """Get current user from JWT token"""
     token = credentials.credentials
