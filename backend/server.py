@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timedelta
 import bcrypt
 import jwt
+from jwt import InvalidTokenError
 from openai import OpenAI
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from sendgrid import SendGridAPIClient
