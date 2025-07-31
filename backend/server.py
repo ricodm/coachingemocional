@@ -1114,6 +1114,9 @@ async def generate_and_save_session_summary(session_id: str, user_id: str):
         
         if message_count == 0:
             logger.info(f"Skipping summary for empty session {session_id}")
+            # Delete the empty session if it exists
+            await db.sessions.delete_one({"id": session_id, "messages_count": {"$lte": 0}})
+            logger.info(f"Deleted empty session {session_id}")
             return None
         
         # Verify session belongs to user
