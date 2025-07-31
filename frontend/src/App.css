@@ -270,10 +270,9 @@ body {
 }
 
 .chat-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  background: #251642;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 3px solid rgba(37, 22, 66, 0.2);
 }
 
 .user-info {
@@ -281,6 +280,7 @@ body {
   align-items: center;
   gap: 1rem;
   color: white;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .plan-badge {
@@ -289,7 +289,8 @@ body {
   border-radius: 20px;
   font-size: 0.8rem;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .messages-count {
@@ -297,6 +298,7 @@ body {
   padding: 0.25rem 0.75rem;
   border-radius: 15px;
   font-size: 0.8rem;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .messages-container {
