@@ -666,23 +666,25 @@ body {
 /* ============ PROFILE ============ */
 .profile-container {
   padding: 2rem;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
-  color: white;
+  color: #2D1B69;
 }
 
 .profile-container h2 {
   margin-bottom: 2rem;
   text-align: center;
   font-size: 2rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  color: #2D1B69;
 }
 
 .profile-container form {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  background: rgba(45, 27, 105, 0.05);
   padding: 2rem;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(45, 27, 105, 0.1);
   margin-bottom: 2rem;
 }
 
@@ -693,30 +695,35 @@ body {
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: white;
+  font-weight: 500;
+  color: #2D1B69;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .profile-container input {
   width: 100%;
   padding: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #2D1B69;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.9);
+  background: #ffffff;
   font-size: 1rem;
-  color: #333;
+  color: #2D1B69;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .disabled-input {
-  background: rgba(255, 255, 255, 0.5) !important;
+  background: rgba(45, 27, 105, 0.1) !important;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .profile-container small {
-  color: rgba(255, 255, 255, 0.7);
+  color: #5B2C87;
   font-size: 0.8rem;
   display: block;
   margin-top: 0.25rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
 }
 
 .profile-container button {
