@@ -316,23 +316,19 @@ body {
   overflow-y: auto;
   padding: 2rem;
   scroll-behavior: smooth;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  background-color: #ffffff;
 }
 
 .messages-container::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 .messages-container::-webkit-scrollbar-track {
-  background: rgba(45, 27, 105, 0.1);
-  border-radius: 6px;
+  background: #f3f3f3;
 }
 
 .messages-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #8E44AD 0%, #5B2C87 100%);
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(45, 27, 105, 0.3);
+  background: #2D1B69;
 }
 
 .message {
