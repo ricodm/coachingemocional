@@ -1818,10 +1818,10 @@ async def create_admin_user():
     
     # Create admin user
     admin_user = User(
-        email="admin@terapia.com",
+        email="ricodmaluf@gmail.com",
         name="Admin Master",
         phone="11999999999",
-        password_hash=hash_password("admin123"),
+        password_hash=hash_password("Bhakti@83"),
         is_admin=True,
         subscription_plan="ilimitado"
     )
@@ -1830,8 +1830,8 @@ async def create_admin_user():
     
     return {
         "message": "Admin user created successfully",
-        "email": "admin@terapia.com",
-        "password": "admin123"
+        "email": "ricodmaluf@gmail.com",
+        "password": "Bhakti@83"
     }
 
 # Health check
