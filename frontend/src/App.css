@@ -50,56 +50,64 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #ffffff;
   padding: 20px;
 }
 
 .auth-form {
-  background: white;
+  background: #ffffff;
   padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(37, 22, 66, 0.2);
   width: 100%;
   max-width: 400px;
+  border: 2px solid #251642;
 }
 
 .auth-form h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #251642;
+  font-family: 'Playwrite Magyarország', cursive;
+  font-size: 2rem;
 }
 
 .auth-form input {
   width: 100%;
-  padding: 12px;
+  padding: 15px;
   margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  border: 2px solid #251642;
+  border-radius: 10px;
   font-size: 16px;
-  color: #333 !important;
-  background-color: #fff !important;
+  color: #251642 !important;
+  background-color: #ffffff !important;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .auth-form input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  border-color: #251642;
+  box-shadow: 0 0 0 3px rgba(37, 22, 66, 0.2);
 }
 
 .auth-form button {
   width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px;
+  background: #251642;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  font-family: 'Playwrite Magyarország', cursive;
+  font-weight: 300;
 }
 
 .auth-form button:hover:not(:disabled) {
+  background: #3d2a5e;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(37, 22, 66, 0.3);
 }
 
 .auth-form button:disabled {
@@ -116,45 +124,48 @@ body {
 .link-button {
   background: none;
   border: none;
-  color: #667eea;
+  color: #251642;
   cursor: pointer;
   text-decoration: underline;
   font-size: 14px;
   margin: 0.5rem 0;
   display: block;
   width: 100%;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .link-button:hover {
-  color: #764ba2;
+  color: #3d2a5e;
 }
 
 .forgot-password-link {
   margin-top: 0.5rem;
   font-size: 13px;
-  color: #888;
+  color: #251642;
 }
 
 .forgot-password-link:hover {
-  color: #667eea;
+  color: #3d2a5e;
 }
 
 .success-message {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 10px;
-  border-radius: 5px;
+  background-color: rgba(37, 22, 66, 0.1);
+  color: #251642;
+  padding: 15px;
+  border-radius: 10px;
   margin-bottom: 1rem;
-  border: 1px solid #c3e6cb;
+  border: 2px solid #251642;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  border-radius: 5px;
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  padding: 15px;
+  border-radius: 10px;
   margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+  border: 2px solid #dc3545;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 /* ============ MAIN LAYOUT ============ */
