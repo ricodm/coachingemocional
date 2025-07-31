@@ -348,31 +348,33 @@ body {
   line-height: 1.5;
   white-space: pre-wrap;
   font-size: 0.95rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(37, 22, 66, 0.1);
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .message.user .message-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #251642;
   color: white;
   border-bottom-right-radius: 8px;
 }
 
 .message.ai .message-text {
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
+  background: rgba(37, 22, 66, 0.1);
+  color: #251642;
   border-bottom-left-radius: 8px;
-  backdrop-filter: blur(10px);
+  border: 2px solid rgba(37, 22, 66, 0.2);
 }
 
 .message-time {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(37, 22, 66, 0.6);
   margin-top: 0.5rem;
   text-align: right;
+  font-family: 'Playwrite Magyarország', cursive;
 }
 
 .message.ai .message-time {
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(37, 22, 66, 0.6);
   text-align: left;
 }
 
