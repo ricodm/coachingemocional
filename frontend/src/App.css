@@ -7,9 +7,9 @@
 }
 
 body {
-  font-family: 'Playwrite Magyarország', cursive;
-  background-color: #ffffff;
-  color: #251642;
+  font-family: 'Dancing Script', cursive;
+  background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%);
+  color: #2D1B69;
   line-height: 1.6;
   min-height: 100vh;
 }
