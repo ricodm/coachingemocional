@@ -234,11 +234,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SendGrid Email Service Integration"
-    - "Forgot Password API Endpoint"
-    - "Reset Password API Endpoint"
     - "Forgot Password Form Component"
     - "Reset Password Form Component"
+    - "Login Form Enhancement"
+    - "URL Token Detection and Routing"
+    - "CSS Styling for Auth Components"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
