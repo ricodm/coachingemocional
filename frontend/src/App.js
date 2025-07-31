@@ -126,11 +126,13 @@ const ForgotPasswordForm = ({ onBack }) => {
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
-    phone: ''
+    phone: '',
+    confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -142,29 +144,80 @@ const LoginForm = () => {
     setError('');
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/register';
-      const response = await axios.post(`${API}${endpoint}`, formData);
-      
-      login(response.data.user, response.data.token);
+      if (isLogin) {
+        const response = await axios.post(`${API}/auth/login`, {
+          email: formData.email,
+          password: formData.password
+        });
+        login(response.data.user, response.data.token);
+      } else {
+        // Registration logic
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('As senhas não coincidem');
+        }
+        
+        if (formData.password.length < 6) {
+          throw new Error('A senha deve ter pelo menos 6 caracteres');
+        }
+
+        const response = await axios.post(`${API}/auth/register`, {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          phone: formData.phone
+        });
+
+        // Auto login after registration
+        login(response.data.user, response.data.token);
+      }
     } catch (error) {
-      setError(error.response?.data?.detail || 'Erro na autenticação');
+      setError(error.response?.data?.detail || error.message || 'Erro desconhecido');
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
+
+  if (showForgotPassword) {
+    return <ForgotPasswordForm onBack={() => setShowForgotPassword(false)} />;
+  }
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-form">
         <h2>{isLogin ? 'Entrar' : 'Criar Conta'}</h2>
         
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <input
+              type="text"
+              name="name"
+              placeholder="Nome completo"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          )}
+          
+          {!isLogin && (
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Telefone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+          )}
+          
           <input
             type="email"
             name="email"
@@ -184,24 +237,14 @@ const LoginForm = () => {
           />
           
           {!isLogin && (
-            <>
-              <input
-                type="text"
-                name="name"
-                placeholder="Nome completo"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Telefone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-            </>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirmar senha"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
           )}
           
           <button type="submit" disabled={loading}>
@@ -209,12 +252,25 @@ const LoginForm = () => {
           </button>
         </form>
         
-        <p className="auth-switch">
-          {isLogin ? 'Não tem conta? ' : 'Já tem conta? '}
-          <button type="button" onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? 'Criar uma' : 'Entrar'}
+        <div className="auth-links">
+          <button 
+            type="button" 
+            onClick={() => setIsLogin(!isLogin)} 
+            className="link-button"
+          >
+            {isLogin ? 'Não tem conta? Criar conta' : 'Já tem conta? Entrar'}
           </button>
-        </p>
+          
+          {isLogin && (
+            <button 
+              type="button" 
+              onClick={() => setShowForgotPassword(true)} 
+              className="link-button forgot-password-link"
+            >
+              Esqueci minha senha
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
