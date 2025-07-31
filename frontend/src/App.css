@@ -177,106 +177,94 @@ body {
 .app-container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #E8DAEF 0%, #D7BDE2 50%, #C39BD3 100%);
+  background-color: #ffffff;
 }
 
 .sidebar {
-  width: 300px;
-  background: linear-gradient(180deg, #2D1B69 0%, #5B2C87 50%, #8E44AD 100%);
-  color: white;
+  width: 280px;
+  background-color: #F9F9F9;
+  color: #2D1B69;
   padding: 2rem 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 8px 0 25px rgba(45, 27, 105, 0.4);
-  border-right: 3px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-header {
   padding: 0 2rem 2rem;
-  border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid #e0e0e0;
   margin-bottom: 2rem;
   text-align: center;
 }
 
 .nav-header h2 {
-  font-family: 'Dancing Script', cursive;
-  font-size: 2.8rem;
-  font-weight: 700;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 300;
   text-align: center;
-  color: white;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-  margin-bottom: 0.5rem;
+  color: #2D1B69;
+  font-style: italic;
 }
 
 .nav-links {
   flex: 1;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
 }
 
 .nav-links button {
   width: 100%;
-  padding: 1.2rem 1.8rem;
+  padding: 1rem 1.5rem;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  border: 2px solid transparent;
-  border-radius: 20px;
-  font-size: 1.2rem;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
+  color: #2D1B69;
+  border: none;
+  font-size: 1.1rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
   cursor: pointer;
-  margin-bottom: 0.8rem;
-  transition: all 0.4s ease;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
   text-align: left;
 }
 
 .nav-links button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  transform: translateX(8px);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(45, 27, 105, 0.05);
+  color: #5B2C87;
 }
 
 .nav-links button.active {
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-  font-weight: 700;
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(45, 27, 105, 0.1);
+  color: #2D1B69;
+  font-weight: 500;
 }
 
 .nav-footer {
-  padding: 0 1.5rem;
-  border-top: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 0 1rem;
+  border-top: 1px solid #e0e0e0;
   margin-top: 2rem;
   padding-top: 2rem;
 }
 
 .logout-btn {
   width: 100%;
-  padding: 1.2rem;
-  background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+  padding: 1rem;
+  background: #E74C3C;
   color: white;
   border: none;
-  border-radius: 20px;
-  font-size: 1.2rem;
-  font-family: 'Dancing Script', cursive;
-  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logout-btn:hover {
-  background: linear-gradient(135deg, #C0392B 0%, #A93226 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6);
+  background: #C0392B;
 }
 
 .main-content {
   flex: 1;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background-color: #ffffff;
   overflow-y: auto;
 }
 
