@@ -1,0 +1,77 @@
+{
+  "summary": {
+    "total_tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "Backend Health",
+      "success": true,
+      "details": "Service: anantara_v2",
+      "timestamp": "2025-08-01T20:56:58.163790"
+    },
+    {
+      "name": "User Registration",
+      "success": true,
+      "details": "User: anantara_user_205658@spiritual.com, Plan: free",
+      "timestamp": "2025-08-01T20:56:58.424186"
+    },
+    {
+      "name": "User Login",
+      "success": true,
+      "details": "Token received, User: Spiritual Seeker",
+      "timestamp": "2025-08-01T20:56:58.679697"
+    },
+    {
+      "name": "Auth Me",
+      "success": true,
+      "details": "User: Spiritual Seeker, Plan: free, Messages: 7",
+      "timestamp": "2025-08-01T20:56:58.701985"
+    },
+    {
+      "name": "Forgot Password Functionality",
+      "success": true,
+      "details": "All forgot password scenarios working correctly",
+      "timestamp": "2025-08-01T20:56:59.076086"
+    },
+    {
+      "name": "Reset Password Functionality",
+      "success": true,
+      "details": "Reset password validation working correctly",
+      "timestamp": "2025-08-01T20:56:59.119781"
+    },
+    {
+      "name": "Chat System",
+      "success": true,
+      "details": "AI responded (1263 chars), Remaining messages: 6",
+      "timestamp": "2025-08-01T20:57:14.739789"
+    },
+    {
+      "name": "Session Management",
+      "success": true,
+      "details": "Found 1 sessions, 2 messages",
+      "timestamp": "2025-08-01T20:57:14.806243"
+    },
+    {
+      "name": "Subscription Plans",
+      "success": true,
+      "details": "All expected plans found: ['basico', 'premium', 'ilimitado']",
+      "timestamp": "2025-08-01T20:57:14.882113"
+    },
+    {
+      "name": "Profile Update",
+      "success": true,
+      "details": "Profile updated successfully",
+      "timestamp": "2025-08-01T20:57:14.943233"
+    },
+    {
+      "name": "Message Limits",
+      "success": true,
+      "details": "Free user has 6 messages remaining",
+      "timestamp": "2025-08-01T20:57:14.965036"
+    }
+  ],
+  "timestamp": "2025-08-01T20:57:14.965221"
+}
