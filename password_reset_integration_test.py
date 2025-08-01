@@ -16,7 +16,7 @@ load_dotenv('backend/.env')
 
 class PasswordResetIntegrationTest:
     def __init__(self):
-        self.base_url = "https://46e5dc81-5d7b-439c-bf84-9e6b622cc977.preview.emergentagent.com"
+        self.base_url = "https://71832b61-f09e-4b43-b8fe-dcfd4ba45e0d.preview.emergentagent.com"
         self.api_url = f"{self.base_url}/api"
         self.test_email = f"reset_test_{datetime.now().strftime('%H%M%S')}@test.com"
         self.user_id = None

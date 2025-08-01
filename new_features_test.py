@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class NewFeaturesTester:
-    def __init__(self, base_url="https://431abbe8-54e5-4686-ae34-fef4fe187f36.preview.emergentagent.com"):
+    def __init__(self, base_url="https://71832b61-f09e-4b43-b8fe-dcfd4ba45e0d.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None

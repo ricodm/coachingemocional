@@ -249,7 +249,7 @@ async def send_password_reset_email(email: str, reset_token: str) -> bool:
             return False
         
         # Create the reset URL - using the frontend URL from environment
-        frontend_url = "https://46e5dc81-5d7b-439c-bf84-9e6b622cc977.preview.emergentagent.com"
+        frontend_url = "https://71832b61-f09e-4b43-b8fe-dcfd4ba45e0d.preview.emergentagent.com"
         reset_url = f"{frontend_url}/reset-password?token={reset_token}"
         
         # Create HTML email content
