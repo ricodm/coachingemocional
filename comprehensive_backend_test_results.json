@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed": 8,
+    "failed": 1,
+    "success_rate": "88.9%"
+  },
+  "results": [
+    {
+      "name": "Authentication System",
+      "success": true,
+      "details": "Registration, login, JWT validation, and forgot password all working",
+      "timestamp": "2025-08-01T20:58:42.866084"
+    },
+    {
+      "name": "Chat System",
+      "success": true,
+      "details": "Session creation, OpenAI integration, and message limits working. Remaining: 4",
+      "timestamp": "2025-08-01T20:59:25.269494"
+    },
+    {
+      "name": "User Management",
+      "success": true,
+      "details": "Profile updates, data retrieval, and subscription management working",
+      "timestamp": "2025-08-01T20:59:36.293897"
+    },
+    {
+      "name": "Database Operations",
+      "success": true,
+      "details": "MongoDB connection, data persistence, and session management working. Found 1 sessions, 6 messages",
+      "timestamp": "2025-08-01T20:59:36.344389"
+    },
+    {
+      "name": "Email Integration",
+      "success": true,
+      "details": "SendGrid integration working for password reset emails",
+      "timestamp": "2025-08-01T20:59:36.817417"
+    },
+    {
+      "name": "Password Reset Flow",
+      "success": true,
+      "details": "Complete password reset flow with validation working",
+      "timestamp": "2025-08-01T20:59:37.153875"
+    },
+    {
+      "name": "Session Summaries and History",
+      "success": true,
+      "details": "Session history working. 1 sessions, 6 messages. Summary: Available",
+      "timestamp": "2025-08-01T20:59:43.792982"
+    },
+    {
+      "name": "Subscription Plans and Limits",
+      "success": true,
+      "details": "All subscription plans configured correctly. User on free plan with 4 messages remaining",
+      "timestamp": "2025-08-01T20:59:43.854991"
+    },
+    {
+      "name": "API Endpoints Structure",
+      "success": false,
+      "details": "Only 3/7 endpoints working",
+      "timestamp": "2025-08-01T20:59:44.045184"
+    }
+  ],
+  "timestamp": "2025-08-01T20:59:44.045387",
+  "test_type": "comprehensive_backend_functionality"
+}
