@@ -1177,6 +1177,24 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchCustomSuggestions = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/custom-suggestions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const suggestions = response.data.suggestions || [];
+      
+      // Ensure we have exactly 3 suggestions
+      while (suggestions.length < 3) {
+        suggestions.push({ placeholder: '', prompt: '' });
+      }
+      
+      setCustomSuggestions(suggestions.slice(0, 3));
+    } catch (error) {
+      console.error('Erro ao carregar sugestões customizadas:', error);
+    }
+  };
+
   const fetchSystemDocuments = async () => {
     try {
       const response = await axios.get(`${API}/admin/documents/system`, {
