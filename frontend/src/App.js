@@ -377,6 +377,8 @@ const Chat = () => {
   useEffect(() => {
     createSession();
     updateRemainingMessages();
+    // Fetch suggestions after user has some conversation history
+    setTimeout(() => fetchSuggestions(), 2000);
   }, []);
 
   const updateRemainingMessages = async () => {
