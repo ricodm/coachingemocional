@@ -1066,6 +1066,7 @@ Responda de forma personalizada, considerando todo o contexto e histórico desta
         ai_message = {
             "id": ai_message_id,
             "session_id": session_id,
+            "user_id": user_id,  # Add missing user_id
             "content": ai_response,
             "is_user": False,
             "timestamp": datetime.utcnow()
