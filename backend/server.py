@@ -885,11 +885,11 @@ IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres e representar uma E
                     suggestions_data.get("mindfulness", "Respire e observe: o que sente agora?")
                 ]
             except json.JSONDecodeError:
-                # Fallback suggestions if JSON parsing fails
+                # Fallback suggestions for new users
                 suggestions = [
-                    "O que você gostaria de explorar hoje?",
-                    "Pratique: 'Quem sou eu além dos pensamentos?'", 
-                    "Respire e observe: o que sente agora?"
+                    "Como você se sente em sua jornada espiritual?",
+                    "O que você sabe sobre si mesmo neste momento?", 
+                    "Respire fundo e observe seus pensamentos"
                 ]
             
             return {
