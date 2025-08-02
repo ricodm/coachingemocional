@@ -1434,6 +1434,61 @@ async def stripe_webhook(request: Request):
 
 # ============ ADMIN PROMPTS & DOCUMENTS ============
 
+@api_router.get("/admin/custom-suggestions")
+async def get_admin_custom_suggestions(admin_user: User = Depends(check_admin_access)):
+    """Get current admin custom suggestions"""
+    suggestions = await db.admin_settings.find_one({"type": "custom_suggestions"})
+    if not suggestions:
+        # Create default custom suggestions
+        default_suggestions = {
+            "type": "custom_suggestions",
+            "suggestions": [
+                {
+                    "placeholder": "Sugira uma reflexão baseada no meu histórico",
+                    "prompt": "Levando em conta toda a evolução desta pessoa através das conversas anteriores, analise seu progresso espiritual e sugira a próxima reflexão lógica para que ela dê o próximo passo em sua jornada de autoconhecimento."
+                },
+                {
+                    "placeholder": "O que devo investigar sobre mim mesmo?",
+                    "prompt": "Baseado no histórico completo de conversas desta pessoa, identifique qual aspecto de sua personalidade, padrões de pensamento ou questões emocionais seria mais importante ela investigar neste momento para seu crescimento espiritual."
+                },
+                {
+                    "placeholder": "Guie-me em uma prática contemplativa",
+                    "prompt": "Considerando o estado emocional e espiritual atual desta pessoa, baseado em nosso histórico de conversas, sugira uma prática contemplativa ou meditativa específica que seria mais benéfica para ela neste momento de sua jornada."
+                }
+            ],
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        await db.admin_settings.insert_one(default_suggestions)
+        suggestions = default_suggestions
+    
+    return {
+        "suggestions": suggestions.get("suggestions", []),
+        "updated_at": suggestions.get("updated_at")
+    }
+
+class CustomSuggestionRequest(BaseModel):
+    suggestions: List[Dict[str, str]] = Field(..., description="List of custom suggestions with placeholders and prompts")
+
+@api_router.put("/admin/custom-suggestions")
+async def update_admin_custom_suggestions(
+    request: CustomSuggestionRequest,
+    admin_user: User = Depends(check_admin_access)
+):
+    """Update admin custom suggestions"""
+    await db.admin_settings.update_one(
+        {"type": "custom_suggestions"},
+        {
+            "$set": {
+                "suggestions": request.suggestions,
+                "updated_at": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+    
+    return {"message": "Sugestões customizadas atualizadas com sucesso"}
+
 class AdminPromptUpdate(BaseModel):
     base_prompt: Optional[str] = None
     additional_prompt: Optional[str] = None
