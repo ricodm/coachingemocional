@@ -1053,20 +1053,28 @@ async def chat_with_custom_suggestion(request: ChatSuggestionRequest, current_us
                         complete_journey_history += f"  {role}: {msg.get('content', '')}\n"
                     complete_journey_history += "\n"
         
-        # Create enhanced prompt with context
+        # Create enhanced prompt with complete journey context
         enhanced_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, você está respondendo a uma solicitação específica do usuário.
 
-HISTÓRICO DE SESSÕES ANTERIORES:
+IMPORTANTE: Use TODO o histórico abaixo para entender a JORNADA COMPLETA desta pessoa e dar uma resposta que demonstre que você se LEMBRA de tudo que já foi conversado anteriormente.
+
+HISTÓRICO COMPLETO DA JORNADA ESPIRITUAL (TODAS as sessões anteriores):
 {complete_journey_history}
 
-CONVERSA ATUAL:
+CONVERSA DA SESSÃO ATUAL:
 {current_conversation}
 Usuário: {user_display_message}
 
 INSTRUÇÃO ESPECÍFICA PARA ESTA RESPOSTA:
 {suggestion_prompt}
 
-Responda de forma personalizada, considerando todo o contexto e histórico desta pessoa, seguindo a instrução específica acima."""
+COMO RESPONDER:
+1. Demonstre que você SE LEMBRA das conversas anteriores mencionando elementos específicos do histórico
+2. Conecte a resposta atual com a evolução que a pessoa já teve
+3. Sugira o PRÓXIMO PASSO baseado em toda a jornada, não apenas na conversa atual
+4. Seja específico sobre como a pessoa evoluiu desde as primeiras conversas
+
+Responda de forma personalizada, considerando TODA a jornada espiritual desta pessoa."""
         
         # Get system prompt
         system_prompt = await get_enhanced_system_prompt(user_id)
