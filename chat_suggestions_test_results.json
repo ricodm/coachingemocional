@@ -1,0 +1,65 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "Setup - User Registration",
+      "success": true,
+      "details": "User registered: suggestions_test_125459@test.com",
+      "timestamp": "2025-08-02T12:54:59.349221"
+    },
+    {
+      "name": "Setup - Conversation History",
+      "success": true,
+      "details": "Created 5 messages in session d8c458fe-2884-4aa3-9890-ff1be3258a6e",
+      "timestamp": "2025-08-02T12:55:01.890606"
+    },
+    {
+      "name": "Suggestions - No Auth",
+      "success": true,
+      "details": "Correctly rejected unauthenticated request",
+      "timestamp": "2025-08-02T12:55:01.933909"
+    },
+    {
+      "name": "Suggestions - No History",
+      "success": true,
+      "details": "Got 3 fallback suggestions",
+      "timestamp": "2025-08-02T12:55:02.272871"
+    },
+    {
+      "name": "Suggestions - With History",
+      "success": true,
+      "details": "Got 3 valid suggestions: ['Como voc\u00ea se sente neste momento?', 'Quem \u00e9 aquele que observa os pensamentos?', 'Concentre-se na respira\u00e7\u00e3o por 3 minutos']",
+      "timestamp": "2025-08-02T12:55:02.375096"
+    },
+    {
+      "name": "Suggestions - Response Format",
+      "success": true,
+      "details": "Response format is correct",
+      "timestamp": "2025-08-02T12:55:02.462387"
+    },
+    {
+      "name": "Suggestions - Personalization",
+      "success": true,
+      "details": "Found relevant keywords: ['quem', 'respir']",
+      "timestamp": "2025-08-02T12:55:02.636529"
+    },
+    {
+      "name": "Suggestions - Fallback",
+      "success": true,
+      "details": "Got fallback suggestions (or AI-generated): ['Como voc\u00ea se sente neste momento?', 'Quem \u00e9 aquele que observa os pensamentos?', 'Concentre-se na respira\u00e7\u00e3o por 3 minutos']",
+      "timestamp": "2025-08-02T12:55:02.723645"
+    },
+    {
+      "name": "Suggestions - Multiple Calls",
+      "success": true,
+      "details": "All 3 calls successful",
+      "timestamp": "2025-08-02T12:55:02.989652"
+    }
+  ],
+  "timestamp": "2025-08-02T12:55:02.989833"
+}
