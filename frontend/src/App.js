@@ -1126,6 +1126,11 @@ const SessionHistory = () => {
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('prompts');
   const [prompts, setPrompts] = useState({ base_prompt: '', additional_prompt: '' });
+  const [customSuggestions, setCustomSuggestions] = useState([
+    { placeholder: '', prompt: '' },
+    { placeholder: '', prompt: '' },
+    { placeholder: '', prompt: '' }
+  ]);
   const [systemDocs, setSystemDocs] = useState({ theory_document: '', support_document: '' });
   const [documents, setDocuments] = useState([]);
   const [users, setUsers] = useState([]);
