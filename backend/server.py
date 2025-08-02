@@ -790,6 +790,122 @@ async def reset_password(request: ResetPasswordRequest):
 
 # ============ CHAT ENDPOINTS ============
 
+@api_router.post("/chat/suggestions")
+async def generate_suggestions(current_user: User = Depends(get_current_user)):
+    """Generate 3 personalized suggestions based on user's conversation history"""
+    try:
+        user_id = current_user.id
+        
+        # Get user's recent sessions and messages
+        sessions_cursor = db.sessions.find(
+            {"user_id": user_id},
+            {"_id": 1, "created_at": 1, "summary": 1}
+        ).sort("created_at", -1).limit(5)
+        
+        recent_sessions = await sessions_cursor.to_list(length=5)
+        
+        # Get recent messages from these sessions
+        all_messages = []
+        for session in recent_sessions:
+            messages_cursor = db.messages.find(
+                {"session_id": session["_id"]},
+                {"content": 1, "is_user": 1, "timestamp": 1}
+            ).sort("timestamp", -1).limit(10)
+            
+            session_messages = await messages_cursor.to_list(length=10)
+            all_messages.extend(session_messages)
+        
+        # Sort all messages by timestamp (most recent first) and limit to 30
+        all_messages.sort(key=lambda x: x.get("timestamp", datetime.min), reverse=True)
+        all_messages = all_messages[:30]
+        
+        # Prepare conversation history for analysis
+        conversation_history = ""
+        for msg in reversed(all_messages):  # Reverse to show chronological order
+            role = "Usuário" if msg.get("is_user") else "Anantara"
+            conversation_history += f"{role}: {msg.get('content', '')}\n"
+        
+        # Add session summaries if available
+        summary_context = ""
+        for session in recent_sessions:
+            if session.get("summary"):
+                summary_context += f"Resumo de sessão anterior: {session['summary']}\n"
+        
+        # Generate suggestions using OpenAI
+        suggestions_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, analise o histórico de conversas deste usuário e gere EXATAMENTE 3 sugestões personalizadas:
+
+HISTÓRICO DE CONVERSAS:
+{conversation_history}
+
+RESUMOS DE SESSÕES ANTERIORES:
+{summary_context}
+
+Baseado neste histórico, gere 3 sugestões curtas (máximo 60 caracteres cada):
+
+1. PRÓXIMA PERGUNTA LÓGICA: Uma pergunta natural que daria continuidade às conversas anteriores
+2. EXERCÍCIO DE AUTOINVESTIGAÇÃO: Um exercício prático de autoconhecimento baseado no método "Quem sou eu?"
+3. MEDITAÇÃO MINDFULNESS: Uma prática de mindfulness contemplativa adaptada às necessidades demonstradas
+
+Responda APENAS no formato JSON:
+{{
+  "next_question": "sua pergunta aqui...",
+  "self_inquiry": "seu exercício aqui...", 
+  "mindfulness": "sua meditação aqui..."
+}}
+
+IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres para caber na interface."""
+
+        try:
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Você é Anantara, um mentor espiritual sábio baseado nos ensinamentos de Ramana Maharshi. Responda sempre em português brasileiro de forma concisa."},
+                    {"role": "user", "content": suggestions_prompt}
+                ],
+                max_tokens=300,
+                temperature=0.8
+            )
+            
+            ai_response = response.choices[0].message.content.strip()
+            
+            # Try to parse JSON response
+            import json
+            try:
+                suggestions_data = json.loads(ai_response)
+                suggestions = [
+                    suggestions_data.get("next_question", "O que você gostaria de explorar hoje?"),
+                    suggestions_data.get("self_inquiry", "Pratique: 'Quem sou eu além dos pensamentos?'"),
+                    suggestions_data.get("mindfulness", "Respire e observe: o que sente agora?")
+                ]
+            except json.JSONDecodeError:
+                # Fallback suggestions if JSON parsing fails
+                suggestions = [
+                    "O que você gostaria de explorar hoje?",
+                    "Pratique: 'Quem sou eu além dos pensamentos?'", 
+                    "Respire e observe: o que sente agora?"
+                ]
+            
+            return {
+                "suggestions": suggestions,
+                "generated_at": datetime.utcnow().isoformat()
+            }
+            
+        except Exception as openai_error:
+            logger.error(f"OpenAI error in suggestions: {openai_error}")
+            # Return fallback suggestions
+            return {
+                "suggestions": [
+                    "Como você se sente neste momento?",
+                    "Quem é aquele que observa os pensamentos?",
+                    "Concentre-se na respiração por 3 minutos"
+                ],
+                "generated_at": datetime.utcnow().isoformat()
+            }
+            
+    except Exception as e:
+        logger.error(f"Error generating suggestions: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao gerar sugestões")
+
 @api_router.post("/chat", response_model=ChatResponse)
 async def chat_with_therapist(request: ChatRequest, current_user: User = Depends(get_current_user)):
     """Enhanced chat endpoint with user context and support"""
