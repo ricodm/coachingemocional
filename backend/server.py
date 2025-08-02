@@ -999,6 +999,7 @@ async def chat_with_custom_suggestion(request: ChatSuggestionRequest, current_us
         user_message = {
             "id": user_message_id,
             "session_id": session_id,
+            "user_id": user_id,  # Add missing user_id
             "content": user_display_message,
             "is_user": True,
             "timestamp": datetime.utcnow()
