@@ -792,47 +792,69 @@ async def reset_password(request: ResetPasswordRequest):
 
 @api_router.post("/chat/suggestions")
 async def generate_suggestions(current_user: User = Depends(get_current_user)):
-    """Generate 3 personalized suggestions based on user's conversation history"""
+    """Generate 3 personalized suggestions based on admin custom suggestions"""
     try:
         user_id = current_user.id
         
-        # Get ALL user's sessions and messages (not just recent ones)
-        sessions_cursor = db.sessions.find(
-            {"user_id": user_id},
-            {"_id": 1, "created_at": 1, "summary": 1}
-        ).sort("created_at", -1).limit(10)  # Get more sessions for better context
+        # Get admin custom suggestions
+        custom_suggestions = await db.admin_settings.find_one({"type": "custom_suggestions"})
         
-        recent_sessions = await sessions_cursor.to_list(length=10)
-        
-        # Get messages from ALL these sessions
-        all_messages = []
-        for session in recent_sessions:
-            messages_cursor = db.messages.find(
-                {"session_id": session["_id"]},
-                {"content": 1, "is_user": 1, "timestamp": 1}
-            ).sort("timestamp", -1).limit(20)  # More messages per session
+        if custom_suggestions and custom_suggestions.get("suggestions"):
+            # Use admin configured suggestions
+            admin_suggestions = custom_suggestions["suggestions"]
+            suggestions = []
             
-            session_messages = await messages_cursor.to_list(length=20)
-            all_messages.extend(session_messages)
-        
-        # Sort all messages by timestamp (most recent first) and limit to 50 for better analysis
-        all_messages.sort(key=lambda x: x.get("timestamp", datetime.min), reverse=True)
-        all_messages = all_messages[:50]
-        
-        # Prepare conversation history for analysis
-        conversation_history = ""
-        for msg in reversed(all_messages):  # Reverse to show chronological order
-            role = "Usuário" if msg.get("is_user") else "Anantara"
-            conversation_history += f"{role}: {msg.get('content', '')}\n"
-        
-        # Add session summaries if available
-        summary_context = ""
-        for session in recent_sessions:
-            if session.get("summary"):
-                summary_context += f"Resumo de sessão anterior: {session['summary']}\n"
-        
-        # Generate suggestions using OpenAI
-        suggestions_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, analise TODO o histórico de conversas e sessões deste usuário para gerar 3 sugestões personalizadas que representem os PRÓXIMOS PASSOS na jornada espiritual desta pessoa.
+            for suggestion_config in admin_suggestions[:3]:  # Limit to 3
+                placeholder = suggestion_config.get("placeholder", "")
+                # Truncate placeholder if too long for UI
+                if len(placeholder) > 60:
+                    placeholder = placeholder[:57] + "..."
+                suggestions.append(placeholder)
+            
+            return {
+                "suggestions": suggestions,
+                "generated_at": datetime.utcnow().isoformat(),
+                "type": "admin_configured"
+            }
+        else:
+            # Fallback to old AI-generated suggestions if no admin config
+            # Get user's conversation history for AI generation
+            sessions_cursor = db.sessions.find(
+                {"user_id": user_id},
+                {"_id": 1, "created_at": 1, "summary": 1}
+            ).sort("created_at", -1).limit(10)
+            
+            recent_sessions = await sessions_cursor.to_list(length=10)
+            
+            # Get messages from ALL these sessions
+            all_messages = []
+            for session in recent_sessions:
+                messages_cursor = db.messages.find(
+                    {"session_id": session["_id"]},
+                    {"content": 1, "is_user": 1, "timestamp": 1}
+                ).sort("timestamp", -1).limit(20)
+                
+                session_messages = await messages_cursor.to_list(length=20)
+                all_messages.extend(session_messages)
+            
+            # Sort all messages by timestamp (most recent first) and limit to 50 for better analysis
+            all_messages.sort(key=lambda x: x.get("timestamp", datetime.min), reverse=True)
+            all_messages = all_messages[:50]
+            
+            # Prepare conversation history for analysis
+            conversation_history = ""
+            for msg in reversed(all_messages):  # Reverse to show chronological order
+                role = "Usuário" if msg.get("is_user") else "Anantara"
+                conversation_history += f"{role}: {msg.get('content', '')}\n"
+            
+            # Add session summaries if available
+            summary_context = ""
+            for session in recent_sessions:
+                if session.get("summary"):
+                    summary_context += f"Resumo de sessão anterior: {session['summary']}\n"
+            
+            # Generate suggestions using OpenAI
+            suggestions_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, analise TODO o histórico de conversas e sessões deste usuário para gerar 3 sugestões personalizadas que representem os PRÓXIMOS PASSOS na jornada espiritual desta pessoa.
 
 HISTÓRICO COMPLETO DE CONVERSAS:
 {conversation_history}
@@ -862,52 +884,54 @@ Responda APENAS no formato JSON:
 
 IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres e representar uma EVOLUÇÃO baseada no histórico completo."""
 
-        try:
-            response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "Você é Anantara, um mentor espiritual sábio baseado nos ensinamentos de Ramana Maharshi. Responda sempre em português brasileiro de forma concisa."},
-                    {"role": "user", "content": suggestions_prompt}
-                ],
-                max_tokens=300,
-                temperature=0.8
-            )
-            
-            ai_response = response.choices[0].message.content.strip()
-            
-            # Try to parse JSON response
-            import json
             try:
-                suggestions_data = json.loads(ai_response)
-                suggestions = [
-                    suggestions_data.get("next_question", "O que você gostaria de explorar hoje?"),
-                    suggestions_data.get("self_inquiry", "Pratique: 'Quem sou eu além dos pensamentos?'"),
-                    suggestions_data.get("mindfulness", "Respire e observe: o que sente agora?")
-                ]
-            except json.JSONDecodeError:
-                # Fallback suggestions for new users
-                suggestions = [
-                    "Como você se sente em sua jornada espiritual?",
-                    "O que você sabe sobre si mesmo neste momento?", 
-                    "Respire fundo e observe seus pensamentos"
-                ]
-            
-            return {
-                "suggestions": suggestions,
-                "generated_at": datetime.utcnow().isoformat()
-            }
-            
-        except Exception as openai_error:
-            logger.error(f"OpenAI error in suggestions: {openai_error}")
-            # Return fallback suggestions
-            return {
-                "suggestions": [
-                    "Como você se sente em sua jornada espiritual?",
-                    "O que você sabe sobre si mesmo neste momento?",
-                    "Respire fundo e observe seus pensamentos"
-                ],
-                "generated_at": datetime.utcnow().isoformat()
-            }
+                response = openai_client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "Você é Anantara, um mentor espiritual sábio baseado nos ensinamentos de Ramana Maharshi. Responda sempre em português brasileiro de forma concisa."},
+                        {"role": "user", "content": suggestions_prompt}
+                    ],
+                    max_tokens=300,
+                    temperature=0.8
+                )
+                
+                ai_response = response.choices[0].message.content.strip()
+                
+                # Try to parse JSON response
+                import json
+                try:
+                    suggestions_data = json.loads(ai_response)
+                    suggestions = [
+                        suggestions_data.get("next_question", "O que você gostaria de explorar hoje?"),
+                        suggestions_data.get("self_inquiry", "Pratique: 'Quem sou eu além dos pensamentos?'"),
+                        suggestions_data.get("mindfulness", "Respire e observe: o que sente agora?")
+                    ]
+                except json.JSONDecodeError:
+                    # Fallback suggestions for new users
+                    suggestions = [
+                        "Como você se sente em sua jornada espiritual?",
+                        "O que você sabe sobre si mesmo neste momento?", 
+                        "Respire fundo e observe seus pensamentos"
+                    ]
+                
+                return {
+                    "suggestions": suggestions,
+                    "generated_at": datetime.utcnow().isoformat(),
+                    "type": "ai_generated"
+                }
+                
+            except Exception as openai_error:
+                logger.error(f"OpenAI error in suggestions: {openai_error}")
+                # Return fallback suggestions
+                return {
+                    "suggestions": [
+                        "Como você se sente em sua jornada espiritual?",
+                        "O que você sabe sobre si mesmo neste momento?",
+                        "Respire fundo e observe seus pensamentos"
+                    ],
+                    "generated_at": datetime.utcnow().isoformat(),
+                    "type": "fallback"
+                }
             
     except Exception as e:
         logger.error(f"Error generating suggestions: {e}")
