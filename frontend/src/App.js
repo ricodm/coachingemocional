@@ -1362,6 +1362,12 @@ const AdminPanel = () => {
               Prompts do GPT
             </button>
             <button 
+              className={activeTab === 'custom-suggestions' ? 'active' : ''} 
+              onClick={() => setActiveTab('custom-suggestions')}
+            >
+              Sugestões Customizáveis
+            </button>
+            <button 
               className={activeTab === 'documents' ? 'active' : ''} 
               onClick={() => setActiveTab('documents')}
             >
