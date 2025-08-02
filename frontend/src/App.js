@@ -377,7 +377,8 @@ const Chat = () => {
   useEffect(() => {
     createSession();
     updateRemainingMessages();
-    // Don't fetch suggestions immediately - wait for user to have some conversation
+    // Fetch suggestions immediately when chat loads (based on previous sessions)
+    fetchSuggestions();
   }, []);
 
   const updateRemainingMessages = async () => {
