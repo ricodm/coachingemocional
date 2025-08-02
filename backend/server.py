@@ -958,6 +958,143 @@ IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres e representar uma E
         logger.error(f"Error generating suggestions: {e}")
         raise HTTPException(status_code=500, detail="Erro ao gerar sugestões")
 
+class ChatSuggestionRequest(BaseModel):
+    session_id: str = Field(..., description="Session ID")
+    suggestion_index: int = Field(..., description="Index of the clicked suggestion (0-2)")
+    user_message: Optional[str] = Field(None, description="Additional user message if they edited the suggestion")
+
+@api_router.post("/chat/suggestion", response_model=ChatResponse)
+async def chat_with_custom_suggestion(request: ChatSuggestionRequest, current_user: User = Depends(get_current_user)):
+    """Handle chat when user clicks a custom suggestion"""
+    try:
+        user_id = current_user.id
+        session_id = request.session_id
+        suggestion_index = request.suggestion_index
+        
+        # Check message limits
+        remaining = await check_and_update_message_limits(user_id)
+        if remaining == 0:
+            raise HTTPException(
+                status_code=429,
+                detail="Você atingiu o limite de mensagens diárias. Faça upgrade do seu plano para continuar."
+            )
+        
+        # Get admin custom suggestions
+        custom_suggestions = await db.admin_settings.find_one({"type": "custom_suggestions"})
+        
+        if not custom_suggestions or not custom_suggestions.get("suggestions"):
+            raise HTTPException(status_code=400, detail="Sugestões customizadas não configuradas")
+        
+        admin_suggestions = custom_suggestions["suggestions"]
+        if suggestion_index >= len(admin_suggestions):
+            raise HTTPException(status_code=400, detail="Índice de sugestão inválido")
+        
+        # Get the selected suggestion config
+        suggestion_config = admin_suggestions[suggestion_index]
+        suggestion_prompt = suggestion_config.get("prompt", "")
+        user_display_message = request.user_message or suggestion_config.get("placeholder", "")
+        
+        # Save user message to database
+        user_message_id = str(uuid.uuid4())
+        user_message = {
+            "id": user_message_id,
+            "session_id": session_id,
+            "content": user_display_message,
+            "is_user": True,
+            "timestamp": datetime.utcnow()
+        }
+        await db.messages.insert_one(user_message)
+        
+        # Get conversation history for context
+        messages_cursor = db.messages.find(
+            {"session_id": session_id},
+            {"content": 1, "is_user": 1, "timestamp": 1}
+        ).sort("timestamp", 1)
+        
+        messages = await messages_cursor.to_list(length=None)
+        conversation_history = ""
+        for msg in messages[:-1]:  # Exclude the current message
+            role = "Usuário" if msg.get("is_user") else "Anantara"
+            conversation_history += f"{role}: {msg.get('content', '')}\n"
+        
+        # Get user's complete session history for better context
+        sessions_cursor = db.sessions.find(
+            {"user_id": user_id},
+            {"summary": 1}
+        ).sort("created_at", -1).limit(5)
+        recent_sessions = await sessions_cursor.to_list(length=5)
+        
+        session_summaries = ""
+        for session in recent_sessions:
+            if session.get("summary"):
+                session_summaries += f"Sessão anterior: {session['summary']}\n"
+        
+        # Create enhanced prompt with context
+        enhanced_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, você está respondendo a uma solicitação específica do usuário.
+
+HISTÓRICO DE SESSÕES ANTERIORES:
+{session_summaries}
+
+CONVERSA ATUAL:
+{conversation_history}
+Usuário: {user_display_message}
+
+INSTRUÇÃO ESPECÍFICA PARA ESTA RESPOSTA:
+{suggestion_prompt}
+
+Responda de forma personalizada, considerando todo o contexto e histórico desta pessoa, seguindo a instrução específica acima."""
+        
+        # Get system prompt
+        system_prompt = await get_enhanced_system_prompt(user_id)
+        
+        # Generate AI response
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": enhanced_prompt}
+            ],
+            max_tokens=800,
+            temperature=0.8
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # Save AI message
+        ai_message_id = str(uuid.uuid4())
+        ai_message = {
+            "id": ai_message_id,
+            "session_id": session_id,
+            "content": ai_response,
+            "is_user": False,
+            "timestamp": datetime.utcnow()
+        }
+        await db.messages.insert_one(ai_message)
+        
+        # Update session last activity
+        await db.sessions.update_one(
+            {"id": session_id},
+            {"$set": {"last_activity": datetime.utcnow()}}
+        )
+        
+        # Get updated remaining messages
+        remaining_after = remaining - 1
+        
+        logger.info(f"Custom suggestion chat response generated for user {user_id} in session {session_id}")
+        
+        return ChatResponse(
+            message_id=ai_message_id,
+            response=ai_response,
+            session_id=session_id,
+            messages_remaining_today=remaining_after
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in custom suggestion chat: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao processar sugestão")
+
 @api_router.post("/chat", response_model=ChatResponse)
 async def chat_with_therapist(request: ChatRequest, current_user: User = Depends(get_current_user)):
     """Enhanced chat endpoint with user context and support"""
