@@ -1049,17 +1049,34 @@ Responda de forma personalizada, considerando todo o contexto e histórico desta
         system_prompt = await get_enhanced_system_prompt(user_id)
         
         # Generate AI response
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": enhanced_prompt}
-            ],
-            max_tokens=800,
-            temperature=0.8
-        )
-        
-        ai_response = response.choices[0].message.content
+        try:
+            response = openai_client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": enhanced_prompt}
+                ],
+                max_tokens=800,
+                temperature=0.8
+            )
+            
+            ai_response = response.choices[0].message.content
+        except Exception as openai_error:
+            logger.error(f"OpenAI error in custom suggestion chat: {openai_error}")
+            # Provide a meaningful fallback response
+            ai_response = f"""Obrigado por compartilhar isso comigo. 
+
+Como seu mentor espiritual, percebo que você está buscando uma orientação específica em sua jornada de autoconhecimento. 
+
+Baseado em nossa conversa atual, convido você a:
+
+1. **Respirar profundamente** e se conectar com o momento presente
+2. **Observar seus pensamentos** sem julgamento, apenas como um observador sereno  
+3. **Questionar-se**: "Quem é aquele que observa estes pensamentos?"
+
+Lembre-se: você é muito mais do que seus pensamentos e emoções. Você é a consciência pura que os observa.
+
+Como se sente ao refletir sobre isso? 🕉️"""
         
         # Save AI message
         ai_message_id = str(uuid.uuid4())
