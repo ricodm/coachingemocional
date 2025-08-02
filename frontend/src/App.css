@@ -1752,6 +1752,24 @@ input::placeholder, textarea::placeholder {
     font-size: 16px; /* Evita zoom no iOS */
   }
 
+  .suggestions-container {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: stretch;
+  }
+
+  .suggestion-btn {
+    max-width: none;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .refresh-suggestions-btn {
+    align-self: center;
+    margin-top: var(--spacing-xs);
+  }
+
   .plans-grid {
     grid-template-columns: 1fr;
   }
