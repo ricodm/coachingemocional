@@ -1314,6 +1314,66 @@ input::placeholder, textarea::placeholder {
   font-weight: 600;
 }
 
+.admin-section p {
+  margin-bottom: var(--spacing-lg);
+  color: var(--medium-gray);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.custom-suggestion-section {
+  background: var(--light-blue);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--soft-gray);
+}
+
+.custom-suggestion-section h4 {
+  color: var(--deep-blue);
+  margin-bottom: var(--spacing-md);
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  color: var(--deep-blue);
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+.form-group input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--soft-gray);
+  border-radius: var(--border-radius-sm);
+  background: var(--pure-white);
+  font-size: 1rem;
+  color: var(--dark-gray);
+  font-family: var(--font-sans);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(168, 218, 220, 0.2);
+}
+
+.form-group small {
+  color: var(--medium-gray);
+  font-size: 0.8rem;
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-family: var(--font-sans);
+  font-style: italic;
+}
+
 .admin-section textarea {
   width: 100%;
   padding: var(--spacing-md);
