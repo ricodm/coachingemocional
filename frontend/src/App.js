@@ -406,9 +406,9 @@ const Chat = () => {
       console.error('Erro ao buscar sugestões:', error);
       // Fallback suggestions if API fails
       setSuggestions([
-        "Como você se sente neste momento?",
-        "Quem é aquele que observa os pensamentos?", 
-        "Concentre-se na respiração por 3 minutos"
+        "Como você se sente em sua jornada espiritual?",
+        "O que você sabe sobre si mesmo neste momento?",
+        "Respire fundo e observe seus pensamentos"
       ]);
     } finally {
       setLoadingSuggestions(false);
