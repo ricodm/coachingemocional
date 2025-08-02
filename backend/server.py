@@ -902,9 +902,9 @@ IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres e representar uma E
             # Return fallback suggestions
             return {
                 "suggestions": [
-                    "Como você se sente neste momento?",
-                    "Quem é aquele que observa os pensamentos?",
-                    "Concentre-se na respiração por 3 minutos"
+                    "Como você se sente em sua jornada espiritual?",
+                    "O que você sabe sobre si mesmo neste momento?",
+                    "Respire fundo e observe seus pensamentos"
                 ],
                 "generated_at": datetime.utcnow().isoformat()
             }
