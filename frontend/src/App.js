@@ -470,14 +470,11 @@ O que move seu coração hoje?`,
       setMessages(prev => [...prev, aiMessage]);
       setRemainingMessages(response.data.messages_remaining_today);
       
-      // Show suggestions after AI responds, but only if user has at least 2 messages (1 exchange)
-      const totalMessages = messages.length + 2; // Current messages + user message + AI message
-      if (totalMessages >= 4) { // At least 2 exchanges (welcome + user + AI + user + AI)
-        setTimeout(() => {
-          setShowSuggestions(true);
-          fetchSuggestions();
-        }, 1000);
-      }
+      // Show suggestions again after AI responds and refresh them based on the new conversation
+      setTimeout(() => {
+        setShowSuggestions(true);
+        fetchSuggestions(); // This will now include the new conversation in the history analysis
+      }, 1500);
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
