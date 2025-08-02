@@ -1012,32 +1012,55 @@ async def chat_with_custom_suggestion(request: ChatSuggestionRequest, current_us
             {"content": 1, "is_user": 1, "timestamp": 1}
         ).sort("timestamp", 1)
         
-        messages = await messages_cursor.to_list(length=None)
-        conversation_history = ""
-        for msg in messages[:-1]:  # Exclude the current message
+        current_session_messages = await messages_cursor.to_list(length=None)
+        current_conversation = ""
+        for msg in current_session_messages[:-1]:  # Exclude the current message
             role = "Usuário" if msg.get("is_user") else "Anantara"
-            conversation_history += f"{role}: {msg.get('content', '')}\n"
+            current_conversation += f"{role}: {msg.get('content', '')}\n"
         
-        # Get user's complete session history for better context
-        sessions_cursor = db.sessions.find(
+        # Get ALL user's session summaries for complete journey context
+        all_sessions_cursor = db.sessions.find(
             {"user_id": user_id},
-            {"summary": 1}
-        ).sort("created_at", -1).limit(5)
-        recent_sessions = await sessions_cursor.to_list(length=5)
+            {"summary": 1, "created_at": 1}
+        ).sort("created_at", -1)  # Most recent first
         
-        session_summaries = ""
-        for session in recent_sessions:
+        all_user_sessions = await all_sessions_cursor.to_list(length=None)
+        
+        # Build comprehensive history from all sessions
+        complete_journey_history = ""
+        for session in reversed(all_user_sessions):  # Reverse to show chronological order
             if session.get("summary"):
-                session_summaries += f"Sessão anterior: {session['summary']}\n"
+                session_date = session.get("created_at", "").strftime("%d/%m/%Y") if session.get("created_at") else "Data desconhecida"
+                complete_journey_history += f"[{session_date}] {session['summary']}\n"
+        
+        # If no summaries exist yet, get recent messages from previous sessions
+        if not complete_journey_history.strip():
+            # Get messages from the last 3 sessions (excluding current)
+            recent_sessions = [s for s in all_user_sessions if s.get("_id") != session_id][:3]
+            
+            for session_info in recent_sessions:
+                session_messages_cursor = db.messages.find(
+                    {"session_id": session_info["_id"]},
+                    {"content": 1, "is_user": 1, "timestamp": 1}
+                ).sort("timestamp", 1).limit(10)
+                
+                session_messages = await session_messages_cursor.to_list(length=10)
+                if session_messages:
+                    session_date = session_info.get("created_at", "").strftime("%d/%m/%Y") if session_info.get("created_at") else "Data desconhecida"
+                    complete_journey_history += f"[{session_date}] Conversa anterior:\n"
+                    for msg in session_messages:
+                        role = "Usuário" if msg.get("is_user") else "Anantara"
+                        complete_journey_history += f"  {role}: {msg.get('content', '')}\n"
+                    complete_journey_history += "\n"
         
         # Create enhanced prompt with context
         enhanced_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, você está respondendo a uma solicitação específica do usuário.
 
 HISTÓRICO DE SESSÕES ANTERIORES:
-{session_summaries}
+{complete_journey_history}
 
 CONVERSA ATUAL:
-{conversation_history}
+{current_conversation}
 Usuário: {user_display_message}
 
 INSTRUÇÃO ESPECÍFICA PARA ESTA RESPOSTA:
