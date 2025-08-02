@@ -796,28 +796,28 @@ async def generate_suggestions(current_user: User = Depends(get_current_user)):
     try:
         user_id = current_user.id
         
-        # Get user's recent sessions and messages
+        # Get ALL user's sessions and messages (not just recent ones)
         sessions_cursor = db.sessions.find(
             {"user_id": user_id},
             {"_id": 1, "created_at": 1, "summary": 1}
-        ).sort("created_at", -1).limit(5)
+        ).sort("created_at", -1).limit(10)  # Get more sessions for better context
         
-        recent_sessions = await sessions_cursor.to_list(length=5)
+        recent_sessions = await sessions_cursor.to_list(length=10)
         
-        # Get recent messages from these sessions
+        # Get messages from ALL these sessions
         all_messages = []
         for session in recent_sessions:
             messages_cursor = db.messages.find(
                 {"session_id": session["_id"]},
                 {"content": 1, "is_user": 1, "timestamp": 1}
-            ).sort("timestamp", -1).limit(10)
+            ).sort("timestamp", -1).limit(20)  # More messages per session
             
-            session_messages = await messages_cursor.to_list(length=10)
+            session_messages = await messages_cursor.to_list(length=20)
             all_messages.extend(session_messages)
         
-        # Sort all messages by timestamp (most recent first) and limit to 30
+        # Sort all messages by timestamp (most recent first) and limit to 50 for better analysis
         all_messages.sort(key=lambda x: x.get("timestamp", datetime.min), reverse=True)
-        all_messages = all_messages[:30]
+        all_messages = all_messages[:50]
         
         # Prepare conversation history for analysis
         conversation_history = ""
