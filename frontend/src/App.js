@@ -505,6 +505,22 @@ O que move seu coração hoje?`,
     }
   };
 
+  const handleSuggestionClick = (suggestion) => {
+    setInputMessage(suggestion);
+    // Focus on the input field after setting the suggestion
+    setTimeout(() => {
+      const textarea = document.querySelector('.message-input');
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(suggestion.length, suggestion.length);
+      }
+    }, 100);
+  };
+
+  const refreshSuggestions = () => {
+    fetchSuggestions();
+  };
+
   const formatTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('pt-BR', {
       hour: '2-digit',
