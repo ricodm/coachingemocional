@@ -433,6 +433,23 @@ async def increment_message_count(user_id: str):
         }
     )
 
+async def check_and_update_message_limits(user_id: str) -> int:
+    """Check message limits and return remaining messages"""
+    # Get fresh user data
+    user_data = await db.users.find_one({"id": user_id})
+    if not user_data:
+        return 0
+    
+    user = User(**user_data)
+    
+    # Check if user can send messages
+    can_send = await check_message_limit(user)
+    if not can_send:
+        return 0
+    
+    # Calculate and return remaining messages
+    return calculate_remaining_messages(user)
+
 def create_enhanced_system_prompt(user_history_summary: str = "") -> str:
     """Create enhanced system prompt with support document and user history"""
     base_prompt = """
