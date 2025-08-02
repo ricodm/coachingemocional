@@ -1220,6 +1220,20 @@ const AdminPanel = () => {
     }
   };
 
+  const updateCustomSuggestions = async () => {
+    setLoading(true);
+    try {
+      await axios.put(`${API}/admin/custom-suggestions`, { suggestions: customSuggestions }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Sugestões customizadas atualizadas com sucesso!');
+    } catch (error) {
+      alert('Erro ao atualizar sugestões customizadas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateSystemDocuments = async () => {
     setLoading(true);
     try {
