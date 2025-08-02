@@ -574,6 +574,37 @@ O que move seu coração hoje?`,
         </div>
 
         <div className="input-container">
+          {/* Suggestions */}
+          {showSuggestions && suggestions.length > 0 && !isLoading && (
+            <div className="suggestions-container">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="suggestion-btn"
+                  disabled={loadingSuggestions}
+                >
+                  {suggestion}
+                </button>
+              ))}
+              <button
+                onClick={refreshSuggestions}
+                className="refresh-suggestions-btn"
+                disabled={loadingSuggestions}
+                title="Gerar novas sugestões"
+              >
+                {loadingSuggestions ? (
+                  <div className="loading-spinner-small"></div>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
+          
           <div className="input-wrapper">
             <textarea
               value={inputMessage}
