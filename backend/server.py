@@ -832,28 +832,35 @@ async def generate_suggestions(current_user: User = Depends(get_current_user)):
                 summary_context += f"Resumo de sessão anterior: {session['summary']}\n"
         
         # Generate suggestions using OpenAI
-        suggestions_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, analise o histórico de conversas deste usuário e gere EXATAMENTE 3 sugestões personalizadas:
+        suggestions_prompt = f"""Como Anantara, mentor espiritual baseado em Ramana Maharshi, analise TODO o histórico de conversas e sessões deste usuário para gerar 3 sugestões personalizadas que representem os PRÓXIMOS PASSOS na jornada espiritual desta pessoa.
 
-HISTÓRICO DE CONVERSAS:
+HISTÓRICO COMPLETO DE CONVERSAS:
 {conversation_history}
 
-RESUMOS DE SESSÕES ANTERIORES:
+RESUMOS DE TODAS AS SESSÕES ANTERIORES:
 {summary_context}
 
-Baseado neste histórico, gere 3 sugestões curtas (máximo 60 caracteres cada):
+INSTRUÇÕES IMPORTANTES:
+- Se a pessoa já praticou meditação, sugira uma técnica mais avançada
+- Se já explorou uma questão, aprofunde ou sugira o próximo aspecto
+- Se já fez autoinvestigação básica, eleve o nível
+- LEMBRE-SE das conversas anteriores e crie CONTINUIDADE na jornada
+- Como se você fosse um mentor que acompanha essa pessoa há tempo
 
-1. PRÓXIMA PERGUNTA LÓGICA: Uma pergunta natural que daria continuidade às conversas anteriores
-2. EXERCÍCIO DE AUTOINVESTIGAÇÃO: Um exercício prático de autoconhecimento baseado no método "Quem sou eu?"
-3. MEDITAÇÃO MINDFULNESS: Uma prática de mindfulness contemplativa adaptada às necessidades demonstradas
+Gere 3 sugestões curtas (máximo 60 caracteres cada) que sejam os PRÓXIMOS PASSOS EVOLUTIVOS:
+
+1. PRÓXIMA PERGUNTA LÓGICA: Baseada em TODA a jornada anterior, qual seria a próxima pergunta natural para o crescimento desta pessoa?
+2. EXERCÍCIO DE AUTOINVESTIGAÇÃO: Considerando o que já foi explorado, qual o próximo nível de "Quem sou eu?" que esta pessoa deveria praticar?
+3. MEDITAÇÃO MINDFULNESS: Baseado no estado atual e práticas anteriores, qual meditação seria o próximo passo evolutivo?
 
 Responda APENAS no formato JSON:
 {{
-  "next_question": "sua pergunta aqui...",
-  "self_inquiry": "seu exercício aqui...", 
-  "mindfulness": "sua meditação aqui..."
+  "next_question": "próxima pergunta evolutiva...",
+  "self_inquiry": "próximo exercício de autoinvestigação...", 
+  "mindfulness": "próxima prática meditativa..."
 }}
 
-IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres para caber na interface."""
+IMPORTANTE: Cada sugestão deve ter no máximo 60 caracteres e representar uma EVOLUÇÃO baseada no histórico completo."""
 
         try:
             response = openai_client.chat.completions.create(
