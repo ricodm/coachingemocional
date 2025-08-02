@@ -1411,6 +1411,53 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {activeTab === 'custom-suggestions' && (
+            <div className="admin-section">
+              <h3>Configurar Sugestões Customizáveis</h3>
+              <p>Configure as 3 sugestões que aparecerão para os usuários no chat. Cada sugestão tem um texto que o usuário vê (placeholder) e um prompt correspondente que será enviado para a IA quando a sugestão for clicada.</p>
+              
+              {customSuggestions.map((suggestion, index) => (
+                <div key={index} className="custom-suggestion-section">
+                  <h4>Sugestão {index + 1}</h4>
+                  
+                  <div className="form-group">
+                    <label>Texto da Sugestão (que o usuário vê):</label>
+                    <input
+                      type="text"
+                      value={suggestion.placeholder}
+                      onChange={(e) => {
+                        const newSuggestions = [...customSuggestions];
+                        newSuggestions[index].placeholder = e.target.value;
+                        setCustomSuggestions(newSuggestions);
+                      }}
+                      placeholder={`Ex: "Sugira uma reflexão baseada no meu histórico"`}
+                      maxLength={60}
+                    />
+                    <small>{suggestion.placeholder.length}/60 caracteres</small>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Prompt Correspondente (enviado para a IA):</label>
+                    <textarea
+                      value={suggestion.prompt}
+                      onChange={(e) => {
+                        const newSuggestions = [...customSuggestions];
+                        newSuggestions[index].prompt = e.target.value;
+                        setCustomSuggestions(newSuggestions);
+                      }}
+                      placeholder={`Ex: "Levando em conta toda a evolução desta pessoa, analise seu progresso espiritual e sugira a próxima reflexão lógica..."`}
+                      rows={4}
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              <button onClick={updateCustomSuggestions} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Sugestões Customizáveis'}
+              </button>
+            </div>
+          )}
+
           {activeTab === 'documents' && (
             <div className="admin-section">
               <h3>Documentos do Sistema</h3>
