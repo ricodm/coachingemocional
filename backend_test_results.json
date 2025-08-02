@@ -1,143 +1,143 @@
 {
   "summary": {
     "total_tests": 22,
-    "passed": 17,
-    "failed": 5,
-    "success_rate": "77.3%"
+    "passed": 15,
+    "failed": 7,
+    "success_rate": "68.2%"
   },
   "results": [
     {
       "name": "Backend Health",
       "success": true,
       "details": "Backend responsive, found 3 subscription plans",
-      "timestamp": "2025-08-01T20:55:13.746338"
+      "timestamp": "2025-08-02T12:55:08.872373"
     },
     {
       "name": "Create Admin",
       "success": false,
       "details": "Response: {'detail': 'Not Found'}",
-      "timestamp": "2025-08-01T20:55:13.768892"
+      "timestamp": "2025-08-02T12:55:08.891505"
     },
     {
       "name": "Admin Login",
       "success": false,
       "details": "Response: {'detail': 'Invalid credentials'}",
-      "timestamp": "2025-08-01T20:55:13.792871"
+      "timestamp": "2025-08-02T12:55:08.949073"
     },
     {
       "name": "User Registration",
       "success": true,
-      "details": "User: test_user_205513@test.com",
-      "timestamp": "2025-08-01T20:55:14.050270"
+      "details": "User: test_user_125508@test.com",
+      "timestamp": "2025-08-02T12:55:09.204907"
     },
     {
       "name": "User Login",
       "success": true,
       "details": "Token received, User: Test User",
-      "timestamp": "2025-08-01T20:55:14.309239"
+      "timestamp": "2025-08-02T12:55:09.456031"
     },
     {
       "name": "Auth Me",
       "success": true,
       "details": "User: Test User, Plan: free",
-      "timestamp": "2025-08-01T20:55:14.333504"
+      "timestamp": "2025-08-02T12:55:09.479295"
     },
     {
       "name": "Forgot Password - Valid Email",
-      "success": true,
-      "details": "Message: Se o email existir em nossa base, voc\u00ea receber\u00e1 as instru\u00e7\u00f5es de recupera\u00e7\u00e3o.",
-      "timestamp": "2025-08-01T20:55:14.851100"
+      "success": false,
+      "details": "Response: {'detail': 'Erro ao enviar email de recupera\u00e7\u00e3o'}",
+      "timestamp": "2025-08-02T12:55:09.804365"
     },
     {
       "name": "Forgot Password - Invalid Email",
       "success": true,
       "details": "Message: Se o email existir em nossa base, voc\u00ea receber\u00e1 as instru\u00e7\u00f5es de recupera\u00e7\u00e3o.",
-      "timestamp": "2025-08-01T20:55:14.874563"
+      "timestamp": "2025-08-02T12:55:09.825115"
     },
     {
       "name": "Forgot Password - Malformed Email",
       "success": true,
       "details": "Validation error returned as expected",
-      "timestamp": "2025-08-01T20:55:14.933475"
+      "timestamp": "2025-08-02T12:55:09.883924"
     },
     {
       "name": "Reset Password - Invalid Token",
       "success": true,
       "details": "Error: Token inv\u00e1lido ou expirado",
-      "timestamp": "2025-08-01T20:55:14.955134"
+      "timestamp": "2025-08-02T12:55:09.903381"
     },
     {
       "name": "Reset Password - Short Password",
       "success": true,
       "details": "Validation error: Token inv\u00e1lido ou expirado",
-      "timestamp": "2025-08-01T20:55:14.979252"
+      "timestamp": "2025-08-02T12:55:09.919595"
     },
     {
       "name": "Database - Password Reset Tokens",
-      "success": true,
-      "details": "Token creation inferred from API response",
-      "timestamp": "2025-08-01T20:55:15.221550"
+      "success": false,
+      "details": "Failed to trigger forgot password",
+      "timestamp": "2025-08-02T12:55:10.208155"
     },
     {
       "name": "Existing Auth Endpoints",
       "success": true,
       "details": "Registration, login, and auth/me all working",
-      "timestamp": "2025-08-01T20:55:15.757725"
+      "timestamp": "2025-08-02T12:55:10.724065"
     },
     {
       "name": "Create Session",
       "success": true,
-      "details": "Session ID: 8d7d7f16-8c34-4090-a078-7365d3018b10",
-      "timestamp": "2025-08-01T20:55:15.777934"
+      "details": "Session ID: 605209ad-bb7b-4926-bbee-2e5ff7348ca0",
+      "timestamp": "2025-08-02T12:55:10.740816"
     },
     {
       "name": "Chat Message",
       "success": true,
-      "details": "AI responded (559 chars), Remaining: 7",
-      "timestamp": "2025-08-01T20:55:21.112079"
+      "details": "AI responded (167 chars), Remaining: 6",
+      "timestamp": "2025-08-02T12:55:10.940116"
     },
     {
       "name": "Get Sessions",
       "success": true,
       "details": "Found 1 sessions",
-      "timestamp": "2025-08-01T20:55:21.153162"
+      "timestamp": "2025-08-02T12:55:10.961312"
     },
     {
       "name": "Session Messages",
       "success": true,
       "details": "Found 2 messages",
-      "timestamp": "2025-08-01T20:55:21.180836"
+      "timestamp": "2025-08-02T12:55:10.982123"
     },
     {
       "name": "Subscription Plans",
       "success": true,
       "details": "Plans: ['basico', 'premium', 'ilimitado']",
-      "timestamp": "2025-08-01T20:55:21.199419"
+      "timestamp": "2025-08-02T12:55:10.996494"
     },
     {
       "name": "Admin Prompts",
       "success": false,
       "details": "No admin token available",
-      "timestamp": "2025-08-01T20:55:21.199438"
+      "timestamp": "2025-08-02T12:55:10.996516"
     },
     {
       "name": "Admin Users",
       "success": false,
       "details": "No admin token available",
-      "timestamp": "2025-08-01T20:55:21.199446"
+      "timestamp": "2025-08-02T12:55:10.996524"
     },
     {
       "name": "Admin Documents",
       "success": false,
       "details": "No admin token available",
-      "timestamp": "2025-08-01T20:55:21.199453"
+      "timestamp": "2025-08-02T12:55:10.996532"
     },
     {
       "name": "Profile Update",
       "success": true,
       "details": "Profile updated successfully",
-      "timestamp": "2025-08-01T20:55:21.226821"
+      "timestamp": "2025-08-02T12:55:11.019561"
     }
   ],
-  "timestamp": "2025-08-01T20:55:21.227004"
+  "timestamp": "2025-08-02T12:55:11.019739"
 }
