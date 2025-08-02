@@ -391,6 +391,28 @@ const Chat = () => {
     }
   };
 
+  const fetchSuggestions = async () => {
+    if (!token) return;
+    
+    setLoadingSuggestions(true);
+    try {
+      const response = await axios.post(`${API}/chat/suggestions`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSuggestions(response.data.suggestions || []);
+    } catch (error) {
+      console.error('Erro ao buscar sugestões:', error);
+      // Fallback suggestions if API fails
+      setSuggestions([
+        "Como você se sente neste momento?",
+        "Quem é aquele que observa os pensamentos?", 
+        "Concentre-se na respiração por 3 minutos"
+      ]);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
   const createSession = async () => {
     try {
       const response = await axios.post(`${API}/session`, {}, {
