@@ -450,6 +450,7 @@ O que move seu coração hoje?`,
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsLoading(true);
+    setShowSuggestions(false); // Hide suggestions when user sends a message
 
     try {
       const response = await axios.post(`${API}/chat`, {
@@ -468,6 +469,13 @@ O que move seu coração hoje?`,
 
       setMessages(prev => [...prev, aiMessage]);
       setRemainingMessages(response.data.messages_remaining_today);
+      
+      // Show suggestions again after AI responds, but only if user has conversation history
+      setTimeout(() => {
+        setShowSuggestions(true);
+        fetchSuggestions();
+      }, 1000);
+      
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
       let errorMsg = 'Desculpe, houve um problema. Por favor, tente novamente.';
