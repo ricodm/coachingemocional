@@ -360,6 +360,9 @@ const Chat = () => {
   const [sessionId, setSessionId] = useState(null);
   const [remainingMessages, setRemainingMessages] = useState(7); // Default for free users
   const [showPlansModal, setShowPlansModal] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const messagesEndRef = useRef(null);
   const { user, token } = useAuth();
 
