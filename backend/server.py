@@ -450,6 +450,10 @@ async def check_and_update_message_limits(user_id: str) -> int:
     # Calculate and return remaining messages
     return calculate_remaining_messages(user)
 
+async def get_enhanced_system_prompt(user_id: str) -> str:
+    """Get enhanced system prompt - alias for get_admin_enhanced_prompt"""
+    return await get_admin_enhanced_prompt(user_id)
+
 def create_enhanced_system_prompt(user_history_summary: str = "") -> str:
     """Create enhanced system prompt with support document and user history"""
     base_prompt = """
