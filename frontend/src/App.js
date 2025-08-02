@@ -1145,6 +1145,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     if (activeTab === 'prompts') fetchPrompts();
+    if (activeTab === 'custom-suggestions') fetchCustomSuggestions();
     if (activeTab === 'documents') {
       fetchDocuments();
       fetchSystemDocuments();
