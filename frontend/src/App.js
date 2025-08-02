@@ -647,7 +647,7 @@ O que move seu coração hoje?`,
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
+                  onClick={() => handleSuggestionClick(suggestion, index)}
                   className="suggestion-btn"
                   disabled={loadingSuggestions}
                 >
