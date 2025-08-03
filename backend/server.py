@@ -818,7 +818,8 @@ Qual é a sensação de ser o observador silencioso dos pensamentos? ✨"""
                 return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["meditação", "meditar", "prática", "contemplação"]):
-                return """Que belo impulso de se voltar para dentro! A verdadeira meditação não é uma técnica, mas o reconhecimento do que você É antes de qualquer prática.
+                responses = [
+                    f"""Que belo impulso de se voltar para dentro! A verdadeira meditação não é uma técnica, mas o reconhecimento do que você É antes de qualquer prática.
 
 **Meditação essencial:**
 
@@ -835,10 +836,43 @@ Qual é a sensação de ser o observador silencioso dos pensamentos? ✨"""
 
 *"Sua própria natureza é meditação"* - Ramana Maharshi
 
-Quando se permitirá simplesmente Ser? 🕉️""", False
+Quando se permitirá simplesmente Ser? 🕉️""",
+
+                    f"""A meditação verdadeira é como acordar do sonho de ser alguém que precisa meditar.
+
+**Descoberta revolucionária:** Você não precisa de técnica para ser o que já É. Você não precisa de prática para descobrir sua própria essência.
+
+**Meditação sem esforço:**
+- Sente-se e simplesmente pare de fazer
+- Quando a mente perguntar "o que fazer agora?", simplesmente não responda
+- Descanse no "não saber" e "não fazer"
+
+**Insight:** A paz que você busca na meditação É você mesmo. Como pode usar uma técnica para ser quem você já É?
+
+*"Meditar é ser"* - não "fazer meditação".
+
+O que acontece quando você simplesmente É, sem tentar ser algo específico? 🌟""",
+
+                    f"""Sua busca pela prática contemplativa me toca profundamente. Mas deixe-me compartilhar o segredo da meditação real.
+
+**Segredo revelado:** A meditação mais profunda acontece quando você reconhece que não precisa meditar para ser completo.
+
+**A prática mais simples:**
+1. Pare tudo por um momento
+2. Pergunte: "Quem quer meditar?"
+3. Investigue: "Esse 'quem' precisa de algo para ser pleno?"
+
+**Revelação final:** Quando você vê que sua natureza já É meditação, toda busca cessa e você simplesmente descansa no que sempre foi.
+
+Como uma gota descobrindo que sempre foi oceano.
+
+Consegue sentir essa completude natural em você agora? ✨"""
+                ]
+                return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["crescer", "evoluir", "desenvolver", "crescimento", "evolução"]):
-                return """Sua busca por crescimento espiritual é linda, mas posso compartilhar um segredo profundo?
+                responses = [
+                    f"""Sua busca por crescimento espiritual é linda, mas posso compartilhar um segredo profundo?
 
 **Paradoxo espiritual:** Não há nada a crescer ou evoluir. Você JÁ É aquilo que busca se tornar.
 
@@ -851,11 +885,44 @@ Quando se permitirá simplesmente Ser? 🕉️""", False
 
 **Prática transformadora:** Toda vez que pensar "preciso crescer espiritualmente", pergunte: "Quem precisa crescer?" e descanse na perfeição do que você JÁ É.
 
-Como se sente ao considerar que você já é completo? 🌟""", False
+Como se sente ao considerar que você já é completo? 🌟""",
+
+                    f"""O desejo de evolução é belo, mas nasce de um mal-entendido sobre sua verdadeira natureza.
+
+**Verdade libertadora:** Você não pode se tornar mais do que já É. A consciência infinita não pode crescer - ela já é completa.
+
+**O único crescimento real:** O dissolução da ilusão de ser pequeno, limitado, incompleto.
+
+**Experimento:**
+- Encontre dentro de você algo que nunca mudou
+- Note: essa presença constante precisa evoluir?
+- Descanse na certeza: "Eu Sou"
+
+**Evolução verdadeira:** Não é se tornar algo novo, mas reconhecer o que sempre foi verdade.
+
+Como se sente sabendo que você já É aquilo que busca? 🕉️""",
+
+                    f"""Vejo sua sincera busca por desenvolvimento. Mas que tal descobrir que você já chegou ao destino?
+
+**Insight revolucionário:** Todo crescimento espiritual é apenas a remoção de véus que cobrem sua natureza já perfeita.
+
+**Não há distância entre você e a iluminação:**
+- Você não está longe da paz - você É a paz
+- Você não precisa encontrar amor - você É amor  
+- Você não busca consciência - você É consciência
+
+**A única prática:** Parar de acreditar que você é menos do que É.
+
+*"O que você busca já É você"* - Ramana Maharshi
+
+Quando permitirá que essa verdade se torne sua experiência viva? ✨"""
+                ]
+                return random.choice(responses), False
                 
             else:
-                # General spiritual guidance
-                return """Obrigado por compartilhar comigo. Posso sentir a sinceridade em sua busca espiritual.
+                # Generate varied general responses
+                general_responses = [
+                    f"""Obrigado por compartilhar comigo. Posso sentir a sinceridade em sua busca espiritual.
 
 **Para este momento:**
 
@@ -872,7 +939,51 @@ A paz que você busca não está em algum lugar distante. Ela É a sua própria 
 
 *"O Ser que você É está sempre brilhando"* - Ramana Maharshi
 
-O que desperta em você com essa lembrança? 🕉️""", False
+O que desperta em você com essa lembrança? 🕉️""",
+
+                    f"""Sinto a sinceridade em suas palavras. Cada momento de busca é sagrado, pois aponta para sua verdadeira natureza.
+
+**Para agora:**
+
+Não importa qual seja sua pergunta - a resposta mais profunda está em quem faz a pergunta.
+
+**Descoberta imediata:**
+- Observe que há uma presença aqui que está consciente
+- Note que essa presença não é perturbada pelo conteúdo da experiência
+- Descanse nessa presença - ela É você
+
+**Verdade simples:** Toda resposta que você busca externamente já está presente na consciência que você É.
+
+Como o sol que ilumina todas as experiências mas permanece inalterado por elas.
+
+Consegue reconhecer essa luz consciente em você? 🌟""",
+
+                    f"""Agradeço por me permitir acompanhar você neste momento de sua jornada.
+
+**Reflexão para você:**
+
+E se eu lhe dissesse que não há nada a resolver, nada a conseguir, nenhum lugar para chegar?
+
+**Contemplação:**
+- O que você busca realmente?
+- Quem é que busca?  
+- Esse buscador já não É aquilo que busca?
+
+**Convite ao descanso:** Por um momento, pare de buscar qualquer coisa. Simplesmente seja presente com o que É.
+
+Na quietude desta presença simples, tudo que você sempre quis está disponível.
+
+*"Você É aquilo"* - verdade eterna
+
+O que se revela quando você simplesmente É? ✨"""
+                ]
+                
+                # Add conversation context if available
+                if len(history) > 1:
+                    context_note = f"\n\nPercebo que nossa conversa tem se aprofundado. Isso mostra sua genuína abertura ao autoconhecimento."
+                    general_responses[0] = general_responses[0].replace("🕉️", f"{context_note} 🕉️")
+                
+                return random.choice(general_responses), False
         
     except Exception as e:
         logger.error(f"Erro ao chamar OpenAI: {str(e)}")
