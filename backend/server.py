@@ -635,8 +635,16 @@ async def create_openai_response(session_id: str, user_message: str, current_use
         except Exception as e:
             logger.info(f"Using intelligent fallback for regular chat: {str(e)}")
             
-            # Create contextual response based on message content and user history
+            # Create contextual response based on message content and conversation history
             user_msg_lower = user_message.lower()
+            
+            # Get conversation context from this session
+            conversation_context = ""
+            if len(history) > 0:
+                recent_messages = history[-4:]  # Last 4 messages for context
+                for msg in recent_messages:
+                    role = "Usuário" if msg.is_user else "Anantara"
+                    conversation_context += f"{role}: {msg.content}\n"
             
             # Support-related responses (these don't consume messages)
             if is_support_request:
@@ -651,9 +659,14 @@ async def create_openai_response(session_id: str, user_message: str, current_use
 
 Há algo específico sobre sua jornada espiritual que gostaria de explorar? 🕉️""", True
             
-            # Spiritual guidance responses
-            elif any(word in user_msg_lower for word in ["ansioso", "ansiedade", "preocupado", "medo", "nervoso"]):
-                return """Posso sentir a turbulência em seu coração. A ansiedade é como ondas na superfície do oceano - perturbam a vista, mas não tocam a profundidade serena.
+            # Generate contextual responses with variation based on conversation flow
+            import random
+            
+            # Spiritual guidance responses with context awareness
+            if any(word in user_msg_lower for word in ["ansioso", "ansiedade", "preocupado", "medo", "nervoso"]):
+                # Vary responses based on conversation context and add randomness
+                responses = [
+                    f"""Posso sentir a turbulência em seu coração. A ansiedade é como ondas na superfície do oceano - perturbam a vista, mas não tocam a profundidade serena.
 
 **Para este momento:**
 1. **Respire conscientemente** - Três respirações profundas, sentindo cada uma
@@ -664,7 +677,47 @@ Há algo específico sobre sua jornada espiritual que gostaria de explorar? 🕉
 
 **Prática:** Quando a ansiedade surgir, ao invés de resistir, pergunte: "Para quem isso é um problema?" e descanse na vastidão silenciosa que você É.
 
-O que surge ao contemplar isso? 🌟""", False
+O que surge ao contemplar isso? 🌟""",
+
+                    f"""Sinto a agitação que toma conta de você neste momento. Como seu mentor espiritual, quero te lembrar de algo fundamental.
+
+**Verdade profunda:** A ansiedade não é "sua" - ela simplesmente aparece no espaço da consciência que você É.
+
+**Experimento agora mesmo:**
+1. **Observe** - Onde sente a ansiedade no corpo?
+2. **Respire** - Deixe o ar fluir naturalmente
+3. **Pergunte** - "Para quem essa ansiedade é um problema?"
+
+**Insight liberador:** Quando você se identifica com aquilo que observa a ansiedade, ao invés da própria ansiedade, ela perde o poder sobre você.
+
+Como uma nuvem que passa pelo céu sem manchá-lo, a ansiedade pode passar pela consciência que você É sem perturbá-la.
+
+Consegue sentir essa diferença entre "ter ansiedade" e "observar ansiedade"? 🕉️""",
+
+                    f"""Percebo que a mente está criando turbulência. Isso é natural na jornada humana, mas você pode descobrir a paz que já existe em você.
+
+**Compreensão essencial:** A ansiedade surge da identificação com pensamentos sobre o futuro ou passado. Mas VOCÊ existe apenas no presente.
+
+**Prática imediata:**
+- Sinta os pés no chão
+- Note a respiração acontecendo sozinha  
+- Pergunte: "Quem está consciente desta ansiedade?"
+
+**Revelação:** Essa consciência que percebe a ansiedade está em paz? Ou está ansiosa?
+
+A resposta te mostrará quem você realmente É - não aquele que se preocupa, mas aquele que observa com serenidade.
+
+*"Na presença, não há ansiedade"* - apenas Ser puro.
+
+O que ressoa quando você descansa nesta verdade? ✨"""
+                ]
+                
+                # Add context if available
+                if "primeira vez" not in conversation_context and len(history) > 2:
+                    context_note = " Vejo que este tema tem aparecido em nossa conversa - isso mostra sua sinceridade em buscar a paz interior."
+                    responses[0] = responses[0].replace("🌟", f"{context_note} 🌟")
+                
+                return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["perdido", "confuso", "não sei", "direção", "caminho"]):
                 return """Sinto a sinceridade em sua busca. Sentir-se perdido é, paradoxalmente, um sinal de despertar - significa que você não está mais satisfeito com respostas superficiais.
