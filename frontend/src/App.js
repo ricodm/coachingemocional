@@ -506,22 +506,16 @@ O que move seu coração hoje?`,
   };
 
   const handleSuggestionClick = (suggestion, index) => {
-    // Check if this is an admin-configured suggestion
-    if (suggestions.length > 0) {
-      // Use the new chat suggestion endpoint for admin-configured suggestions
-      sendCustomSuggestion(index, suggestion);
-    } else {
-      // Fallback to old behavior for AI-generated suggestions
-      setInputMessage(suggestion);
-      // Focus on the input field after setting the suggestion
-      setTimeout(() => {
-        const textarea = document.querySelector('.message-input');
-        if (textarea) {
-          textarea.focus();
-          textarea.setSelectionRange(suggestion.length, suggestion.length);
-        }
-      }, 100);
-    }
+    // Always populate the input field with the suggestion text for user to edit/send
+    setInputMessage(suggestion);
+    // Focus on the input field after setting the suggestion
+    setTimeout(() => {
+      const textarea = document.querySelector('.message-input');
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(suggestion.length, suggestion.length);
+      }
+    }, 100);
   };
 
   const sendCustomSuggestion = async (suggestionIndex, suggestionText) => {
