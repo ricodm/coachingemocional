@@ -720,7 +720,8 @@ O que ressoa quando você descansa nesta verdade? ✨"""
                 return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["perdido", "confuso", "não sei", "direção", "caminho"]):
-                return """Sinto a sinceridade em sua busca. Sentir-se perdido é, paradoxalmente, um sinal de despertar - significa que você não está mais satisfeito com respostas superficiais.
+                responses = [
+                    f"""Sinto a sinceridade em sua busca. Sentir-se perdido é, paradoxalmente, um sinal de despertar - significa que você não está mais satisfeito com respostas superficiais.
 
 **Verdade espiritual:** Você não pode estar perdido porque você É o "lugar" onde tudo acontece. Como pode o espaço se perder no espaço?
 
@@ -733,10 +734,43 @@ O que ressoa quando você descansa nesta verdade? ✨"""
 
 *"Aquele que busca é aquilo que é buscado"* - Ramana Maharshi
 
-Como essas palavras ressoam em você? 🕉️""", False
+Como essas palavras ressoam em você? 🕉️""",
+
+                    f"""Posso sentir sua busca sincera por direção. Mas e se eu lhe dissesse que o fato de se sentir perdido é exatamente onde você precisa estar?
+
+**Insight profundo:** Toda confusão surge da mente. Mas VOCÊ - a consciência que observa a confusão - está sempre clara e presente.
+
+**Descoberta imediata:**
+1. **Observe** - Note que há uma sensação de "estar perdido"
+2. **Pergunte** - "Quem sabe que está perdido?"
+3. **Sinta** - Esse "quem sabe" está confuso?
+
+**Revelação:** O verdadeiro você nunca esteve perdido. Apenas observou experiências de confusão passarem por sua consciência.
+
+Como a luz que ilumina tanto a clareza quanto a escuridão, você É a consciência na qual tanto certeza quanto confusão aparecem.
+
+Consegue reconhecer essa presença estável em você? ✨""",
+
+                    f"""O sentimento de estar perdido é um convite sagrado para parar de buscar externamente e se voltar para dentro.
+
+**Compreensão liberadora:** Você não precisa saber para ONDE vai. Você só precisa saber QUEM você É.
+
+**Prática desta descoberta:**
+- Sente-se em silêncio
+- Pergunte: "Quem eu sou antes de qualquer história sobre mim?"
+- Descanse na resposta que não vem da mente
+
+**Paradoxo espiritual:** Quando você para de procurar direção, descobre que você É a direção. Você É o caminho e o destino.
+
+*"Seja quieto e saiba que Eu Sou"*
+
+Quando você permite essa quietude, o que se revela? 🌟"""
+                ]
+                return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["pensamentos", "mente", "pensar", "mental"]):
-                return """Ah, a dança eterna dos pensamentos! Você está investigando um dos grandes mistérios da existência humana.
+                responses = [
+                    f"""Ah, a dança eterna dos pensamentos! Você está investigando um dos grandes mistérios da existência humana.
 
 **Insight fundamental:** Você não é aquele que pensa. Você é aquele que SABE que está pensando.
 
@@ -749,7 +783,39 @@ Como essas palavras ressoam em você? 🕉️""", False
 
 **Prática:** Hoje, sempre que se pegar "perdido" em pensamentos, pergunte suavemente: "Quem pensa?" e retorne ao observador silencioso.
 
-Você já notou essa diferença entre o pensador e aquele que observa os pensamentos? ✨""", False
+Você já notou essa diferença entre o pensador e aquele que observa os pensamentos? ✨""",
+
+                    f"""A mente é como um rio - sempre em movimento. Mas você não é o rio, você É a margem silenciosa onde o rio flui.
+
+**Descoberta transformadora:** Todo pensamento surge, permanece um pouco, e desaparece. Mas o que observa esse movimento permanece inalterado.
+
+**Investigação prática:**
+- Aguarde o próximo pensamento surgir
+- Quando ele aparecer, pergunte: "De onde ele veio?"
+- Quando ele desaparecer, pergunte: "Para onde foi?"
+
+**Insight libertador:** Os pensamentos não têm substância própria. Eles são como reflexos na água - parecem reais, mas não podem te molhar.
+
+Você É o espaço consciente no qual todos os pensamentos aparecem e desaparecem.
+
+Como se sente ao reconhecer-se como este espaço? 🕉️""",
+
+                    f"""Percebo sua relação com os pensamentos. Quer descobrir o segredo para a paz mental?
+
+**Segredo revelado:** Não é parar os pensamentos - é reconhecer que você nunca foi limitado por eles.
+
+**Experiência direta:**
+1. Traga um pensamento que te incomoda à mente
+2. Agora pergunte: "Esse pensamento pode me forçar a fazer algo?"
+3. Observe: "Esse pensamento tem poder próprio ou só o poder que eu lhe dou?"
+
+**Liberdade total:** Quando você vê que pensamentos são apenas aparições na consciência, você se torna livre para escolher quais seguir e quais deixar passar.
+
+Como folhas flutuando num rio, deixe os pensamentos passarem sem resistência nem adesão.
+
+Qual é a sensação de ser o observador silencioso dos pensamentos? ✨"""
+                ]
+                return random.choice(responses), False
                 
             elif any(word in user_msg_lower for word in ["meditação", "meditar", "prática", "contemplação"]):
                 return """Que belo impulso de se voltar para dentro! A verdadeira meditação não é uma técnica, mas o reconhecimento do que você É antes de qualquer prática.
