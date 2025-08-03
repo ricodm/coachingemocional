@@ -1080,6 +1080,7 @@ Responda de forma personalizada, considerando TODA a jornada espiritual desta pe
         system_prompt = await get_enhanced_system_prompt(user_id)
         
         # Generate AI response
+        ai_response_successful = True
         try:
             response = openai_client.chat.completions.create(
                 model="gpt-4",
@@ -1093,6 +1094,7 @@ Responda de forma personalizada, considerando TODA a jornada espiritual desta pe
             
             ai_response = response.choices[0].message.content
         except Exception as openai_error:
+            ai_response_successful = False
             logger.error(f"OpenAI error in custom suggestion chat: {openai_error}")
             # Provide a meaningful fallback response
             ai_response = f"""Obrigado por compartilhar isso comigo. 
@@ -1127,8 +1129,12 @@ Como se sente ao refletir sobre isso? 🕉️"""
             {"$set": {"last_activity": datetime.utcnow()}}
         )
         
-        # Get updated remaining messages
-        remaining_after = remaining - 1
+        # Only decrement message count if OpenAI responded successfully (not an error message)
+        if ai_response_successful:
+            remaining_after = remaining - 1
+        else:
+            # Don't decrement for error responses
+            remaining_after = remaining
         
         logger.info(f"Custom suggestion chat response generated for user {user_id} in session {session_id}")
         
