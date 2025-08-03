@@ -518,66 +518,6 @@ O que move seu coração hoje?`,
     }, 100);
   };
 
-  const sendCustomSuggestion = async (suggestionIndex, suggestionText) => {
-    if (!sessionId || isLoading) return;
-
-    const userMessage = {
-      id: Date.now().toString(),
-      content: suggestionText,
-      is_user: true,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
-    setShowSuggestions(false);
-
-    try {
-      const response = await axios.post(`${API}/chat/suggestion`, {
-        session_id: sessionId,
-        suggestion_index: suggestionIndex,
-        user_message: suggestionText
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const aiMessage = {
-        id: response.data.message_id,
-        content: response.data.response,
-        is_user: false,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-      setRemainingMessages(response.data.messages_remaining_today);
-      
-      // Show new suggestions after AI responds
-      setTimeout(() => {
-        setShowSuggestions(true);
-        fetchSuggestions();
-      }, 1500);
-      
-    } catch (error) {
-      console.error('Erro ao enviar sugestão customizada:', error);
-      let errorMsg = 'Desculpe, houve um problema. Por favor, tente novamente.';
-      
-      if (error.response?.status === 429) {
-        errorMsg = error.response.data.detail;
-        setShowPlansModal(true);
-      }
-
-      const errorMessage = {
-        id: 'error-' + Date.now(),
-        content: errorMsg,
-        is_user: false,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const refreshSuggestions = () => {
     fetchSuggestions();
   };
