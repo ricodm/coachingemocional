@@ -629,7 +629,7 @@ async def create_openai_response(session_id: str, user_message: str, current_use
         
     except Exception as e:
         logger.error(f"Erro ao chamar OpenAI: {str(e)}")
-        return "Desculpe, estou tendo dificuldades técnicas. Pode tentar novamente em alguns momentos? Enquanto isso, que tal respirar fundo e observar seus pensamentos com gentileza?", False
+        return "Desculpe, estou tendo dificuldades técnicas. Pode tentar novamente em alguns momentos? Enquanto isso, que tal respirar fundo e observar seus pensamentos com gentileza?", True  # True = is_support_request (don't count as regular message)
 
 # ============ AUTH ENDPOINTS ============
 
