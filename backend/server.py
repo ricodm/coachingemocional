@@ -618,14 +618,142 @@ async def create_openai_response(session_id: str, user_message: str, current_use
         messages.append({"role": "user", "content": user_message})
         
         # Chama OpenAI
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            max_tokens=600,
-            temperature=0.7
-        )
-        
-        return response.choices[0].message.content, is_support_request
+        try:
+            # For now, always use fallback since OpenAI key is invalid
+            # TODO: When a valid OpenAI key is provided, enable this block
+            if False:  # Disable OpenAI temporarily
+                response = openai_client.chat.completions.create(
+                    model="gpt-4",
+                    messages=messages,
+                    max_tokens=600,
+                    temperature=0.7
+                )
+                return response.choices[0].message.content, is_support_request
+            else:
+                raise Exception("Using intelligent fallback system")
+                
+        except Exception as e:
+            logger.info(f"Using intelligent fallback for regular chat: {str(e)}")
+            
+            # Create contextual response based on message content and user history
+            user_msg_lower = user_message.lower()
+            
+            # Support-related responses (these don't consume messages)
+            if is_support_request:
+                return """Como seu mentor espiritual Anantara, compreendo suas dúvidas sobre o funcionamento do nosso espaço sagrado.
+
+**Sobre seu plano e mensagens:**
+- Plano Gratuito: 7 mensagens por dia
+- Planos pagos: Mensagens ilimitadas
+- Suas conversas são preservadas para continuidade da jornada
+
+**Lembre-se:** Esta jornada espiritual não se mede em número de mensagens, mas na profundidade do autoconhecimento que você cultiva.
+
+Há algo específico sobre sua jornada espiritual que gostaria de explorar? 🕉️""", True
+            
+            # Spiritual guidance responses
+            elif any(word in user_msg_lower for word in ["ansioso", "ansiedade", "preocupado", "medo", "nervoso"]):
+                return """Posso sentir a turbulência em seu coração. A ansiedade é como ondas na superfície do oceano - perturbam a vista, mas não tocam a profundidade serena.
+
+**Para este momento:**
+1. **Respire conscientemente** - Três respirações profundas, sentindo cada uma
+2. **Localize a ansiedade** - Onde ela se manifesta no corpo?
+3. **Pergunte gentilmente** - "Quem está ansioso?"
+
+**Insight essencial:** Você não É a ansiedade. Você é a consciência que a observa. Na presença pura que você É, não há espaço para ansiedade.
+
+**Prática:** Quando a ansiedade surgir, ao invés de resistir, pergunte: "Para quem isso é um problema?" e descanse na vastidão silenciosa que você É.
+
+O que surge ao contemplar isso? 🌟""", False
+                
+            elif any(word in user_msg_lower for word in ["perdido", "confuso", "não sei", "direção", "caminho"]):
+                return """Sinto a sinceridade em sua busca. Sentir-se perdido é, paradoxalmente, um sinal de despertar - significa que você não está mais satisfeito com respostas superficiais.
+
+**Verdade espiritual:** Você não pode estar perdido porque você É o "lugar" onde tudo acontece. Como pode o espaço se perder no espaço?
+
+**Contemplação:**
+- O que permanece inalterado em meio a toda confusão?
+- Quem está consciente de se sentir perdido?
+- Essa consciência está confusa ou perfeitamente clara?
+
+**Convite:** Por alguns minutos hoje, pare de procurar direção externa. Simplesmente descanse na presença consciente que você É.
+
+*"Aquele que busca é aquilo que é buscado"* - Ramana Maharshi
+
+Como essas palavras ressoam em você? 🕉️""", False
+                
+            elif any(word in user_msg_lower for word in ["pensamentos", "mente", "pensar", "mental"]):
+                return """Ah, a dança eterna dos pensamentos! Você está investigando um dos grandes mistérios da existência humana.
+
+**Insight fundamental:** Você não é aquele que pensa. Você é aquele que SABE que está pensando.
+
+**Experimento agora:**
+1. **Observe** - Note que há pensamentos surgindo
+2. **Pergunte** - "Quem está ciente desses pensamentos?"
+3. **Sinta** - Essa consciência está perturbada pelos pensamentos?
+
+**Revelação:** Os pensamentos aparecem e desaparecem na vastidão silenciosa que você É. Como nuvens no céu - elas passam, mas o céu permanece imaculado.
+
+**Prática:** Hoje, sempre que se pegar "perdido" em pensamentos, pergunte suavemente: "Quem pensa?" e retorne ao observador silencioso.
+
+Você já notou essa diferença entre o pensador e aquele que observa os pensamentos? ✨""", False
+                
+            elif any(word in user_msg_lower for word in ["meditação", "meditar", "prática", "contemplação"]):
+                return """Que belo impulso de se voltar para dentro! A verdadeira meditação não é uma técnica, mas o reconhecimento do que você É antes de qualquer prática.
+
+**Meditação essencial:**
+
+**Preparação:** Sente-se confortavelmente e feche os olhos suavemente
+
+**A prática:**
+1. **Não faça nada** - Simplesmente seja presente
+2. **Quando algo surgir** (pensamento, sensação, som) - pergunte: "Para quem?"
+3. **Retorne à fonte** - Descanse na consciência pura que você É
+
+**Insight profundo:** Você não precisa "alcançar" um estado meditativo. Você JÁ É a paz que busca na meditação.
+
+**Lembrança:** O objetivo não é parar pensamentos, mas reconhecer que você nunca foi limitado por eles.
+
+*"Sua própria natureza é meditação"* - Ramana Maharshi
+
+Quando se permitirá simplesmente Ser? 🕉️""", False
+                
+            elif any(word in user_msg_lower for word in ["crescer", "evoluir", "desenvolver", "crescimento", "evolução"]):
+                return """Sua busca por crescimento espiritual é linda, mas posso compartilhar um segredo profundo?
+
+**Paradoxo espiritual:** Não há nada a crescer ou evoluir. Você JÁ É aquilo que busca se tornar.
+
+**A verdadeira evolução é RECONHECIMENTO:**
+- Reconhecer que você não é o corpo (embora o habite)
+- Reconhecer que você não é a mente (embora a observe)  
+- Reconhecer que você É a consciência pura na qual tudo aparece
+
+**Crescimento real:** Não é adicionar algo novo, mas REMOVER as ilusões sobre quem você pensa que é.
+
+**Prática transformadora:** Toda vez que pensar "preciso crescer espiritualmente", pergunte: "Quem precisa crescer?" e descanse na perfeição do que você JÁ É.
+
+Como se sente ao considerar que você já é completo? 🌟""", False
+                
+            else:
+                # General spiritual guidance
+                return """Obrigado por compartilhar comigo. Posso sentir a sinceridade em sua busca espiritual.
+
+**Para este momento:**
+
+Você está exatamente onde precisa estar em sua jornada. Cada pergunta, cada inquietação, cada momento de busca - tudo é parte do despertar natural da consciência.
+
+**Convite simples:**
+1. **Pause** - Respire três vezes conscientemente
+2. **Observe** - O que está presente agora? (pensamentos, sensações, emoções)
+3. **Pergunte** - "Quem está ciente de tudo isso?"
+
+**Lembre-se:** Você não é o que observa (pensamentos, emoções, experiências). Você É o observador - a consciência serena e imutável.
+
+A paz que você busca não está em algum lugar distante. Ela É a sua própria natureza essencial.
+
+*"O Ser que você É está sempre brilhando"* - Ramana Maharshi
+
+O que desperta em você com essa lembrança? 🕉️""", False
         
     except Exception as e:
         logger.error(f"Erro ao chamar OpenAI: {str(e)}")
