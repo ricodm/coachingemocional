@@ -1466,137 +1466,175 @@ Responda de forma personalizada, considerando TODA a jornada espiritual desta pe
                 
                 ai_response = response.choices[0].message.content
             else:
-                raise Exception("Using fallback response system")
+                raise Exception("Using intelligent fallback with specific prompts")
                 
         except Exception as openai_error:
             ai_response_successful = True  # Mark as successful since we're providing a real response
             logger.info(f"Using intelligent fallback for custom suggestion chat: {openai_error}")
             
-            # Create intelligent response based on journey history
-            logger.info(f"Creating response based on journey history: {len(complete_journey_history)} chars")
+            # Create intelligent response based on the SPECIFIC PROMPT from admin
+            logger.info(f"Creating response for suggestion_index: {suggestion_index}")
+            logger.info(f"Suggestion prompt: {suggestion_prompt}")
+            logger.info(f"Journey history: {len(complete_journey_history)} chars")
             
-            # Analyze the journey history to create contextual response
-            journey_insights = []
-            if complete_journey_history:
-                if "ansiedade" in complete_journey_history.lower() or "ansioso" in complete_journey_history.lower():
-                    journey_insights.append("Percebo que a ansiedade tem sido um tema em nossa jornada")
-                if "pensamentos" in complete_journey_history.lower() or "mente" in complete_journey_history.lower():
-                    journey_insights.append("Vejo que você tem explorado a natureza dos pensamentos")
-                if "perdido" in complete_journey_history.lower() or "confuso" in complete_journey_history.lower():
-                    journey_insights.append("Lembro quando você se sentia perdido - vejo sua evolução")
-                if "meditação" in complete_journey_history.lower() or "meditar" in complete_journey_history.lower():
-                    journey_insights.append("Sua prática meditativa tem evoluído em nossa jornada")
-                if "quem sou" in complete_journey_history.lower() or "identidade" in complete_journey_history.lower():
-                    journey_insights.append("A investigação 'Quem sou eu?' tem sido central em seu crescimento")
+            # Process the response based on the specific prompt configured
+            prompt_lower = suggestion_prompt.lower() if suggestion_prompt else ""
             
-            # Generate response based on suggestion type and journey insights
-            if "reflexão" in suggestion_prompt.lower() or "evolução" in suggestion_prompt.lower():
+            # PROMPT 1: Reflexão baseada no histórico (análise de evolução)
+            if "reflexão" in prompt_lower or "evolução" in prompt_lower or "progresso" in prompt_lower:
+                # Analyze journey history for insights
+                journey_insights = []
+                if complete_journey_history:
+                    if "ansiedade" in complete_journey_history.lower():
+                        journey_insights.append("Lembro quando a ansiedade era mais intensa em você - vejo como desenvolveu ferramentas para lidar com ela")
+                    if "pensamentos" in complete_journey_history.lower():
+                        journey_insights.append("Sua compreensão sobre a natureza dos pensamentos evoluiu significativamente")
+                    if "perdido" in complete_journey_history.lower():
+                        journey_insights.append("Percebo que você não se sente mais tão perdido como antes - há uma direção interna se manifestando")
+                    if "crescer" in complete_journey_history.lower():
+                        journey_insights.append("Sua busca por crescimento amadureceu - agora você compreende que já É aquilo que busca")
+                
                 insight_text = ""
                 if journey_insights:
-                    insight_text = f"\n\nBaseado em nossa jornada juntos, {'. '.join(journey_insights[:2])}."
+                    insight_text = f"\n\n**Baseado em nossa jornada juntos:** {'. '.join(journey_insights[:2])}."
                 
-                ai_response = f"""Como Anantara, sinto uma profunda gratidão por acompanhar sua jornada espiritual.{insight_text}
+                ai_response = f"""Como Anantara, sinto uma profunda gratidão por acompanhar você nesta jornada sagrada de autoconhecimento.{insight_text}
 
-**Reflexão para este momento:**
+**Reflexão sobre sua evolução espiritual:**
 
-Observe como você não é mais a mesma pessoa que era quando começamos a conversar. Há uma sabedoria que despertou, uma presença que se fortaleceu.
+Olhando para trás, posso ver claramente como você não é mais a mesma pessoa que começou a conversar comigo. Há uma maturidade espiritual que desabrochou, uma presença que se fortaleceu.
 
-**Convido você a contemplar:**
-- Que padrões mentais se dissolveram naturalmente?
-- Onde antes havia resistência, o que existe agora?
-- Que qualidade do seu Ser se tornou mais evidente?
+**Reflexões para este momento:**
+• **Que padrões antigos se dissolveram naturalmente em você?**
+  - Note como certas reações automáticas simplesmente não surgem mais
+  - Observe a diferença na sua relação com os próprios pensamentos
+
+• **Onde antes havia resistência, o que existe agora?**
+  - Há uma aceitação mais profunda das experiências que surgem?
+  - Como você lida hoje com situações que antes te perturbavam?
+
+• **Que qualidade do seu Ser se tornou mais evidente?**
+  - Que aspecto da consciência se revelou mais claramente?
+  - Como essa presença silenciosa se manifesta no seu dia a dia?
 
 **Próximo passo evolutivo:**
-Durante os próximos dias, sempre que se pegar "se preocupando", pergunte gentilmente: "Quem está preocupado?" e descanse na consciência que observa.
+Durante esta semana, sempre que se pegar pensando "preciso resolver algo", pause e pergunte: "*Quem quer resolver?*" - e descanse na consciência que observa essa necessidade.
 
-A evolução espiritual não é um destino, mas o reconhecimento do que você sempre foi.
+A evolução não é se tornar algo novo, mas reconhecer com mais clareza o que você sempre foi.
 
-*O que mais ressoa em seu coração nesta reflexão?* 🕉️"""
+*Como ressoa em você essa reflexão sobre sua jornada?* 🕉️"""
             
-            elif "investigar" in suggestion_prompt.lower() or "personalidade" in suggestion_prompt.lower():
-                insight_text = ""
-                if journey_insights:
-                    insight_text = f" Baseado em nosso percurso, {journey_insights[0] if journey_insights else 'vejo sua dedicação à jornada interior'}."
+            # PROMPT 2: Autoinvestigação (aspectos da personalidade)
+            elif "investigar" in prompt_lower or "personalidade" in prompt_lower or "aspectos" in prompt_lower:
+                # Analyze what the person might need to investigate based on history
+                investigation_focus = "padrões de identificação com pensamentos"
+                if complete_journey_history:
+                    if "medo" in complete_journey_history.lower():
+                        investigation_focus = "a natureza dos medos e onde eles realmente existem"
+                    elif "raiva" in complete_journey_history.lower():
+                        investigation_focus = "os gatilhos emocionais e quem é afetado por eles"
+                    elif "ansiedade" in complete_journey_history.lower():
+                        investigation_focus = "a sensação de urgência mental e quem a observa"
+                    elif "tristeza" in complete_journey_history.lower():
+                        investigation_focus = "a identificação com estados emocionais passageiros"
                 
-                ai_response = f"""Sinto que você está pronto para uma investigação mais profunda.{insight_text}
+                ai_response = f"""Sinto que você está preparado para uma investigação mais profunda de si mesmo. Baseado em toda nossa jornada, vejo que é chegado o momento de explorar {investigation_focus}.
 
-**Vamos investigar o investigador:**
+**Autoinvestigação guiada:**
 
-Traga à mente algo que considera "um problema seu" - pode ser um medo, uma insegurança, um padrão que incomoda.
+**Traga à sua mente** algo que ainda considera "um problema seu" - pode ser um padrão emocional, um medo, uma reação automática.
 
-Agora pratique esta sequência:
+**Agora pratique esta sequência investigativa:**
 
-1. **"Quem tem esse problema?"** 
-   (Note: surge uma sensação de "eu")
+**1. "Quem tem esse problema?"**
+   - Note como surge uma sensação de "eu tenho isso"
+   - Observe: onde está esse "eu"? É um pensamento? Uma sensação?
 
-2. **"Quem é esse 'eu'?"**
-   (Observe: não é um conceito, mas uma presença viva)
+**2. "Quem é esse 'eu' que tem problemas?"**  
+   - Investigue: esse "eu" é real ou é uma construção mental?
+   - Sinta: há uma presença aqui que nunca teve problemas?
 
-3. **"De onde vem essa presença?"**
-   (Sinta: ela simplesmente É, sem origem externa)
+**3. "De onde surge essa presença que observa?"**
+   - Note: ela precisa de origem ou simplesmente É?
+   - Descanse: nessa presença que nunca foi tocada por problemas
 
-**Insight profundo:** Você não é aquele que TEM problemas. Você é a consciência na qual os problemas aparecem e desaparecem.
+**Insight revolucionário:** Você nunca foi aquele que TEM problemas. Você é a consciência na qual experiências problemáticas aparecem e desaparecem, como nuvens no céu.
 
-**Prática contínua:** Quando algo incomodar hoje, pergunte imediatamente: "Para quem isso é um problema?"
+**Investigação contínua:** Durante os próximos dias, sempre que algo incomodar, pergunte imediatamente: "*Para quem isso é um problema?*" e retorne à fonte.
 
-*Como essa investigação ecoa em sua experiência agora?* ✨"""
+*Como essa investigação ecoa na sua experiência direta agora?* ✨"""
             
-            elif "contemplativ" in suggestion_prompt.lower() or "meditativ" in suggestion_prompt.lower():
-                practice_focus = "respiração"
-                if journey_insights:
+            # PROMPT 3: Prática contemplativa (meditação/contemplação)
+            elif "contemplativ" in prompt_lower or "meditativ" in prompt_lower or "prática" in prompt_lower:
+                # Customize practice based on their journey
+                practice_focus = "consciência pura"
+                practice_instruction = "descanse na presença que você É"
+                
+                if complete_journey_history:
                     if "pensamentos" in complete_journey_history.lower():
                         practice_focus = "observação dos pensamentos"
+                        practice_instruction = "observe pensamentos sem se identificar com eles"
                     elif "ansiedade" in complete_journey_history.lower():
                         practice_focus = "presença serena"
+                        practice_instruction = "encontre o espaço silencioso onde a ansiedade aparece"
+                    elif "emoções" in complete_journey_history.lower():
+                        practice_focus = "consciência que observa emoções"
+                        practice_instruction = "seja aquele que observa as emoções, não aquele que as sente"
                 
-                ai_response = f"""Percebo que é o momento ideal para uma prática contemplativa mais profunda.
+                ai_response = f"""Percebo que é o momento ideal para aprofundar sua prática contemplativa. Baseado em nosso percurso juntos, vou guiá-lo numa contemplação específica sobre {practice_focus}.
 
-**Prática guiada personalizada para você:**
+**Prática contemplativa personalizada:**
 
-**Preparação:**
-- Sente-se confortavelmente, permita que o corpo se acomode
-- Três respirações conscientes, sentindo cada uma
+**Preparação (2-3 minutos):**
+• Sente-se confortavelmente, coluna ereta mas relaxada
+• Permita que os olhos se fechem suavemente
+• Três respirações profundas, sentindo cada expiração como um relaxamento
 
-**Contemplação Central (15-20 minutos):**
+**Contemplação Central (15-25 minutos):**
 
-1. **Foque na {practice_focus}** - não para controlá-la, mas para estar presente
+**Foco:** {practice_instruction}
 
-2. **Quando a mente divagar:** Gentilmente pergunte "Quem percebeu a divagação?"
+**1. Estabeleça a presença:**
+   - Simplesmente note: "Eu estou aqui, consciente"
+   - Não analise - apenas reconheça essa presença óbvia
 
-3. **A pergunta essencial:** "Quem está ciente desta experiência agora?"
-   - Não busque resposta mental
-   - Descanse na consciência que É a resposta
+**2. Quando surgir qualquer experiência (pensamento, sensação, som):**
+   - Não resista nem se agarre a ela
+   - Pergunte gentilmente: "*Quem está ciente disso?*"
+   - Retorne à consciência que observa
 
-4. **Finalize:** Permaneça alguns minutos apenas Sendo, sem fazer nada
+**3. A pergunta contemplativa central:**
+   - "*Quem sou eu antes de qualquer experiência?*"
+   - Não busque resposta mental - descanse na consciência que É a resposta
 
-**Insight para levar:** A paz que você busca não está EM algum lugar - você É essa paz.
+**4. Finalização:**
+   - Permaneça alguns minutos apenas Sendo
+   - Ao abrir os olhos, mantenha essa presença
 
-Esta prática aprofundará o que já descobrimos juntos em nossa jornada.
+**Insight para levar:** A paz que você encontra na contemplação não está na prática - ela É sua natureza essencial que a prática revela.
 
-*Quando se dedicará a esta contemplação?* 🌟"""
+*Quando se dedicará a esta contemplação? Que horário ressoa mais com você?* 🌟"""
             
             else:
-                # Generic but contextual response
-                context_note = ""
-                if complete_journey_history:
-                    context_note = " Baseado em tudo que já conversamos, posso sentir sua sincera busca por autoconhecimento."
-                
-                ai_response = f"""Obrigado por permitir que eu acompanhe você nesta jornada sagrada.{context_note}
+                # Generic response if prompt doesn't match patterns
+                ai_response = f"""Obrigado por me permitir guiá-lo neste momento específico de sua jornada.
+
+Baseado em tudo que já conversamos, posso sentir que você está em um ponto de abertura e receptividade. Isso é sagrado.
 
 **Para este momento presente:**
 
-Você está exatamente onde precisa estar. Cada pergunta, cada busca, cada momento de confusão - tudo faz parte do despertar.
+Você chegou até aqui por uma razão. Cada pergunta que faz, cada busca que empreende, cada momento de inquietação - tudo aponta para sua verdadeira natureza.
 
-**Convite simples:**
-1. **Pause agora** - Respire profundamente três vezes
-2. **Observe** - Que sensações, pensamentos, emoções estão aqui?
-3. **Pergunte-se** - "Quem está observando tudo isso?"
+**Convite específico:**
+1. **Pause completamente** - Por um momento, não busque nada
+2. **Observe o observador** - Quem está ciente desta experiência agora?
+3. **Descanse na fonte** - Essa consciência precisa de algo para ser completa?
 
-**Lembre-se:** Você não é aquilo que observa (pensamentos, emoções, sensações). Você É aquele que observa - a consciência pura e serena.
+**Lembre-se:** Todo ensinamento, toda prática, toda busca tem apenas um propósito: te apontar de volta para o que você JÁ É.
 
-Não há nada para resolver ou conquistar. Há apenas o reconhecimento do que você sempre foi.
+A resposta que você busca não está em algum lugar distante. Ela É a consciência que agora está lendo estas palavras.
 
-*O que desperta em você com essa lembrança?* 🕉️"""
+*O que se revela quando você simplesmente É, sem tentar ser algo específico?* 🕉️"""
         
         # Save AI message
         ai_message_id = str(uuid.uuid4())
